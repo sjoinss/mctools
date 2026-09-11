@@ -176,6 +176,44 @@
   }
   .dye-btn:hover .dye-name { opacity: 1; }
 
+  .base-color-box {
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .base-color-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .base-color-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .base-color-input-row input[type="text"] {
+    flex: 1;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 9px;
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+    min-width: 0;
+  }
+  .base-color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,0.3);
+  }
+
   .clear-btn {
     margin-top: 20px;
     width: 100%;
@@ -544,27 +582,69 @@
 
   /* ================= COMMANDS TAB ================= */
   .cmd-view {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 28px 32px 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 96px);
   }
-  .cmd-search {
-    width: 100%;
-    padding: 12px 14px;
-    background: var(--bg-panel-2);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 14px;
-    margin-bottom: 24px;
-  }
-  .cmd-search::placeholder { color: var(--text-faint); }
 
-  .cmd-group {
-    margin-bottom: 30px;
+  /* Category nav — horizontal, drag/scroll to see more */
+  .cmd-nav {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg-panel);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+    cursor: grab;
+    -webkit-overflow-scrolling: touch;
   }
+  .cmd-nav.dragging { cursor: grabbing; scroll-behavior: auto; user-select: none; }
+  .cmd-nav::-webkit-scrollbar { height: 4px; background: transparent; }
+  .cmd-nav::-webkit-scrollbar-track { background: transparent; }
+  .cmd-nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px;
+  }
+  .cmd-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+  .cmd-nav-item {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    color: var(--text-dim);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .cmd-nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .cmd-nav-item.active { background: #2e4a3a; border-color: #3d6650; color: #b8e0c8; font-weight: 600; }
+
+  .cmd-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .cmd-content {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+    overflow-y: auto;
+  }
+
+  .cmd-group { display: none; }
+  .cmd-group.active { display: block; }
+
   .cmd-group-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     margin-bottom: 4px;
     color: var(--text);
@@ -572,7 +652,7 @@
   .cmd-group-desc {
     font-size: 12.5px;
     color: var(--text-dim);
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     line-height: 1.5;
   }
 
@@ -595,34 +675,12 @@
     line-height: 1.5;
   }
 
-  .cmd-version-tabs {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .cmd-version-tab {
-    padding: 5px 10px;
-    background: var(--bg-panel-2);
-    border: 1px solid var(--line);
-    border-radius: 5px;
-    color: var(--text-faint);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.12s ease;
-  }
-  .cmd-version-tab.active {
-    background: #2e4a3a;
-    border-color: #3d6650;
-    color: #b8e0c8;
-  }
-  .cmd-version-tab:hover:not(.active) { color: var(--text-dim); }
-
   .cmd-controls {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 10px;
+    align-items: center;
   }
   .cmd-select {
     background: var(--bg-panel-2);
@@ -632,6 +690,110 @@
     padding: 7px 9px;
     font-size: 12.5px;
   }
+
+  /* Custom searchable dropdown: click to open a filterable list, type to narrow it down */
+  .cmd-combo {
+    position: relative;
+    display: inline-block;
+  }
+  .cmd-combo-input {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 30px 7px 9px;
+    font-size: 12.5px;
+    cursor: pointer;
+    min-width: 160px;
+  }
+  .cmd-combo-input::placeholder { color: var(--text-faint); }
+  .cmd-combo-arrow {
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    font-size: 10px;
+    pointer-events: none;
+  }
+  .cmd-combo-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    background: #1b1e26;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 50;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+  .cmd-combo-list.open { display: block; }
+  .cmd-combo-list::-webkit-scrollbar { width: 5px; }
+  .cmd-combo-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+  .cmd-combo-option {
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .cmd-combo-option:hover, .cmd-combo-option.highlighted {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+  .cmd-combo-option.selected {
+    color: #b8e0c8;
+    font-weight: 600;
+  }
+  .cmd-combo-empty {
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .cmd-combo-search {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    padding: 8px 10px;
+    background: #1b1e26;
+    border: none;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+    font-size: 12.5px;
+    box-sizing: border-box;
+  }
+  .cmd-combo-search::placeholder { color: var(--text-faint); }
+  .cmd-num-input {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 9px;
+    font-size: 12.5px;
+    width: 90px;
+    font-family: 'Courier New', monospace;
+  }
+  .cmd-num-input.out-of-range {
+    border-color: #a85c4a;
+    color: #f0a0a0;
+  }
+  .cmd-num-label {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-right: -4px;
+  }
+  .cmd-range-warning {
+    font-size: 11px;
+    color: #e0a06a;
+    margin: -4px 0 8px;
+    display: none;
+  }
+  .cmd-range-warning.show { display: block; }
 
   .cmd-code-row {
     display: flex;
@@ -675,6 +837,18 @@
     margin-top: 8px;
     line-height: 1.5;
   }
+  .cmd-rule-desc {
+    font-size: 11.5px;
+    color: #9db5a8;
+    background: rgba(58, 95, 74, 0.15);
+    border: 1px solid rgba(61, 102, 80, 0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: none;
+  }
+  .cmd-rule-desc.show { display: block; }
 
   /* saved snippets */
   .cmd-save-box {
@@ -685,11 +859,11 @@
   }
   .cmd-save-input-row {
     display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
   .cmd-save-input-row input[type="text"] {
-    flex: 1;
     background: #0f1116;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -698,7 +872,6 @@
     font-size: 12.5px;
   }
   .cmd-save-input-row textarea {
-    flex: 1;
     background: #0f1116;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -753,6 +926,7 @@
     font-size: 14px;
     padding: 2px 6px;
     border-radius: 4px;
+    flex-shrink: 0;
   }
   .cmd-saved-del:hover { color: #d97f7f; background: rgba(217,127,127,0.1); }
   .cmd-saved-empty {
@@ -760,6 +934,17 @@
     font-size: 12.5px;
     text-align: center;
     padding: 16px;
+  }
+  .cmd-save-persist-note {
+    font-size: 10.5px;
+    color: var(--text-faint);
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    .cmd-content { padding: 18px 16px 50px; }
+    .cmd-nav { padding: 10px 12px; }
   }
 
   ::selection { background: rgba(255,255,255,0.15); }
@@ -769,8 +954,8 @@
 
 <header>
   <div class="header-top">
-    <h1>⚗ 마인크래프트 도구</h1>
-    <p>마인크래프트에서 쓸 수 있는 작은 도구 모음</p>
+    <h1>⚗ 마크 서버 도구</h1>
+    <p>서버 운영/제작에 쓸 수 있는 작은 도구 모음</p>
   </div>
   <div class="tool-tabs">
     <button class="tool-tab active" data-tool="dye">염색 조합기</button>
@@ -782,6 +967,16 @@
 
   <!-- LEFT: dye palette -->
   <div class="panel palette-panel">
+    <div class="base-color-box">
+      <label class="base-color-checkbox">
+        <input type="checkbox" id="baseColorCheckbox">
+        <span>이미 염색된 가죽에서 시작</span>
+      </label>
+      <div class="base-color-input-row" id="baseColorInputRow" style="display:none;">
+        <input type="text" id="baseColorHexInput" placeholder="#RRGGBB" maxlength="7">
+        <div class="base-color-swatch" id="baseColorSwatch"></div>
+      </div>
+    </div>
     <p class="section-label">염료 선택</p>
     <div class="dye-grid" id="dyeGrid"></div>
     <button class="clear-btn" id="clearBtn">전부 비우기</button>
@@ -856,223 +1051,462 @@
 
 <!-- ================= COMMANDS VIEW ================= -->
 <div class="cmd-view" id="commandsView" style="display:none;">
-  <input type="text" class="cmd-search" id="cmdSearch" placeholder="명령어 검색... (예: 액자, 크기, 위치)">
 
-  <!-- 1. Invisible item frame -->
-  <div class="cmd-group" data-cmd-group="invisible-frame">
-    <div class="cmd-group-title">투명 아이템 액자 주기</div>
-    <div class="cmd-group-desc">아이템 액자를 투명하게 만들어서 아이템만 떠 있는 것처럼 보이게 해요. 버전에 따라 명령어 문법이 바뀌었어요.</div>
+  <nav class="cmd-nav" id="cmdNav">
+    <button class="cmd-nav-item" data-nav="invisible-frame">투명 아이템 액자</button>
+    <button class="cmd-nav-item" data-nav="locate-entity">엔티티 위치 찾기</button>
+    <button class="cmd-nav-item" data-nav="look-at">엔티티 고개 돌리기</button>
+    <button class="cmd-nav-item" data-nav="scale">크기 변경</button>
+    <button class="cmd-nav-item" data-nav="mannequin">마네킹</button>
+    <button class="cmd-nav-item" data-nav="fetchprofile">프로필 조회</button>
+    <button class="cmd-nav-item" data-nav="gamerule">게임규칙</button>
+    <button class="cmd-nav-item" data-nav="chair">의자 만들기</button>
+    <button class="cmd-nav-item" data-nav="effect">효과 부여</button>
+    <button class="cmd-nav-item" data-nav="structure">구조물 찾기</button>
+    <button class="cmd-nav-item" data-nav="worldborder">월드보더</button>
+    <button class="cmd-nav-item" data-nav="etc">그 밖의 명령어</button>
+    <button class="cmd-nav-item" data-nav="saved">내가 저장한 명령어</button>
+  </nav>
 
-    <div class="cmd-card" data-cmd-search="투명 액자 아이템프레임 invisible item frame 1.19">
-      <div class="cmd-card-title">1.19.4 ~ 1.20.4</div>
-      <div class="cmd-card-desc">구버전 NBT 문법 (EntityTag)</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">give @p item_frame{EntityTag:{Invisible:1b}}</div>
-        <button class="cmd-copy-btn">복사</button>
+  <div class="cmd-body">
+    <div class="cmd-content" id="cmdContent">
+
+      <!-- 1. Invisible item frame -->
+      <div class="cmd-group" data-cmd-group="invisible-frame">
+        <div class="cmd-group-title">투명 아이템 액자 주기</div>
+        <div class="cmd-group-desc">아이템 액자를 투명하게 만들어서 아이템만 떠 있는 것처럼 보이게 해요. 버전에 따라 명령어 문법이 바뀌었어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">1.19.4 ~ 1.20.4</div>
+          <div class="cmd-card-desc">구버전 NBT 문법 (EntityTag)</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code">give @p item_frame{EntityTag:{Invisible:1b}}</div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">1.20.5 이상 (컴포넌트 문법)</div>
+          <div class="cmd-card-desc">1.20.5부터 아이템 컴포넌트 방식으로 바뀌어서 entity_data 안에 넣어줘야 해요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code">give @p item_frame[entity_data={id:"minecraft:item_frame",Invisible:1b}]</div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">글로우 아이템 액자는 item_frame 대신 glow_item_frame으로 바꾸면 돼요.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="cmd-card" data-cmd-search="투명 액자 아이템프레임 invisible item frame 1.20.5 1.21">
-      <div class="cmd-card-title">1.20.5 이상 (컴포넌트 문법)</div>
-      <div class="cmd-card-desc">1.20.5부터 아이템 컴포넌트 방식으로 바뀌어서 entity_data 안에 넣어줘야 해요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">give @p item_frame[entity_data={id:"minecraft:item_frame",Invisible:1b}]</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-      <div class="cmd-note">글로우 아이템 액자는 item_frame 대신 glow_item_frame으로 바꾸면 돼요.</div>
-    </div>
-  </div>
+      <!-- 2. Locate entity -->
+      <div class="cmd-group" data-cmd-group="locate-entity">
+        <div class="cmd-group-title">특정 엔티티 위치 찾기</div>
+        <div class="cmd-group-desc">선택한 종류의 엔티티가 어디 있는지 알려줘요.</div>
 
-  <!-- 2. Locate entity -->
-  <div class="cmd-group" data-cmd-group="locate-entity">
-    <div class="cmd-group-title">특정 엔티티 위치 찾기</div>
-    <div class="cmd-group-desc">선택한 종류의 엔티티가 어디 있는지 좌표로 알려줘요. 가장 가까운 것을 찾아서 그 위치를 채팅으로 표시합니다.</div>
+        <div class="cmd-card">
+          <div class="cmd-card-title">해당 엔티티에게 순간이동해서 위치 확인</div>
+          <div class="cmd-card-desc">가장 가까운 대상 옆으로 순간이동해요. 실행 후 좌표를 F3 화면에서 확인하면 돼요.</div>
+          <div class="cmd-controls">
+            <div class="cmd-combo" id="locateEntitySelectCombo" >
+              <input type="text" class="cmd-combo-input" id="locateEntitySelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="locateEntitySelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="locateByNameCheckbox">
+              이름표가 있는 것만 찾기
+            </label>
+            <input type="text" class="cmd-num-input" id="locateByNameFilterInput" placeholder="이름표" style="display:none; width:140px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="locateEntityCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">이름표 조건을 추가하면, 종류와 이름이 둘 다 일치하는 대상만 찾아요. 이름표가 화면에 안 보이게(hide) 되어 있어도 내부적으로 저장된 이름이면 찾을 수 있어요.</div>
+        </div>
 
-    <div class="cmd-card" data-cmd-search="엔티티 위치 찾기 locate entity 텔레포트">
-      <div class="cmd-card-title">해당 엔티티에게 순간이동해서 위치 확인</div>
-      <div class="cmd-card-desc">가장 가까운 대상 옆으로 순간이동해요. 실행 후 좌표를 F3 화면에서 확인하면 돼요.</div>
-      <div class="cmd-controls">
-        <select class="cmd-select" id="locateEntitySelect"></select>
+        <div class="cmd-card">
+          <div class="cmd-card-title">좌표를 채팅으로 바로 출력</div>
+          <div class="cmd-card-desc">순간이동 없이, 가장 가까운 대상의 좌표를 시스템 메시지로 띄워줘요.</div>
+          <div class="cmd-controls">
+            <div class="cmd-combo" id="locateEntitySelect2Combo" >
+              <input type="text" class="cmd-combo-input" id="locateEntitySelect2" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="locateEntitySelect2List"></div>
+            </div>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="locateEntityCode2"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">/data 명령어 결과는 실행한 사람에게만 보여요.</div>
+        </div>
       </div>
-      <div class="cmd-code-row">
-        <div class="cmd-code" id="locateEntityCode"></div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
 
-    <div class="cmd-card" data-cmd-search="엔티티 좌표 채팅 출력 tellraw data get">
-      <div class="cmd-card-title">좌표를 채팅으로 바로 출력</div>
-      <div class="cmd-card-desc">순간이동 없이, 가장 가까운 대상의 좌표를 채팅창에 숫자로 띄워줘요.</div>
-      <div class="cmd-controls">
-        <select class="cmd-select" id="locateEntitySelect2"></select>
-      </div>
-      <div class="cmd-code-row">
-        <div class="cmd-code" id="locateEntityCode2"></div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-      <div class="cmd-note">/data 명령어 결과는 실행한 사람에게만 보이는 시스템 메시지로 표시돼요.</div>
-    </div>
-  </div>
+      <!-- 3. Look at (head turn) -->
+      <div class="cmd-group" data-cmd-group="look-at">
+        <div class="cmd-group-title">엔티티 고개(몸) 돌리기</div>
+        <div class="cmd-group-desc">NPC나 몹의 방향을 바꿀 때 써요. NoAI 몹이나 정적인 연출에 자주 쓰여요. 특정 대상을 바라보게 하거나, 각도를 직접 지정할 수 있어요.</div>
 
-  <!-- 3. Scale -->
-  <div class="cmd-group" data-cmd-group="scale">
-    <div class="cmd-group-title">플레이어 / 엔티티 크기 변경</div>
-    <div class="cmd-group-desc">1.20.5부터 추가된 scale 속성으로 크기를 바꿔요. 히트박스도 같이 변합니다.</div>
+        <div class="cmd-card">
+          <div class="cmd-card-title">① 특정 대상을 바라보게 하기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">바라볼 주체</span>
+            <div class="cmd-combo" id="lookAtSourceSelectCombo" >
+              <input type="text" class="cmd-combo-input" id="lookAtSourceSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="lookAtSourceSelectList"></div>
+            </div>
+            <span class="cmd-num-label">바라볼 대상</span>
+            <select class="cmd-select" id="lookAtTargetSelect">
+              <option value="@p">가장 가까운 플레이어</option>
+              <option value="@a">모든 플레이어(각자 가장 가까운 대상 기준)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="lookAtTargetNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="lookAtCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">반복형 커맨드블록에 넣으면 계속 상대를 따라 고개를 돌려요. eyes 기준이라 눈높이를 바라봐요.</div>
+        </div>
 
-    <div class="cmd-card" data-cmd-search="크기 변경 스케일 scale attribute">
-      <div class="cmd-controls">
-        <select class="cmd-select" id="scaleTargetType">
-          <option value="@s">나 자신 (@s)</option>
-          <option value="@p">가장 가까운 플레이어 (@p)</option>
-          <option value="@e[type=ENTITY,limit=1,sort=nearest]">특정 엔티티</option>
-        </select>
-        <select class="cmd-select" id="scaleEntitySelect" style="display:none;"></select>
-        <select class="cmd-select" id="scaleValueSelect">
-          <option value="0.2">0.2배 (아주 작게)</option>
-          <option value="0.5">0.5배 (작게)</option>
-          <option value="1" selected>1 (기본 크기)</option>
-          <option value="2">2배 (크게)</option>
-          <option value="5">5배 (거대하게)</option>
-          <option value="custom">직접 입력...</option>
-        </select>
-        <input type="text" class="cmd-select" id="scaleCustomInput" style="display:none; width:70px;" placeholder="예: 1.5">
+        <div class="cmd-card">
+          <div class="cmd-card-title">② 각도를 직접 지정해서 돌리기</div>
+          <div class="cmd-card-desc">특정 대상을 추적하지 않고, 정확한 방향으로 고정하고 싶을 때 써요.</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">대상</span>
+            <div class="cmd-combo" id="rotateSourceSelectCombo" >
+              <input type="text" class="cmd-combo-input" id="rotateSourceSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="rotateSourceSelectList"></div>
+            </div>
+            <span class="cmd-num-label">yaw (좌우)</span>
+            <input type="text" class="cmd-num-input" id="rotateYawInput" value="0">
+            <span class="cmd-num-label">pitch (상하)</span>
+            <input type="text" class="cmd-num-input" id="rotatePitchInput" value="0">
+          </div>
+          <div class="cmd-range-warning" id="rotateYawWarning">yaw는 -180 ~ 180 사이여야 해요.</div>
+          <div class="cmd-range-warning" id="rotatePitchWarning">pitch는 -90(위) ~ 90(아래) 사이여야 해요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="rotateCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">
+            <strong>yaw(좌우 회전)</strong>: -180 또는 180 = 북쪽, -90 = 동쪽, 0 = 남쪽, 90 = 서쪽을 바라봐요.<br>
+            <strong>pitch(상하 회전)</strong>: -90 = 정면 위(하늘), 0 = 수평, 90 = 정면 아래(땅)를 바라봐요.<br>
+            1.21.2 이상에서 쓸 수 있는 /rotate 명령어예요. 그 이전 버전은 tp의 facing 좌표 지정 방식을 써야 해요.
+          </div>
+        </div>
       </div>
-      <div class="cmd-code-row">
-        <div class="cmd-code" id="scaleCode"></div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-      <div class="cmd-note">되돌리려면 값을 1로 다시 설정하면 돼요.</div>
-    </div>
-  </div>
 
-  <!-- 4. Mannequin -->
-  <div class="cmd-group" data-cmd-group="mannequin">
-    <div class="cmd-group-title">마네킹 소환 (1.21.9+)</div>
-    <div class="cmd-group-desc">아머스탠드가 아니라, 플레이어처럼 생긴 NPC 형태의 새 엔티티예요. Copper Age 업데이트(1.21.9)부터 추가됐고, summon 명령어로만 소환할 수 있어요.</div>
+      <!-- 4. Scale -->
+      <div class="cmd-group" data-cmd-group="scale">
+        <div class="cmd-group-title">플레이어 / 엔티티 크기 변경</div>
+        <div class="cmd-group-desc">1.20.5부터 추가된 scale 속성으로 크기를 바꿔요. 히트박스도 같이 변합니다.</div>
 
-    <div class="cmd-card" data-cmd-search="마네킹 mannequin npc 소환">
-      <div class="cmd-code-row">
-        <div class="cmd-code">summon mannequin ~ ~ ~ {profile:"Notch"}</div>
-        <button class="cmd-copy-btn">복사</button>
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <select class="cmd-select" id="scaleTargetType">
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+              <option value="@e[type=ENTITY,limit=1,sort=nearest]">특정 엔티티</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="scalePlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+            <div class="cmd-combo" id="scaleEntitySelectCombo" style="display:none;">
+              <input type="text" class="cmd-combo-input" id="scaleEntitySelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="scaleEntitySelectList"></div>
+            </div>
+            <span class="cmd-num-label">배율</span>
+            <input type="text" class="cmd-num-input" id="scaleValueInput" value="1" placeholder="예: 1.5">
+          </div>
+          <div class="cmd-range-warning" id="scaleRangeWarning">배율은 0.0625 ~ 16 사이여야 해요. 벗어난 값은 게임에서 그 한계치로 고정돼요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="scaleCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">되돌리려면 값을 1로 다시 설정하면 돼요.</div>
+        </div>
       </div>
-      <div class="cmd-note">profile 값에 플레이어 이름을 넣으면 그 사람 스킨을 씌운 마네킹이 소환돼요. 삭제는 근처에서 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격해서 없앨 수 있어요.</div>
-    </div>
-  </div>
 
-  <!-- 5. fetchprofile -->
-  <div class="cmd-group" data-cmd-group="fetchprofile">
-    <div class="cmd-group-title">플레이어 프로필 조회 (fetchprofile)</div>
-    <div class="cmd-group-desc">닉네임이나 UUID로 플레이어의 스킨/UUID 정보를 서버에서 가져와요. 접속 이력이 없어도 조회 가능하고, 결과로 나온 헤드 아이템도 바로 받을 수 있어요.</div>
+      <!-- 5. Mannequin -->
+      <div class="cmd-group" data-cmd-group="mannequin">
+        <div class="cmd-group-title">마네킹 (1.21.9+)</div>
+        <div class="cmd-group-desc">아머스탠드가 아니라, 플레이어처럼 생긴 NPC 형태의 새 엔티티예요. Copper Age 업데이트(1.21.9)부터 추가됐고, summon 명령어로만 소환할 수 있어요.</div>
 
-    <div class="cmd-card" data-cmd-search="fetchprofile 프로필 조회 스킨 uuid">
-      <div class="cmd-controls">
-        <select class="cmd-select" id="fetchProfileType">
-          <option value="name">닉네임으로 조회</option>
-          <option value="id">UUID로 조회</option>
-          <option value="entity">인게임 엔티티로 조회</option>
-        </select>
-        <input type="text" class="cmd-select" id="fetchProfileInput" style="width:160px;" placeholder="Notch">
+        <div class="cmd-card">
+          <div class="cmd-card-title">소환 (스킨 + 이름표 + NPC 문구 설정)</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">스킨으로 쓸 플레이어 아이디</span>
+            <input type="text" class="cmd-num-input" id="mannequinNameInput" value="Notch" style="width:140px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">이름표</span>
+            <input type="text" class="cmd-num-input" id="mannequinCustomNameInput" value="상점 주인" style="width:140px;">
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="mannequinShowDescCheckbox" checked>
+              "NPC" 문구 표시하기
+            </label>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="mannequinSummonCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">이름표는 CustomName으로 항상 표시돼요. "NPC" 문구는 마네킹 고유의 기본 설명(description)인데, 체크를 끄면 hide_description이 적용돼서 그 문구만 안 보이게 할 수 있어요. 삭제는 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격하면 돼요.</div>
+        </div>
       </div>
-      <div class="cmd-code-row">
-        <div class="cmd-code" id="fetchProfileCode"></div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-      <div class="cmd-note">1.21.9(26.1)부터 추가된 명령어예요. 결과가 채팅에 뜨면 클릭으로 헤드 아이템을 바로 받거나 profile 컴포넌트를 복사할 수 있어요.</div>
-    </div>
-  </div>
 
-  <!-- 6. Extra useful commands -->
-  <div class="cmd-group" data-cmd-group="extra">
-    <div class="cmd-group-title">그 밖에 알아두면 좋은 명령어</div>
-    <div class="cmd-group-desc">막상 필요할 때 잘 기억이 안 나는 것들 모음이에요.</div>
+      <!-- 6. fetchprofile -->
+      <div class="cmd-group" data-cmd-group="fetchprofile">
+        <div class="cmd-group-title">플레이어 프로필 조회 (fetchprofile)</div>
+        <div class="cmd-group-desc">닉네임이나 UUID로 플레이어의 스킨/UUID 정보를 서버에서 가져와요. 접속 이력이 없어도 조회 가능하고, 결과로 나온 헤드 아이템도 바로 받을 수 있어요.</div>
 
-    <div class="cmd-card" data-cmd-search="시간 고정 날씨 낮 밤">
-      <div class="cmd-card-title">시간을 낮으로 고정</div>
-      <div class="cmd-card-desc">낮/밤이 자동으로 안 바뀌게 게임규칙을 끄고 시간을 고정해요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">gamerule doDaylightCycle false</div>
-        <button class="cmd-copy-btn">복사</button>
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <select class="cmd-select" id="fetchProfileType">
+              <option value="name">닉네임으로 조회</option>
+              <option value="id">UUID로 조회</option>
+              <option value="entity">인게임 엔티티로 조회</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="fetchProfileInput" style="width:180px;" placeholder="Notch">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="fetchProfileCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">1.21.9(26.1)부터 추가된 명령어예요. 결과가 채팅에 뜨면 클릭으로 헤드 아이템을 바로 받거나 profile 컴포넌트를 복사할 수 있어요.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="cmd-card" data-cmd-search="날씨 고정 맑음 비">
-      <div class="cmd-card-title">날씨 고정 (맑음)</div>
-      <div class="cmd-card-desc">비/눈이 자동으로 안 오게 게임규칙을 끄고 날씨를 맑게 유지해요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">gamerule doWeatherCycle false</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
+      <!-- 7. Gamerule -->
+      <div class="cmd-group" data-cmd-group="gamerule">
+        <div class="cmd-group-title">게임규칙 (gamerule) 바꾸기</div>
+        <div class="cmd-group-desc">자주 쓰는 게임규칙을 모았어요. 규칙을 고르면 그게 뭘 하는 건지 설명이 뜨고, 값을 정해서 명령어를 만들 수 있어요.</div>
 
-    <div class="cmd-card" data-cmd-search="인벤토리 클리어 clear">
-      <div class="cmd-card-title">인벤토리 비우기</div>
-      <div class="cmd-card-desc">대상의 인벤토리를 전부 비워요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">clear @p</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <div class="cmd-combo" id="gameruleSelectCombo" >
+              <input type="text" class="cmd-combo-input" id="gameruleSelect" placeholder="게임규칙 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="gameruleSelectList"></div>
+            </div>
+            <button class="cmd-save-add-btn" id="gameruleFavoriteBtn" style="padding:7px 12px; font-size:12px;" title="이 규칙을 즐겨찾기에 저장">★ 즐겨찾기 저장</button>
+          </div>
+          <div class="cmd-rule-desc show" id="gameruleDesc"></div>
+          <div class="cmd-controls" id="gameruleValueControls">
+            <select class="cmd-select" id="gameruleValueSelect"></select>
+            <input type="text" class="cmd-num-input" id="gameruleValueInput" style="display:none;">
+          </div>
+          <div class="cmd-range-warning" id="gameruleValueWarning"></div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="gameruleCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
 
-    <div class="cmd-card" data-cmd-search="이름표 커스텀네임 setblock nbt">
-      <div class="cmd-card-title">엔티티 이름 지정 + 이름표 숨기기</div>
-      <div class="cmd-card-desc">이름은 있지만 머리 위 이름표는 안 보이게 하고 싶을 때.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">data merge entity @e[limit=1,sort=nearest] {CustomName:'{"text":"이름"}',CustomNameVisible:0b}</div>
-        <button class="cmd-copy-btn">복사</button>
+        <div class="cmd-card" id="gameruleFavoritesCard" style="display:none;">
+          <div class="cmd-card-title">즐겨찾기한 게임규칙</div>
+          <div class="cmd-card-desc">자주 바꾸는 규칙을 눌러서 위 드롭다운에 바로 불러와요.</div>
+          <div class="cmd-controls" id="gameruleFavoritesList"></div>
+        </div>
       </div>
-    </div>
 
-    <div class="cmd-card" data-cmd-search="구조물 찾기 마을 요새 locate structure">
-      <div class="cmd-card-title">가장 가까운 구조물 찾기</div>
-      <div class="cmd-card-desc">마을, 요새 등 특정 구조물의 좌표를 알려줘요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">locate structure minecraft:village</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-      <div class="cmd-note">village 대신 stronghold, mansion, ancient_city 등으로 바꿀 수 있어요.</div>
-    </div>
+      <!-- 8. Chair (interaction entity) -->
+      <div class="cmd-group" data-cmd-group="chair">
+        <div class="cmd-group-title">의자 만들기 (interaction 엔티티)</div>
+        <div class="cmd-group-desc">아머스탠드 대신 interaction 엔티티를 앉는 판정으로 써서, 계단이나 블록 위에 자연스럽게 앉을 수 있게 만드는 방법이에요. 총 3단계로 나뉘어요.</div>
 
-    <div class="cmd-card" data-cmd-search="파티클 지속 재생 particle">
-      <div class="cmd-card-title">특정 위치에 파티클 계속 뿌리기</div>
-      <div class="cmd-card-desc">반복 커맨드 블록에 넣으면 장식/이펙트용으로 계속 파티클이 나와요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">particle minecraft:totem_of_undying ~ ~1 ~ 0.3 0.3 0.3 0.01 20</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
+        <div class="cmd-card">
+          <div class="cmd-card-title">① 의자 자리에 interaction 엔티티 소환</div>
+          <div class="cmd-card-desc">앉을 위치의 중심 좌표에 소환해요. width는 앉는 판정의 가로 폭, height는 높이예요. 기본값(가로 0.9 / 높이 0.1)이면 낮은 계단이나 카펫 위에 앉는 느낌에 잘 맞아요.</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">width</span>
+            <input type="text" class="cmd-num-input" id="chairWidthInput" value="0.9">
+            <span class="cmd-num-label">height</span>
+            <input type="text" class="cmd-num-input" id="chairHeightInput" value="0.1">
+          </div>
+          <div class="cmd-range-warning" id="chairWidthWarning">width는 0보다 커야 하고 8을 넘을 수 없어요.</div>
+          <div class="cmd-range-warning" id="chairHeightWarning">height는 0보다 커야 하고 8을 넘을 수 없어요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="chairSummonCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">~ ~ ~ 부분은 명령어를 실행하는 위치 기준 상대좌표예요. 원하는 좌표로 직접 바꿔도 돼요.</div>
+        </div>
 
-    <div class="cmd-card" data-cmd-search="이펙트 효과 부여 effect">
-      <div class="cmd-card-title">무한 효과 부여 (예: 야간투시)</div>
-      <div class="cmd-card-desc">infinite로 시간 제한 없이 효과를 유지해요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">effect give @p minecraft:night_vision infinite 0 true</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
+        <div class="cmd-card">
+          <div class="cmd-card-title">② 이미 소환된 의자 크기 조절</div>
+          <div class="cmd-card-desc">이미 만들어둔 chair 태그 엔티티들의 크기를 한 번에 바꿔요.</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">width</span>
+            <input type="text" class="cmd-num-input" id="chairResizeWidthInput" value="0.9">
+            <span class="cmd-num-label">height</span>
+            <input type="text" class="cmd-num-input" id="chairResizeHeightInput" value="0.1">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="chairResizeCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">하나만 지정해서 바꾸고 싶다면, 먼저 /data get entity @e[tag=chair,limit=1] UUID 로 UUID를 확인한 다음 그 값을 대상으로 data merge entity 명령을 실행하면 돼요.</div>
+        </div>
 
-    <div class="cmd-card" data-cmd-search="월드보더 크기 world border">
-      <div class="cmd-card-title">월드보더 크기 설정</div>
-      <div class="cmd-card-desc">플레이 가능 구역을 제한할 때. 숫자는 지름(블록 수)이에요.</div>
-      <div class="cmd-code-row">
-        <div class="cmd-code">worldborder set 6000</div>
-        <button class="cmd-copy-btn">복사</button>
-      </div>
-    </div>
-  </div>
+        <div class="cmd-card">
+          <div class="cmd-card-title">③ 앉기 구현 (반복 명령블록)</div>
+          <div class="cmd-card-desc">플레이어가 chair 태그 엔티티를 우클릭하면 자동으로 올라타게(앉게) 만들어요. 반복형 커맨드블록에 넣고 계속 켜두세요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code">execute as @e[tag=chair] at @s on target run ride @s mount @e[tag=chair,limit=1,sort=nearest]</div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">on target은 방금 누군가 우클릭(상호작용)한 interaction 엔티티만 골라내는 조건이에요.</div>
+        </div>
 
-  <!-- 7. Saved custom commands -->
-  <div class="cmd-group" data-cmd-group="saved">
-    <div class="cmd-group-title">내가 저장한 명령어</div>
-    <div class="cmd-group-desc">자주 쓰는 커스텀 명령어를 직접 저장해두고 언제든 복사해서 쓰세요.</div>
-    <div class="cmd-save-box">
-      <div class="cmd-save-input-row" style="flex-direction:column;">
-        <input type="text" id="cmdSaveLabel" placeholder="이름 (예: 관리자 킷 지급)">
-        <textarea id="cmdSaveText" placeholder="명령어 내용을 붙여넣으세요"></textarea>
-        <button class="cmd-save-add-btn" id="cmdSaveBtn">저장하기</button>
+        <div class="cmd-card">
+          <div class="cmd-card-title">③-보조. 상호작용 기록 초기화 (연쇄형)</div>
+          <div class="cmd-card-desc">위 반복 명령이 같은 클릭을 계속 인식하지 않도록, 처리한 상호작용 기록을 지워줘요. 위 명령어 바로 뒤에 연쇄형 커맨드블록으로 이어붙이세요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code">execute as @e[tag=chair] run data remove entity @s interaction</div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
       </div>
-      <div class="cmd-saved-list" id="cmdSavedList">
-        <div class="cmd-saved-empty">아직 저장한 명령어가 없어요.</div>
+
+      <!-- 9. Effect -->
+      <div class="cmd-group" data-cmd-group="effect">
+        <div class="cmd-group-title">효과 부여</div>
+        <div class="cmd-group-desc">대상, 효과, 지속시간, 레벨을 골라서 명령어를 만들어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <select class="cmd-select" id="effectTargetSelect">
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="effectPlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-controls">
+            <div class="cmd-combo" id="effectTypeSelectCombo" >
+              <input type="text" class="cmd-combo-input" id="effectTypeSelect" placeholder="효과 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="effectTypeSelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">지속시간</span>
+            <select class="cmd-select" id="effectDurationMode">
+              <option value="infinite">무한 (infinite)</option>
+              <option value="custom">직접 입력 (초)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="effectDurationInput" value="30" style="display:none;">
+            <span class="cmd-num-label" id="effectLevelLabel">레벨</span>
+            <select class="cmd-select" id="effectLevelPreset" style="display:none;">
+              <option value="0">레벨 1</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="effectLevelInput" value="0" style="width:60px;">
+          </div>
+          <div class="cmd-range-warning" id="effectDurationWarning">지속시간은 1 ~ 1,000,000초 사이여야 해요.</div>
+          <div class="cmd-range-warning" id="effectLevelWarning">레벨(증폭치)은 0 ~ 255 사이여야 해요. (0이 레벨 1이에요)</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="effectCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">효과를 없애려면 /effect clear (대상) (효과) 를 쓰면 돼요.</div>
+        </div>
       </div>
+
+      <!-- 10. Structure -->
+      <div class="cmd-group" data-cmd-group="structure">
+        <div class="cmd-group-title">가장 가까운 구조물 찾기</div>
+        <div class="cmd-group-desc">마을, 요새 등 특정 구조물의 좌표를 알려줘요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <div class="cmd-combo" id="structureSelectCombo" >
+              <input type="text" class="cmd-combo-input" id="structureSelect" placeholder="구조물 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="structureSelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="structureCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. World border -->
+      <div class="cmd-group" data-cmd-group="worldborder">
+        <div class="cmd-group-title">월드보더 크기 설정</div>
+        <div class="cmd-group-desc">플레이 가능 구역을 제한할 때. 숫자는 지름(블록 수)이에요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">지름 (블록)</span>
+            <input type="text" class="cmd-num-input" id="worldborderInput" value="6000">
+          </div>
+          <div class="cmd-range-warning" id="worldborderWarning">지름은 1 ~ 59,999,968 사이여야 해요.</div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="worldborderCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. Etc -->
+      <div class="cmd-group" data-cmd-group="etc">
+        <div class="cmd-group-title">그 밖에 알아두면 좋은 명령어</div>
+        <div class="cmd-group-desc">막상 필요할 때 잘 기억이 안 나는 것들 모음이에요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">이름표 커스텀 + 숨기기</div>
+          <div class="cmd-card-desc">이름은 있지만 머리 위 이름표는 안 보이게 하고 싶을 때.</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">이름</span>
+            <input type="text" class="cmd-num-input" id="customNameInput" value="이름">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="customNameCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">특정 위치에 파티클 계속 뿌리기</div>
+          <div class="cmd-card-desc">반복 커맨드 블록에 넣으면 장식/이펙트용으로 계속 파티클이 나와요.</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">파티클 개수</span>
+            <input type="text" class="cmd-num-input" id="particleCountInput" value="20">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="particleCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13. Saved custom commands -->
+      <div class="cmd-group" data-cmd-group="saved">
+        <div class="cmd-group-title">내가 저장한 명령어</div>
+        <div class="cmd-group-desc">자주 쓰는 커스텀 명령어를 직접 저장해두고 언제든 복사해서 쓰세요.</div>
+        <div class="cmd-save-box">
+          <div class="cmd-save-input-row">
+            <input type="text" id="cmdSaveLabel" placeholder="이름 (예: 관리자 킷 지급)">
+            <textarea id="cmdSaveText" placeholder="명령어 내용을 붙여넣으세요"></textarea>
+            <button class="cmd-save-add-btn" id="cmdSaveBtn">저장하기</button>
+          </div>
+          <div class="cmd-saved-list" id="cmdSavedList">
+            <div class="cmd-saved-empty">아직 저장한 명령어가 없어요.</div>
+          </div>
+          <div class="cmd-save-persist-note">이 브라우저에 자동으로 저장돼요 (다른 기기/브라우저에서는 안 보여요)</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1180,9 +1614,10 @@ function vanillaDyeMix(colorList) {
 // But vanilla actually treats each successive dye APPLICATION as adding to a running list
 // that includes the *previous resulting color* as a single accumulated entry, not the raw
 // history. I.e. dyeing twice = mix(mix(base, dye1), dye2) where the "current" color counts
-// as ONE input, not N inputs from history. We simulate step-by-step application here:
-function applySequentialDyes(dyeHexList) {
-  let current = null; // {r,g,b} or null if undyed
+// as ONE input, not N inputs from history. We simulate step-by-step application here.
+// An optional starting color (already-dyed leather) seeds "current" before any dyes are applied.
+function applySequentialDyes(dyeHexList, startColor) {
+  let current = startColor ? { ...startColor } : null; // {r,g,b} or null if undyed
   const steps = [];
   for (const hex of dyeHexList) {
     const dye = hexToRgb(hex);
@@ -1195,6 +1630,39 @@ function applySequentialDyes(dyeHexList) {
 
 // ---------- State ----------
 let sequence = []; // array of dye hex strings, in order
+let baseColor = null; // {r,g,b} or null — optional starting (already-dyed) color
+
+// ---------- Base color (already-dyed starting point) ----------
+const baseColorCheckbox = document.getElementById('baseColorCheckbox');
+const baseColorInputRow = document.getElementById('baseColorInputRow');
+const baseColorHexInput = document.getElementById('baseColorHexInput');
+const baseColorSwatch = document.getElementById('baseColorSwatch');
+
+function updateBaseColorSwatch() {
+  const hex = baseColorHexInput.value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    baseColorSwatch.style.background = hex;
+    baseColorSwatch.style.borderColor = borderColorFor(hex);
+    baseColor = hexToRgb(hex);
+  } else {
+    baseColorSwatch.style.background = 'transparent';
+    baseColor = null;
+  }
+}
+
+baseColorCheckbox.addEventListener('change', () => {
+  baseColorInputRow.style.display = baseColorCheckbox.checked ? 'flex' : 'none';
+  if (!baseColorCheckbox.checked) {
+    baseColor = null;
+  } else {
+    updateBaseColorSwatch();
+  }
+  render();
+});
+baseColorHexInput.addEventListener('input', () => {
+  updateBaseColorSwatch();
+  render();
+});
 
 // ---------- Render dye palette ----------
 const dyeGrid = document.getElementById('dyeGrid');
@@ -1227,16 +1695,17 @@ const sequenceRow = document.getElementById('sequenceRow');
 let history = [];
 
 function render() {
-  if (sequence.length === 0) {
+  if (sequence.length === 0 && !baseColor) {
     resultHexEl.textContent = '#5A5A5A';
     resultRgbEl.textContent = 'RGB(90, 90, 90)';
     liquidEl.setAttribute('fill', '#5a5a5a');
     glowEl.style.background = 'transparent';
     sequenceRow.innerHTML = '<div class="empty-state">왼쪽에서 염료를 클릭해서<br>순서대로 섞어보세요</div>';
+    updateSaveBtnState();
     return;
   }
 
-  const { final, steps } = applySequentialDyes(sequence);
+  const { final, steps } = applySequentialDyes(sequence, baseColor);
   const hex = rgbToHex(final);
   resultHexEl.textContent = hex;
   resultRgbEl.textContent = `RGB(${final.r}, ${final.g}, ${final.b})`;
@@ -1244,6 +1713,21 @@ function render() {
   glowEl.style.background = `radial-gradient(circle, ${hex} 0%, transparent 70%)`;
 
   sequenceRow.innerHTML = '';
+  if (baseColor) {
+    const baseChip = document.createElement('div');
+    baseChip.className = 'seq-chip';
+    baseChip.style.background = rgbToHex(baseColor);
+    baseChip.style.borderColor = borderColorFor(rgbToHex(baseColor));
+    baseChip.style.cursor = 'default';
+    baseChip.title = '시작 색상 (이미 염색된 가죽)';
+    sequenceRow.appendChild(baseChip);
+    if (sequence.length > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'seq-arrow';
+      arrow.textContent = '+';
+      sequenceRow.appendChild(arrow);
+    }
+  }
   sequence.forEach((hexColor, i) => {
     if (i > 0) {
       const arrow = document.createElement('span');
@@ -1273,7 +1757,7 @@ function dyeNameFromHex(hex) {
 
 function updateSaveBtnState() {
   const btn = document.getElementById('saveCurrentBtn');
-  if (btn) btn.disabled = sequence.length === 0;
+  if (btn) btn.disabled = sequence.length === 0 && !baseColor;
 }
 
 function renderHistory() {
@@ -1312,8 +1796,8 @@ function renderHistory() {
 }
 
 document.getElementById('saveCurrentBtn').addEventListener('click', () => {
-  if (sequence.length === 0) return;
-  const { final } = applySequentialDyes(sequence);
+  if (sequence.length === 0 && !baseColor) return;
+  const { final } = applySequentialDyes(sequence, baseColor);
   history.unshift({ seq: sequence.slice(), result: final, hex: rgbToHex(final) });
   if (history.length > 40) history.pop();
   renderHistory();
@@ -1367,9 +1851,9 @@ function colorDistance(a, b) {
   return Math.sqrt(2 * dr * dr + 4 * dg * dg + 3 * db * db);
 }
 
-function findBestRoute(targetRgb, maxDepth = 5, beamWidth = 40) {
+function findBestRoute(targetRgb, maxDepth = 5, beamWidth = 40, startColor = null) {
   // Beam search: state = {seq: [hexes], current: {r,g,b}}
-  let beam = [{ seq: [], current: null, dist: Infinity }];
+  let beam = [{ seq: [], current: startColor, dist: Infinity }];
   let best = null;
 
   for (let depth = 0; depth < maxDepth; depth++) {
@@ -1409,7 +1893,7 @@ findBtn.addEventListener('click', () => {
   targetResultArea.innerHTML = '<div class="searching">가장 가까운 조합을 찾는 중...</div>';
 
   setTimeout(() => {
-    const result = findBestRoute(targetRgb, 5, 60);
+    const result = findBestRoute(targetRgb, 5, 60, baseColor);
     if (!result) {
       targetResultArea.innerHTML = '<div class="history-empty">조합을 찾지 못했어요.</div>';
       return;
@@ -1481,11 +1965,58 @@ document.querySelectorAll('.tool-tab[data-tool]').forEach(btn => {
     btn.classList.add('active');
     const tool = btn.dataset.tool;
     document.getElementById('dyeView').style.display = tool === 'dye' ? 'grid' : 'none';
-    document.getElementById('commandsView').style.display = tool === 'commands' ? 'block' : 'none';
+    document.getElementById('commandsView').style.display = tool === 'commands' ? 'flex' : 'none';
   });
 });
 
 // ================= COMMANDS TAB =================
+
+// ---- Category navigation ----
+function showCmdGroup(groupName) {
+  document.querySelectorAll('.cmd-group').forEach(g => {
+    g.classList.toggle('active', g.dataset.cmdGroup === groupName);
+  });
+  document.querySelectorAll('.cmd-nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.nav === groupName);
+  });
+  document.getElementById('cmdContent').scrollTop = 0;
+}
+document.querySelectorAll('.cmd-nav-item').forEach(item => {
+  item.addEventListener('click', () => showCmdGroup(item.dataset.nav));
+});
+showCmdGroup('invisible-frame'); // default view
+
+// ---- Drag-to-scroll for the horizontal category nav ----
+(function enableDragScroll() {
+  const nav = document.getElementById('cmdNav');
+  let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+  nav.addEventListener('mousedown', (e) => {
+    isDown = true;
+    moved = false;
+    nav.classList.add('dragging');
+    startX = e.pageX - nav.offsetLeft;
+    scrollLeft = nav.scrollLeft;
+  });
+  window.addEventListener('mouseup', () => {
+    isDown = false;
+    nav.classList.remove('dragging');
+  });
+  nav.addEventListener('mouseleave', () => {
+    isDown = false;
+    nav.classList.remove('dragging');
+  });
+  nav.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - nav.offsetLeft;
+    const walk = x - startX;
+    if (Math.abs(walk) > 5) moved = true;
+    nav.scrollLeft = scrollLeft - walk;
+  });
+  nav.addEventListener('click', (e) => {
+    if (moved) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+})();
 
 // Common entity list for dropdowns (id -> Korean display name)
 const COMMON_ENTITIES = [
@@ -1547,83 +2078,256 @@ const COMMON_ENTITIES = [
   ['minecraft:player', '플레이어'],
 ];
 
-function populateEntitySelect(selectEl, includeAny) {
-  selectEl.innerHTML = '';
-  if (includeAny) {
-    const optAny = document.createElement('option');
-    optAny.value = '';
-    optAny.textContent = '모든 종류';
-    selectEl.appendChild(optAny);
+// Custom searchable dropdown. inputEl is a readonly text input showing the current
+// selection; listEl is the (initially empty) dropdown panel. Clicking the input opens
+// the panel with a search box pinned to the top; typing filters the option list live.
+// Returns { getValue, setValue } where value is the underlying id (e.g. "minecraft:zombie").
+function setupComboPicker(inputEl, listEl, items, defaultId, onChange) {
+  let currentId = defaultId || items[0][0];
+
+  function labelFor(id) {
+    const item = items.find(([itemId]) => itemId === id);
+    return item ? `${item[1]} (${item[0].replace('minecraft:', '')})` : id;
   }
-  COMMON_ENTITIES.forEach(([id, label]) => {
-    const opt = document.createElement('option');
-    opt.value = id;
-    opt.textContent = `${label} (${id.replace('minecraft:', '')})`;
-    selectEl.appendChild(opt);
+
+  function setValue(id) {
+    currentId = id;
+    inputEl.value = labelFor(id);
+  }
+  setValue(currentId);
+
+  function closeList() {
+    listEl.classList.remove('open');
+  }
+
+  function renderOptions(filterText) {
+    listEl.innerHTML = '';
+    const search = document.createElement('input');
+    search.type = 'text';
+    search.className = 'cmd-combo-search';
+    search.placeholder = '입력해서 검색...';
+    search.value = filterText || '';
+    listEl.appendChild(search);
+
+    const optionsWrap = document.createElement('div');
+    listEl.appendChild(optionsWrap);
+
+    function renderFiltered(text) {
+      optionsWrap.innerHTML = '';
+      const q = (text || '').trim().toLowerCase();
+      const filtered = items.filter(([id, label]) =>
+        !q || label.toLowerCase().includes(q) || id.toLowerCase().includes(q)
+      );
+      if (filtered.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'cmd-combo-empty';
+        empty.textContent = '일치하는 항목이 없어요';
+        optionsWrap.appendChild(empty);
+        return;
+      }
+      filtered.forEach(([id, label]) => {
+        const opt = document.createElement('div');
+        opt.className = 'cmd-combo-option' + (id === currentId ? ' selected' : '');
+        opt.textContent = `${label} (${id.replace('minecraft:', '')})`;
+        opt.addEventListener('mousedown', (e) => {
+          e.preventDefault(); // keep focus handling predictable, avoid input blur race
+          setValue(id);
+          closeList();
+          if (onChange) onChange(id);
+        });
+        optionsWrap.appendChild(opt);
+      });
+    }
+    renderFiltered(filterText);
+
+    search.addEventListener('input', () => renderFiltered(search.value));
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { closeList(); inputEl.blur(); }
+    });
+    // autofocus the search box when the list opens
+    requestAnimationFrame(() => search.focus());
+  }
+
+  inputEl.addEventListener('click', () => {
+    const willOpen = !listEl.classList.contains('open');
+    // close any other open combo lists first
+    document.querySelectorAll('.cmd-combo-list.open').forEach(el => el.classList.remove('open'));
+    if (willOpen) {
+      renderOptions('');
+      listEl.classList.add('open');
+    }
   });
+
+  document.addEventListener('click', (e) => {
+    if (!inputEl.contains(e.target) && !listEl.contains(e.target)) {
+      closeList();
+    }
+  });
+
+  return {
+    getValue: () => currentId,
+    setValue: (id) => setValue(id),
+  };
+}
+
+// Generic numeric range validator: shows a warning element and toggles an
+// out-of-range style when the value is outside [min, max].
+function validateRange(inputEl, warningEl, min, max, isInt) {
+  const raw = inputEl.value.trim();
+  let val = parseFloat(raw);
+  if (isNaN(val)) {
+    inputEl.classList.remove('out-of-range');
+    if (warningEl) warningEl.classList.remove('show');
+    return { value: raw, valid: true };
+  }
+  const outOfRange = val < min || val > max;
+  inputEl.classList.toggle('out-of-range', outOfRange);
+  if (warningEl) warningEl.classList.toggle('show', outOfRange);
+  if (isInt) val = Math.trunc(val);
+  return { value: raw, valid: !outOfRange, clamped: Math.min(max, Math.max(min, val)) };
 }
 
 // ---- 1. Locate entity ----
-const locateEntitySelect = document.getElementById('locateEntitySelect');
-populateEntitySelect(locateEntitySelect, false);
-locateEntitySelect.value = 'minecraft:villager';
-
 function updateLocateCode() {
-  const type = locateEntitySelect.value;
-  document.getElementById('locateEntityCode').textContent =
-    `tp @p @e[type=${type},limit=1,sort=nearest]`;
+  const type = locateEntityPicker.getValue();
+  const byName = locateByNameCheckbox.checked;
+  const name = locateByNameFilterInput.value.trim();
+  let selector = `type=${type},limit=1,sort=nearest`;
+  if (byName && name) {
+    selector += `,nbt={CustomName:'{"text":"${name}"}'}`;
+  }
+  document.getElementById('locateEntityCode').textContent = `tp @p @e[${selector}]`;
 }
-locateEntitySelect.addEventListener('change', updateLocateCode);
+const locateEntityPicker = setupComboPicker(
+  document.getElementById('locateEntitySelect'),
+  document.getElementById('locateEntitySelectList'),
+  COMMON_ENTITIES, 'minecraft:villager',
+  updateLocateCode
+);
+const locateByNameCheckbox = document.getElementById('locateByNameCheckbox');
+const locateByNameFilterInput = document.getElementById('locateByNameFilterInput');
+locateByNameCheckbox.addEventListener('change', () => {
+  locateByNameFilterInput.style.display = locateByNameCheckbox.checked ? 'inline-block' : 'none';
+  updateLocateCode();
+});
+locateByNameFilterInput.addEventListener('input', updateLocateCode);
 updateLocateCode();
 
-const locateEntitySelect2 = document.getElementById('locateEntitySelect2');
-populateEntitySelect(locateEntitySelect2, false);
-locateEntitySelect2.value = 'minecraft:villager';
-
 function updateLocateCode2() {
-  const type = locateEntitySelect2.value;
   document.getElementById('locateEntityCode2').textContent =
-    `data get entity @e[type=${type},limit=1,sort=nearest] Pos`;
+    `data get entity @e[type=${locateEntityPicker2.getValue()},limit=1,sort=nearest] Pos`;
 }
-locateEntitySelect2.addEventListener('change', updateLocateCode2);
+const locateEntityPicker2 = setupComboPicker(
+  document.getElementById('locateEntitySelect2'),
+  document.getElementById('locateEntitySelect2List'),
+  COMMON_ENTITIES, 'minecraft:villager',
+  updateLocateCode2
+);
 updateLocateCode2();
 
-// ---- 2. Scale ----
-const scaleTargetType = document.getElementById('scaleTargetType');
-const scaleEntitySelect = document.getElementById('scaleEntitySelect');
-const scaleValueSelect = document.getElementById('scaleValueSelect');
-const scaleCustomInput = document.getElementById('scaleCustomInput');
-populateEntitySelect(scaleEntitySelect, false);
+// ---- 2. Look at ----
+const lookAtTargetSelect = document.getElementById('lookAtTargetSelect');
+const lookAtTargetNameInput = document.getElementById('lookAtTargetNameInput');
+lookAtTargetSelect.addEventListener('change', () => {
+  lookAtTargetNameInput.style.display = lookAtTargetSelect.value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateLookAtCode();
+});
+lookAtTargetNameInput.addEventListener('input', updateLookAtCode);
+function updateLookAtCode() {
+  const source = lookAtSourcePicker.getValue();
+  let target = lookAtTargetSelect.value;
+  if (target === 'PLAYERNAME') target = lookAtTargetNameInput.value.trim() || '플레이어이름';
+  document.getElementById('lookAtCode').textContent =
+    `execute as @e[type=${source},sort=nearest,limit=1] at @s run tp @s ~ ~ ~ facing entity ${target} eyes`;
+}
+const lookAtSourcePicker = setupComboPicker(
+  document.getElementById('lookAtSourceSelect'),
+  document.getElementById('lookAtSourceSelectList'),
+  COMMON_ENTITIES, 'minecraft:villager',
+  updateLookAtCode
+);
+updateLookAtCode();
 
-scaleTargetType.addEventListener('change', () => {
-  scaleEntitySelect.style.display = scaleTargetType.value.includes('ENTITY') ? 'inline-block' : 'none';
-  updateScaleCode();
-});
-scaleValueSelect.addEventListener('change', () => {
-  scaleCustomInput.style.display = scaleValueSelect.value === 'custom' ? 'inline-block' : 'none';
-  updateScaleCode();
-});
-scaleCustomInput.addEventListener('input', updateScaleCode);
-scaleEntitySelect.addEventListener('change', updateScaleCode);
+// ---- 2b. Rotate by exact angle ----
+const rotateYawInput = document.getElementById('rotateYawInput');
+const rotatePitchInput = document.getElementById('rotatePitchInput');
+const rotateYawWarning = document.getElementById('rotateYawWarning');
+const rotatePitchWarning = document.getElementById('rotatePitchWarning');
+function updateRotateCode() {
+  const source = rotateSourcePicker.getValue();
+  const yaw = validateRange(rotateYawInput, rotateYawWarning, -180, 180, false);
+  const pitch = validateRange(rotatePitchInput, rotatePitchWarning, -90, 90, false);
+  document.getElementById('rotateCode').textContent =
+    `execute as @e[type=${source},sort=nearest,limit=1] run rotate @s ${yaw.value || '0'} ${pitch.value || '0'}`;
+}
+const rotateSourcePicker = setupComboPicker(
+  document.getElementById('rotateSourceSelect'),
+  document.getElementById('rotateSourceSelectList'),
+  COMMON_ENTITIES, 'minecraft:villager',
+  updateRotateCode
+);
+rotateYawInput.addEventListener('input', updateRotateCode);
+rotatePitchInput.addEventListener('input', updateRotateCode);
+updateRotateCode();
+
+// ---- 3. Scale ----
+const scaleTargetType = document.getElementById('scaleTargetType');
+const scalePlayerNameInput = document.getElementById('scalePlayerNameInput');
+const scaleEntitySelect = document.getElementById('scaleEntitySelect');
+const scaleEntityCombo = document.getElementById('scaleEntitySelectCombo');
+const scaleValueInput = document.getElementById('scaleValueInput');
+const scaleRangeWarning = document.getElementById('scaleRangeWarning');
 
 function updateScaleCode() {
   let target = scaleTargetType.value;
   if (target.includes('ENTITY')) {
-    target = target.replace('ENTITY', scaleEntitySelect.value.replace('minecraft:', ''));
+    target = target.replace('ENTITY', scaleEntityPicker.getValue().replace('minecraft:', ''));
+  } else if (target === 'PLAYERNAME') {
+    target = scalePlayerNameInput.value.trim() || '플레이어이름';
   }
-  let value = scaleValueSelect.value;
-  if (value === 'custom') {
-    value = scaleCustomInput.value.trim() || '1';
-  }
+  const result = validateRange(scaleValueInput, scaleRangeWarning, 0.0625, 16, false);
   document.getElementById('scaleCode').textContent =
-    `attribute ${target} minecraft:scale base set ${value}`;
+    `attribute ${target} minecraft:scale base set ${result.value || '1'}`;
 }
+const scaleEntityPicker = setupComboPicker(
+  scaleEntitySelect,
+  document.getElementById('scaleEntitySelectList'),
+  COMMON_ENTITIES, 'minecraft:villager',
+  updateScaleCode
+);
+
+scaleTargetType.addEventListener('change', () => {
+  scaleEntityCombo.style.display = scaleTargetType.value.includes('ENTITY') ? 'inline-block' : 'none';
+  scalePlayerNameInput.style.display = scaleTargetType.value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateScaleCode();
+});
+scaleValueInput.addEventListener('input', updateScaleCode);
+scalePlayerNameInput.addEventListener('input', updateScaleCode);
+
 updateScaleCode();
 
-// ---- 3. fetchprofile ----
+// ---- 4. Mannequin ----
+const mannequinNameInput = document.getElementById('mannequinNameInput');
+const mannequinShowDescCheckbox = document.getElementById('mannequinShowDescCheckbox');
+const mannequinCustomNameInput = document.getElementById('mannequinCustomNameInput');
+function updateMannequinSummonCode() {
+  const skin = mannequinNameInput.value.trim() || 'Notch';
+  const showDesc = mannequinShowDescCheckbox.checked;
+  const customName = mannequinCustomNameInput.value.trim() || '이름표';
+  let nbt = `{profile:"${skin}",CustomName:'{"text":"${customName}"}',CustomNameVisible:1b`;
+  if (!showDesc) nbt += `,hide_description:1b`;
+  nbt += `}`;
+  document.getElementById('mannequinSummonCode').textContent =
+    `summon minecraft:mannequin ~ ~ ~ ${nbt}`;
+}
+mannequinNameInput.addEventListener('input', updateMannequinSummonCode);
+mannequinShowDescCheckbox.addEventListener('change', updateMannequinSummonCode);
+mannequinCustomNameInput.addEventListener('input', updateMannequinSummonCode);
+updateMannequinSummonCode();
+
+// ---- 5. fetchprofile ----
 const fetchProfileType = document.getElementById('fetchProfileType');
 const fetchProfileInput = document.getElementById('fetchProfileInput');
-
 function updateFetchProfileCode() {
   const type = fetchProfileType.value;
   const val = fetchProfileInput.value.trim() || (type === 'entity' ? '@s' : 'Notch');
@@ -1636,6 +2340,393 @@ fetchProfileType.addEventListener('change', () => {
 });
 fetchProfileInput.addEventListener('input', updateFetchProfileCode);
 updateFetchProfileCode();
+
+// ---- 6. Gamerule (curated list with descriptions, numeric ones get free input) ----
+const GAMERULES = [
+  {
+    id: 'commandBlockOutput', label: '커맨드블록 실행 결과 채팅 표시', type: 'bool',
+    desc: '커맨드블록이 명령어를 실행할 때마다 관리자 채팅에 뜨는 로그를 켜거나 꺼요. 커맨드블록이 많은 서버라면 꺼두는 편이 좋아요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'sendCommandFeedback', label: '명령어 실행 결과 채팅 표시', type: 'bool',
+    desc: '플레이어나 콘솔이 실행한 일반 명령어의 결과 메시지(성공/실패 알림)를 켜거나 꺼요. commandBlockOutput과는 별개 설정이에요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'logAdminCommands', label: '관리자 명령어 콘솔 로그 기록', type: 'bool',
+    desc: '오퍼레이터가 실행한 명령어를 서버 콘솔(터미널) 로그에 남길지 정해요. 위 두 개와 다르게 콘솔 로그 전용이에요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'randomTickSpeed', label: '랜덤 틱 속도 (작물/사탕수수 성장 등)', type: 'number', min: 0, max: 4096, defaultVal: '3',
+    desc: '작물 성장, 나뭇잎 소멸, 눈 녹기처럼 "랜덤 틱"에 의존하는 현상이 얼마나 자주 일어날지 정해요. 기본값 3. 값을 올리면 빨라지지만 서버 부하도 늘어요. 0~4096 사이 정수. 서버 틱(TPS) 자체를 바꾸는 설정은 아니에요.',
+  },
+  {
+    id: 'mobGriefing', label: '몹그리핑 (지형/블록 파괴 몹 행동)', type: 'bool',
+    desc: '크리퍼 폭발로 블록이 부서지는 것, 엔더맨이 블록 집어드는 것, 좀비가 문 부수는 것 등을 한 번에 막을지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'keepInventory', label: '사망 시 인벤토리 유지', type: 'bool',
+    desc: '죽어도 아이템/경험치를 잃지 않게 할지 정해요.',
+    values: [['true', '켜기 (true)'], ['false', '끄기 (false, 기본값)']]
+  },
+  {
+    id: 'doDaylightCycle', label: '낮/밤 자동 순환', type: 'bool',
+    desc: '시간이 자동으로 흘러가게 할지 정해요. 끄면 /time set 으로 고정한 시간이 유지돼요.',
+    values: [['false', '끄기 (false, 시간 고정)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'doWeatherCycle', label: '날씨 자동 순환', type: 'bool',
+    desc: '비/눈이 자동으로 오게 할지 정해요. 끄면 마지막 날씨 상태가 유지돼요.',
+    values: [['false', '끄기 (false, 날씨 고정)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'naturalRegeneration', label: '자연 체력 회복', type: 'bool',
+    desc: '허기 게이지로 체력이 자연 회복되는 걸 켜거나 꺼요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'showDeathMessages', label: '사망 메시지 채팅 표시', type: 'bool',
+    desc: '플레이어가 죽었을 때 "OO님이 좀비에게 살해당했습니다" 같은 메시지를 채팅에 띄울지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'maxCommandChainLength', label: '커맨드블록 체인 최대 길이', type: 'number', min: 1, max: 2147483647, defaultVal: '65536',
+    desc: '연쇄형 커맨드블록이 한 틱에 몇 개까지 이어서 실행될 수 있는지 정해요. 복잡한 기계식 커맨드블록 회로를 쓰는 서버라면 늘려야 할 수 있어요.',
+  },
+  {
+    id: 'maxEntityCramming', label: '엔티티 밀집 제한(끼임 데미지)', type: 'number', min: 0, max: 2147483647, defaultVal: '24',
+    desc: '한 칸에 이 숫자 이상 엔티티가 겹치면 끼임 데미지를 받기 시작해요. 0으로 하면 끼임 데미지가 없어져요. 몹 농장 설계에 영향을 줘요.',
+  },
+  {
+    id: 'spawnRadius', label: '리스폰 지점 주변 스폰 반경', type: 'number', min: 0, max: 2147483647, defaultVal: '10',
+    desc: '플레이어가 리스폰될 때 스폰 좌표를 중심으로 얼마나 벗어난 곳에 놓일 수 있는지 정해요.',
+  },
+  {
+    id: 'fallDamage', label: '낙하 데미지', type: 'bool',
+    desc: '높은 곳에서 떨어질 때 데미지를 입을지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'fireDamage', label: '화염 데미지', type: 'bool',
+    desc: '불에 타는 데미지를 입을지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'drowningDamage', label: '익사 데미지', type: 'bool',
+    desc: '물속에서 숨을 못 쉴 때 데미지를 입을지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'doInsomnia', label: '불면증(팬텀 자동 스폰)', type: 'bool',
+    desc: '오랫동안 잠을 안 자면 팬텀이 스폰되는 걸 켜거나 꺼요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'announceAdvancements', label: '발전과제 달성 채팅 공지', type: 'bool',
+    desc: '플레이어가 발전과제를 달성했을 때 전체 채팅에 알릴지 정해요.',
+    values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
+  },
+  {
+    id: 'disableRaids', label: '약탈(레이드) 비활성화', type: 'bool',
+    desc: '불길한 징조 효과로 시작되는 마을 약탈 이벤트를 아예 없앨지 정해요.',
+    values: [['true', '끄기 (true, 레이드 없음)'], ['false', '켜기 (false, 기본값)']]
+  },
+];
+
+const gameruleValueSelect = document.getElementById('gameruleValueSelect');
+const gameruleValueInput = document.getElementById('gameruleValueInput');
+const gameruleValueWarning = document.getElementById('gameruleValueWarning');
+const gameruleDesc = document.getElementById('gameruleDesc');
+const gameruleInputEl = document.getElementById('gameruleSelect');
+
+function updateGameruleUI() {
+  const rule = GAMERULES.find(r => r.id === gamerulePicker.getValue());
+  if (!rule) return;
+  gameruleDesc.textContent = rule.desc;
+
+  if (rule.type === 'bool') {
+    gameruleValueSelect.style.display = '';
+    gameruleValueInput.style.display = 'none';
+    gameruleValueWarning.classList.remove('show');
+    gameruleValueSelect.innerHTML = '';
+    rule.values.forEach(([val, label]) => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = label;
+      gameruleValueSelect.appendChild(opt);
+    });
+  } else {
+    gameruleValueSelect.style.display = 'none';
+    gameruleValueInput.style.display = '';
+    gameruleValueInput.value = rule.defaultVal;
+    gameruleValueWarning.textContent = `${rule.min} ~ ${rule.max} 사이의 정수여야 해요.`;
+  }
+  updateGameruleCode();
+}
+function updateGameruleCode() {
+  const rule = GAMERULES.find(r => r.id === gamerulePicker.getValue());
+  if (!rule) return;
+  let value;
+  if (rule.type === 'bool') {
+    value = gameruleValueSelect.value;
+  } else {
+    const result = validateRange(gameruleValueInput, gameruleValueWarning, rule.min, rule.max, true);
+    value = result.value || rule.defaultVal;
+  }
+  document.getElementById('gameruleCode').textContent = `gamerule ${rule.id} ${value}`;
+}
+const gamerulePicker = setupComboPicker(
+  gameruleInputEl,
+  document.getElementById('gameruleSelectList'),
+  GAMERULES.map(r => [r.id, r.label]),
+  'commandBlockOutput',
+  updateGameruleUI
+);
+gameruleValueSelect.addEventListener('change', updateGameruleCode);
+gameruleValueInput.addEventListener('input', updateGameruleCode);
+updateGameruleUI();
+
+// ---- Gamerule favorites (persisted) ----
+const GAMERULE_FAV_KEY = 'mc-tools-gamerule-favorites';
+let gameruleFavorites = [];
+function loadGameruleFavorites() {
+  try {
+    const raw = localStorage.getItem(GAMERULE_FAV_KEY);
+    gameruleFavorites = raw ? JSON.parse(raw) : [];
+  } catch (e) { gameruleFavorites = []; }
+}
+function persistGameruleFavorites() {
+  try { localStorage.setItem(GAMERULE_FAV_KEY, JSON.stringify(gameruleFavorites)); } catch (e) {}
+}
+function renderGameruleFavorites() {
+  const card = document.getElementById('gameruleFavoritesCard');
+  const list = document.getElementById('gameruleFavoritesList');
+  if (gameruleFavorites.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+  list.innerHTML = '';
+  gameruleFavorites.forEach(ruleId => {
+    const rule = GAMERULES.find(r => r.id === ruleId);
+    if (!rule) return;
+    const btn = document.createElement('button');
+    btn.className = 'cmd-quick-btn-like';
+    btn.style.cssText = 'padding:6px 12px;background:var(--bg-panel-2);border:1px solid var(--line);border-radius:16px;color:var(--text-dim);font-size:12px;cursor:pointer;';
+    btn.textContent = rule.label;
+    btn.addEventListener('click', () => {
+      gamerulePicker.setValue(rule.id);
+      updateGameruleUI();
+    });
+    list.appendChild(btn);
+  });
+}
+document.getElementById('gameruleFavoriteBtn').addEventListener('click', () => {
+  const currentId = gamerulePicker.getValue();
+  if (!gameruleFavorites.includes(currentId)) {
+    gameruleFavorites.unshift(currentId);
+    if (gameruleFavorites.length > 10) gameruleFavorites.pop();
+    persistGameruleFavorites();
+    renderGameruleFavorites();
+  }
+});
+loadGameruleFavorites();
+renderGameruleFavorites();
+
+// ---- 7. Chair (interaction entity) ----
+const chairWidthInput = document.getElementById('chairWidthInput');
+const chairHeightInput = document.getElementById('chairHeightInput');
+const chairWidthWarning = document.getElementById('chairWidthWarning');
+const chairHeightWarning = document.getElementById('chairHeightWarning');
+function updateChairSummonCode() {
+  const w = validateRange(chairWidthInput, chairWidthWarning, 0.001, 8, false);
+  const h = validateRange(chairHeightInput, chairHeightWarning, 0.001, 8, false);
+  document.getElementById('chairSummonCode').textContent =
+    `summon minecraft:interaction ~ ~ ~ {Tags:["chair"],width:${w.value || '0.9'}f,height:${h.value || '0.1'}f}`;
+}
+chairWidthInput.addEventListener('input', updateChairSummonCode);
+chairHeightInput.addEventListener('input', updateChairSummonCode);
+updateChairSummonCode();
+
+const chairResizeWidthInput = document.getElementById('chairResizeWidthInput');
+const chairResizeHeightInput = document.getElementById('chairResizeHeightInput');
+function updateChairResizeCode() {
+  const w = chairResizeWidthInput.value.trim() || '0.9';
+  const h = chairResizeHeightInput.value.trim() || '0.1';
+  document.getElementById('chairResizeCode').textContent =
+    `execute as @e[tag=chair] run data merge entity @s {width:${w}f,height:${h}f}`;
+}
+chairResizeWidthInput.addEventListener('input', updateChairResizeCode);
+chairResizeHeightInput.addEventListener('input', updateChairResizeCode);
+updateChairResizeCode();
+
+// ---- 8. Effect ----
+const POTION_EFFECTS = [
+  ['minecraft:speed', '신속'],
+  ['minecraft:slowness', '구속'],
+  ['minecraft:haste', '성급함'],
+  ['minecraft:mining_fatigue', '피로'],
+  ['minecraft:strength', '힘'],
+  ['minecraft:instant_health', '즉시 회복'],
+  ['minecraft:instant_damage', '즉시 피해'],
+  ['minecraft:jump_boost', '점프 강화'],
+  ['minecraft:regeneration', '재생'],
+  ['minecraft:resistance', '저항'],
+  ['minecraft:fire_resistance', '화염 저항'],
+  ['minecraft:water_breathing', '수중 호흡'],
+  ['minecraft:invisibility', '투명화'],
+  ['minecraft:night_vision', '야간 투시'],
+  ['minecraft:health_boost', '체력 강화'],
+  ['minecraft:absorption', '흡수'],
+  ['minecraft:saturation', '포화'],
+  ['minecraft:glowing', '발광'],
+  ['minecraft:levitation', '부유'],
+  ['minecraft:luck', '행운'],
+  ['minecraft:slow_falling', '천천히 낙하'],
+  ['minecraft:conduit_power', '기원의 힘'],
+  ['minecraft:dolphins_grace', '돌고래의 은총'],
+  ['minecraft:hero_of_the_village', '마을의 영웅'],
+  ['minecraft:weakness', '나약함'],
+  ['minecraft:poison', '독'],
+  ['minecraft:wither', '위더'],
+  ['minecraft:hunger', '허기'],
+  ['minecraft:nausea', '구역질'],
+  ['minecraft:blindness', '실명'],
+  ['minecraft:unluck', '불운'],
+];
+// Effects whose amplifier/level has no meaningful effect in vanilla — level input is hidden for these.
+const LEVELLESS_EFFECTS = new Set([
+  'minecraft:night_vision', 'minecraft:invisibility', 'minecraft:water_breathing',
+  'minecraft:fire_resistance', 'minecraft:conduit_power', 'minecraft:dolphins_grace',
+  'minecraft:hero_of_the_village', 'minecraft:slow_falling',
+]);
+
+const effectTargetSelect = document.getElementById('effectTargetSelect');
+const effectPlayerNameInput = document.getElementById('effectPlayerNameInput');
+effectTargetSelect.addEventListener('change', () => {
+  effectPlayerNameInput.style.display = effectTargetSelect.value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateEffectCode();
+});
+effectPlayerNameInput.addEventListener('input', updateEffectCode);
+
+const effectDurationMode = document.getElementById('effectDurationMode');
+const effectDurationInput = document.getElementById('effectDurationInput');
+const effectDurationWarning = document.getElementById('effectDurationWarning');
+const effectLevelLabel = document.getElementById('effectLevelLabel');
+const effectLevelInput = document.getElementById('effectLevelInput');
+const effectLevelWarning = document.getElementById('effectLevelWarning');
+
+effectDurationMode.addEventListener('change', () => {
+  effectDurationInput.style.display = effectDurationMode.value === 'custom' ? 'inline-block' : 'none';
+  updateEffectCode();
+});
+effectDurationInput.addEventListener('input', updateEffectCode);
+effectLevelInput.addEventListener('input', updateEffectCode);
+
+function onEffectTypeChange() {
+  const isLevelless = LEVELLESS_EFFECTS.has(effectPicker.getValue());
+  effectLevelLabel.style.display = isLevelless ? 'none' : '';
+  effectLevelInput.style.display = isLevelless ? 'none' : '';
+  updateEffectCode();
+}
+
+function updateEffectCode() {
+  let target = effectTargetSelect.value;
+  if (target === 'PLAYERNAME') target = effectPlayerNameInput.value.trim() || '플레이어이름';
+
+  const effectId = effectPicker.getValue();
+  const isLevelless = LEVELLESS_EFFECTS.has(effectId);
+
+  let duration;
+  if (effectDurationMode.value === 'infinite') {
+    duration = 'infinite';
+  } else {
+    const result = validateRange(effectDurationInput, effectDurationWarning, 1, 1000000, true);
+    duration = result.value || '30';
+  }
+
+  let level = '0';
+  if (!isLevelless) {
+    const result = validateRange(effectLevelInput, effectLevelWarning, 0, 255, true);
+    level = result.value || '0';
+  }
+
+  document.getElementById('effectCode').textContent =
+    `effect give ${target} ${effectId} ${duration} ${level} true`;
+}
+const effectPicker = setupComboPicker(
+  document.getElementById('effectTypeSelect'),
+  document.getElementById('effectTypeSelectList'),
+  POTION_EFFECTS, 'minecraft:night_vision',
+  onEffectTypeChange
+);
+onEffectTypeChange();
+
+// ---- 9. Structure ----
+const STRUCTURES = [
+  ['minecraft:village', '마을'],
+  ['minecraft:pillager_outpost', '약탈자 전초기지'],
+  ['minecraft:mansion', '삼림 대저택'],
+  ['minecraft:stronghold', '요새(엔드 포탈)'],
+  ['minecraft:monument', '해저 신전'],
+  ['minecraft:ancient_city', '고대 도시'],
+  ['minecraft:trial_chambers', '시련의 방'],
+  ['minecraft:desert_pyramid', '사막 사원'],
+  ['minecraft:jungle_pyramid', '정글 사원'],
+  ['minecraft:igloo', '이글루'],
+  ['minecraft:swamp_hut', '늪지 오두막'],
+  ['minecraft:shipwreck', '난파선'],
+  ['minecraft:buried_treasure', '보물 상자'],
+  ['minecraft:ocean_ruin', '해저 유적'],
+  ['minecraft:ruined_portal', '파괴된 포탈'],
+  ['minecraft:trail_ruins', '오솔길 유적'],
+  ['minecraft:fortress', '네더 요새'],
+  ['minecraft:bastion_remnant', '보루 잔해'],
+  ['minecraft:nether_fossil', '네더 화석'],
+  ['minecraft:end_city', '엔드 도시'],
+];
+function updateStructureCode() {
+  document.getElementById('structureCode').textContent = `locate structure ${structurePicker.getValue()}`;
+}
+const structurePicker = setupComboPicker(
+  document.getElementById('structureSelect'),
+  document.getElementById('structureSelectList'),
+  STRUCTURES, 'minecraft:village',
+  updateStructureCode
+);
+updateStructureCode();
+
+// ---- 10. World border ----
+const worldborderInput = document.getElementById('worldborderInput');
+const worldborderWarning = document.getElementById('worldborderWarning');
+function updateWorldborderCode() {
+  const result = validateRange(worldborderInput, worldborderWarning, 1, 59999968, true);
+  document.getElementById('worldborderCode').textContent = `worldborder set ${result.value || '6000'}`;
+}
+worldborderInput.addEventListener('input', updateWorldborderCode);
+updateWorldborderCode();
+
+// ---- 11. Etc ----
+const customNameInput = document.getElementById('customNameInput');
+function updateCustomNameCode() {
+  const name = customNameInput.value.trim() || '이름';
+  document.getElementById('customNameCode').textContent =
+    `data merge entity @e[limit=1,sort=nearest] {CustomName:'{"text":"${name}"}',CustomNameVisible:0b}`;
+}
+customNameInput.addEventListener('input', updateCustomNameCode);
+updateCustomNameCode();
+
+const particleCountInput = document.getElementById('particleCountInput');
+function updateParticleCode() {
+  const count = particleCountInput.value.trim() || '20';
+  document.getElementById('particleCode').textContent =
+    `particle minecraft:totem_of_undying ~ ~1 ~ 0.3 0.3 0.3 0.01 ${count}`;
+}
+particleCountInput.addEventListener('input', updateParticleCode);
+updateParticleCode();
 
 // ---- Copy buttons (event delegation, works for all .cmd-code-row) ----
 document.getElementById('commandsView').addEventListener('click', (e) => {
@@ -1652,26 +2743,25 @@ document.getElementById('commandsView').addEventListener('click', (e) => {
   }).catch(() => {});
 });
 
-// ---- Search filter ----
-const cmdSearch = document.getElementById('cmdSearch');
-cmdSearch.addEventListener('input', () => {
-  const q = cmdSearch.value.trim().toLowerCase();
-  document.querySelectorAll('.cmd-group').forEach(group => {
-    if (group.dataset.cmdGroup === 'saved') return; // never hide saved section
-    let groupHasMatch = false;
-    const cards = group.querySelectorAll('.cmd-card');
-    cards.forEach(card => {
-      const haystack = (card.dataset.cmdSearch || '') + ' ' + card.textContent.toLowerCase();
-      const match = q === '' || haystack.toLowerCase().includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) groupHasMatch = true;
-    });
-    group.style.display = (q === '' || groupHasMatch) ? '' : 'none';
-  });
-});
-
-// ---- Saved custom commands (in-memory only, per session) ----
+// ---- Saved custom commands (persisted via localStorage) ----
+const CMD_STORAGE_KEY = 'mc-tools-saved-commands';
 let savedCommands = [];
+
+function loadSavedCommands() {
+  try {
+    const raw = localStorage.getItem(CMD_STORAGE_KEY);
+    savedCommands = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    savedCommands = [];
+  }
+}
+function persistSavedCommands() {
+  try {
+    localStorage.setItem(CMD_STORAGE_KEY, JSON.stringify(savedCommands));
+  } catch (e) {
+    // storage unavailable (private browsing, etc.) — fail silently, session still works
+  }
+}
 
 function renderSavedCommands() {
   const listEl = document.getElementById('cmdSavedList');
@@ -1695,6 +2785,7 @@ function renderSavedCommands() {
     `;
     el.querySelector('.cmd-saved-del').addEventListener('click', () => {
       savedCommands.splice(idx, 1);
+      persistSavedCommands();
       renderSavedCommands();
     });
     listEl.appendChild(el);
@@ -1708,11 +2799,13 @@ document.getElementById('cmdSaveBtn').addEventListener('click', () => {
   const text = textInput.value.trim();
   if (!label || !text) return;
   savedCommands.unshift({ label, text });
+  persistSavedCommands();
   labelInput.value = '';
   textInput.value = '';
   renderSavedCommands();
 });
 
+loadSavedCommands();
 renderSavedCommands();
 </script>
 
