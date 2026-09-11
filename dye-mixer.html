@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>염색 조합기 — 마인크래프트 가죽 염색 시뮬레이터</title>
+<style>
+  :root{
+    --bg: #14161c;
+    --bg-panel: #1b1e26;
+    --bg-panel-2: #21242e;
+    --line: #2e3240;
+    --line-soft: #262a35;
+    --text: #e8e6df;
+    --text-dim: #8b8f9c;
+    --text-faint: #5c6070;
+    --accent: #d97757; /* avoid: reused deliberately? no — replace below */
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.02) 0%, transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,255,255,0.015) 0%, transparent 40%);
+  }
+
+  .pixel {
+    font-family: 'Silkscreen', 'Courier New', monospace;
+  }
+
+  header {
+    padding: 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .header-top {
+    padding: 22px 32px 16px;
+  }
+  header h1 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  header p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  /* --- top tool tabs --- */
+  .tool-tabs {
+    display: flex;
+    gap: 2px;
+    padding: 0 32px;
+  }
+  .tool-tab {
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-faint);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .tool-tab.active {
+    color: var(--text);
+    border-bottom-color: #6a9d7f;
+  }
+  .tool-tab:not(.active):hover {
+    color: var(--text-dim);
+  }
+  .tool-tab.disabled {
+    color: #3d4048;
+    cursor: default;
+  }
+  .tool-tab.disabled:hover { color: #3d4048; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 320px;
+    grid-template-areas: "palette center side";
+    gap: 0;
+    min-height: calc(100vh - 96px);
+  }
+  .palette-panel { grid-area: palette; }
+  .center-panel { grid-area: center; }
+  .side-panel { grid-area: side; }
+
+  /* Tablet: palette + cauldron sit side by side on top, side panel spans full width below.
+     This avoids the palette panel stretching to full page width (which happens if we
+     collapse straight to a single column) and keeps dye buttons a sane, consistent size. */
+  @media (max-width: 980px) and (min-width: 641px) {
+    .layout {
+      grid-template-columns: 260px 1fr;
+      grid-template-areas:
+        "palette center"
+        "side side";
+    }
+    .palette-panel { border-right: 1px solid var(--line-soft); border-bottom: none; }
+    .center-panel { border-right: none; }
+    .side-panel { border-top: 1px solid var(--line-soft); }
+  }
+
+  /* Mobile: everything stacks vertically. */
+  @media (max-width: 640px) {
+    .layout {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "palette"
+        "center"
+        "side";
+    }
+    .panel { border-right: none !important; border-bottom: 1px solid var(--line-soft); }
+    .palette-panel { display: flex; flex-direction: column; align-items: center; }
+    .center-panel { padding-top: 24px; }
+  }
+
+  .panel {
+    padding: 24px;
+    border-right: 1px solid var(--line-soft);
+  }
+  .panel:last-child { border-right: none; }
+
+  .section-label {
+    font-size: 11px;
+    text-transform: none;
+    color: var(--text-faint);
+    margin: 0 0 14px 0;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+  }
+
+  /* --- dye palette --- */
+  .dye-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+    gap: 8px;
+    max-width: 260px;
+  }
+  .dye-btn {
+    aspect-ratio: 1;
+    width: 100%;
+    max-width: 46px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.25);
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    transition: filter 0.12s ease;
+  }
+  .dye-btn:hover {
+    filter: brightness(1.15);
+  }
+  .dye-btn:active { filter: brightness(0.9); }
+  .dye-btn .dye-name {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8.5px;
+    color: var(--text-faint);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    pointer-events: none;
+  }
+  .dye-btn:hover .dye-name { opacity: 1; }
+
+  .clear-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    transition: all 0.15s ease;
+  }
+  .clear-btn:hover {
+    border-color: #a85c4a;
+    color: #d99a8b;
+  }
+
+  .undo-btn {
+    margin-top: 8px;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    transition: all 0.15s ease;
+  }
+  .undo-btn:hover { border-color: #5c6478; color: var(--text); }
+  .undo-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* --- center: cauldron / preview --- */
+  .center-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+  }
+
+  .cauldron-wrap {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 28px;
+  }
+  .cauldron-glow {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.35;
+    transition: background 0.4s ease;
+    z-index: 0;
+  }
+  .cauldron-svg {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .result-hex {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    user-select: all;
+  }
+  .result-rgb {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 24px;
+    font-family: 'Courier New', monospace;
+  }
+  .copy-hint {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: -18px;
+    margin-bottom: 22px;
+  }
+
+  .sequence-title {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .sequence-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 400px;
+    min-height: 32px;
+  }
+  .seq-chip {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.12s ease;
+  }
+  .seq-chip:hover {
+    transform: scale(0.9);
+  }
+  .seq-chip:hover::after {
+    content: '×';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    background: rgba(20,22,28,0.55);
+    border-radius: 5px;
+  }
+  .seq-arrow {
+    color: var(--text-faint);
+    font-size: 13px;
+    align-self: center;
+  }
+  .empty-state {
+    color: var(--text-faint);
+    font-size: 13px;
+    text-align: center;
+    max-width: 260px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  /* --- right panel: target finder + history --- */
+  .tab-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 3px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .tab-btn.active {
+    background: var(--bg-panel-2);
+    color: var(--text);
+  }
+
+  .target-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .target-input-row input[type="text"] {
+    flex: 1;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+  }
+  .target-input-row input[type="color"] {
+    width: 40px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+  }
+  .find-btn {
+    width: 100%;
+    padding: 11px;
+    background: #3a5f4a;
+    border: none;
+    color: #d7f0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+  .find-btn:hover { background: #446f57; }
+
+  .target-swatch-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 10px;
+    background: var(--bg-panel-2);
+    border-radius: 7px;
+    border: 1px solid var(--line-soft);
+  }
+  .target-swatch-preview .sw {
+    width: 30px; height: 30px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    flex-shrink: 0;
+  }
+  .target-swatch-preview .label {
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .target-swatch-preview .val {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+  }
+
+  .route-result {
+    margin-top: 16px;
+  }
+  .route-card {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .route-diff {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .route-diff .good { color: #7fc99a; }
+  .route-diff .ok { color: #d9b877; }
+  .route-diff .bad { color: #d97f7f; }
+  .route-steps {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .route-result-color {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .route-result-color .sw {
+    width: 20px; height: 20px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+  }
+  .apply-route-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .apply-route-btn:hover { border-color: #6a7a9a; color: var(--text); }
+
+  .searching {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12.5px;
+    padding: 20px 0;
+  }
+
+  /* history list */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    background: var(--bg-panel-2);
+    border-radius: 7px;
+    border: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .history-item:hover { border-color: #4a5064; }
+  .history-item .sw {
+    width: 28px; height: 28px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    flex-shrink: 0;
+  }
+  .history-item .info { flex: 1; min-width: 0; }
+  .history-item .hex {
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+  }
+  .history-item .path {
+    font-size: 10.5px;
+    color: var(--text-faint);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .history-empty {
+    color: var(--text-faint);
+    font-size: 12.5px;
+    text-align: center;
+    padding: 30px 10px;
+    line-height: 1.6;
+  }
+  .history-list::-webkit-scrollbar { width: 6px; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  .history-item .del-btn {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 15px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .history-item .del-btn:hover { color: #d97f7f; background: rgba(217,127,127,0.1); }
+
+  .save-btn {
+    width: 100%;
+    padding: 10px;
+    background: #3a5f4a;
+    border: none;
+    color: #d7f0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    transition: background 0.15s ease;
+  }
+  .save-btn:hover { background: #446f57; }
+  .save-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #3a5f4a; }
+  .save-toast {
+    font-size: 11px;
+    color: #7fc99a;
+    text-align: center;
+    margin: -8px 0 12px;
+    height: 14px;
+  }
+
+  /* ================= COMMANDS TAB ================= */
+  .cmd-view {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 32px 60px;
+  }
+  .cmd-search {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .cmd-search::placeholder { color: var(--text-faint); }
+
+  .cmd-group {
+    margin-bottom: 30px;
+  }
+  .cmd-group-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .cmd-group-desc {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .cmd-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .cmd-card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .cmd-card-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .cmd-version-tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .cmd-version-tab {
+    padding: 5px 10px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--text-faint);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .cmd-version-tab.active {
+    background: #2e4a3a;
+    border-color: #3d6650;
+    color: #b8e0c8;
+  }
+  .cmd-version-tab:hover:not(.active) { color: var(--text-dim); }
+
+  .cmd-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .cmd-select {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 9px;
+    font-size: 12.5px;
+  }
+
+  .cmd-code-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: #0f1116;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .cmd-code {
+    flex: 1;
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+    color: #cde5d3;
+    word-break: break-all;
+    white-space: pre-wrap;
+    cursor: pointer;
+    user-select: all;
+  }
+  .cmd-code:hover { background: rgba(255,255,255,0.03); }
+  .cmd-copy-btn {
+    flex-shrink: 0;
+    padding: 0 16px;
+    background: #2e4a3a;
+    border: none;
+    border-left: 1px solid var(--line);
+    color: #b8e0c8;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .cmd-copy-btn:hover { background: #375a46; }
+  .cmd-copy-btn.copied { background: #446f57; }
+
+  .cmd-note {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* saved snippets */
+  .cmd-save-box {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .cmd-save-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .cmd-save-input-row input[type="text"] {
+    flex: 1;
+    background: #0f1116;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 10px;
+    font-size: 12.5px;
+  }
+  .cmd-save-input-row textarea {
+    flex: 1;
+    background: #0f1116;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12.5px;
+    resize: vertical;
+    min-height: 60px;
+  }
+  .cmd-save-add-btn {
+    padding: 9px 16px;
+    background: #3a5f4a;
+    border: none;
+    color: #d7f0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+  .cmd-save-add-btn:hover { background: #446f57; }
+
+  .cmd-saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cmd-saved-item {
+    background: #0f1116;
+    border: 1px solid var(--line-soft);
+    border-radius: 7px;
+    padding: 10px 12px;
+  }
+  .cmd-saved-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .cmd-saved-item-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .cmd-saved-del {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .cmd-saved-del:hover { color: #d97f7f; background: rgba(217,127,127,0.1); }
+  .cmd-saved-empty {
+    color: var(--text-faint);
+    font-size: 12.5px;
+    text-align: center;
+    padding: 16px;
+  }
+
+  ::selection { background: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>⚗ 마크 서버 도구</h1>
+    <p>서버 운영/제작에 쓸 수 있는 작은 도구 모음</p>
+  </div>
+  <div class="tool-tabs">
+    <button class="tool-tab active" data-tool="dye">염색 조합기</button>
+    <button class="tool-tab" data-tool="commands">명령어 모음</button>
+  </div>
+</header>
+
+<div class="layout" id="dyeView">
+
+  <!-- LEFT: dye palette -->
+  <div class="panel palette-panel">
+    <p class="section-label">염료 선택</p>
+    <div class="dye-grid" id="dyeGrid"></div>
+    <button class="clear-btn" id="clearBtn">전부 비우기</button>
+  </div>
+
+  <!-- CENTER: cauldron preview -->
+  <div class="panel center-panel">
+    <div class="cauldron-wrap">
+      <div class="cauldron-glow" id="glow"></div>
+      <svg class="cauldron-svg" viewBox="0 0 200 200" id="cauldronSvg">
+        <!-- cauldron body -->
+        <ellipse cx="100" cy="175" rx="70" ry="10" fill="#000" opacity="0.25"/>
+        <path d="M 40 90 L 48 165 Q 50 175 62 175 L 138 175 Q 150 175 152 165 L 160 90 Z"
+              fill="#3a3d45" stroke="#25272e" stroke-width="3"/>
+        <path d="M 40 90 L 48 165 Q 50 175 62 175 L 138 175 Q 150 175 152 165 L 160 90 Z"
+              fill="none" stroke="#585c68" stroke-width="1.5" opacity="0.5"/>
+        <!-- liquid -->
+        <clipPath id="cauldronClip">
+          <path d="M 44 95 L 51 163 Q 53 170 62 170 L 138 170 Q 147 170 149 163 L 156 95 Z"/>
+        </clipPath>
+        <g clip-path="url(#cauldronClip)">
+          <rect id="liquid" x="40" y="55" width="120" height="120" fill="#5a5a5a"/>
+          <ellipse id="liquidTop" cx="100" cy="100" rx="58" ry="8" fill="#000" opacity="0.12"/>
+        </g>
+        <!-- rim -->
+        <ellipse cx="100" cy="90" rx="60" ry="9" fill="#2b2d33" stroke="#4a4d56" stroke-width="2"/>
+        <!-- legs -->
+        <rect x="52" y="172" width="10" height="14" rx="2" fill="#2b2d33"/>
+        <rect x="138" y="172" width="10" height="14" rx="2" fill="#2b2d33"/>
+        <rect x="95" y="176" width="10" height="12" rx="2" fill="#2b2d33"/>
+      </svg>
+    </div>
+
+    <div class="result-hex" id="resultHex" title="클릭해서 복사">#5A5A5A</div>
+    <div class="result-rgb" id="resultRgb">RGB(90, 90, 90)</div>
+    <div class="copy-hint" id="copyHint">클릭하면 헥스코드가 복사됩니다</div>
+
+    <div class="sequence-title">조합 순서</div>
+    <div class="sequence-row" id="sequenceRow">
+      <div class="empty-state">왼쪽에서 염료를 클릭해서<br>순서대로 섞어보세요</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: target finder + history -->
+  <div class="panel side-panel">
+    <div class="tab-row">
+      <button class="tab-btn active" data-tab="target">목표색 찾기</button>
+      <button class="tab-btn" data-tab="history">히스토리</button>
+    </div>
+
+    <div id="tabTarget">
+      <p class="section-label" style="margin-bottom:10px;">원하는 색을 입력하면 가장 가까운 조합을 찾아드려요</p>
+      <div class="target-input-row">
+        <input type="text" id="targetHexInput" placeholder="#RRGGBB" maxlength="7">
+        <input type="color" id="targetColorPicker" value="#7fb2e0">
+      </div>
+      <button class="find-btn" id="findBtn">가까운 조합 찾기</button>
+      <div id="targetResultArea"></div>
+    </div>
+
+    <div id="tabHistory" style="display:none;">
+      <button class="save-btn" id="saveCurrentBtn">현재 조합 저장하기</button>
+      <div class="save-toast" id="saveToast"></div>
+      <p class="section-label">저장한 조합</p>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">저장한 조합이 없어요.<br>가마솥에서 색을 만든 뒤<br>위 버튼으로 저장해보세요.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= COMMANDS VIEW ================= -->
+<div class="cmd-view" id="commandsView" style="display:none;">
+  <input type="text" class="cmd-search" id="cmdSearch" placeholder="명령어 검색... (예: 액자, 크기, 위치)">
+
+  <!-- 1. Invisible item frame -->
+  <div class="cmd-group" data-cmd-group="invisible-frame">
+    <div class="cmd-group-title">투명 아이템 액자 주기</div>
+    <div class="cmd-group-desc">아이템 액자를 투명하게 만들어서 아이템만 떠 있는 것처럼 보이게 해요. 버전에 따라 명령어 문법이 바뀌었어요.</div>
+
+    <div class="cmd-card" data-cmd-search="투명 액자 아이템프레임 invisible item frame 1.19">
+      <div class="cmd-card-title">1.19.4 ~ 1.20.4</div>
+      <div class="cmd-card-desc">구버전 NBT 문법 (EntityTag)</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">give @p item_frame{EntityTag:{Invisible:1b}}</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="투명 액자 아이템프레임 invisible item frame 1.20.5 1.21">
+      <div class="cmd-card-title">1.20.5 이상 (컴포넌트 문법)</div>
+      <div class="cmd-card-desc">1.20.5부터 아이템 컴포넌트 방식으로 바뀌어서 entity_data 안에 넣어줘야 해요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">give @p item_frame[entity_data={id:"minecraft:item_frame",Invisible:1b}]</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">글로우 아이템 액자는 item_frame 대신 glow_item_frame으로 바꾸면 돼요.</div>
+    </div>
+  </div>
+
+  <!-- 2. Locate entity -->
+  <div class="cmd-group" data-cmd-group="locate-entity">
+    <div class="cmd-group-title">특정 엔티티 위치 찾기</div>
+    <div class="cmd-group-desc">선택한 종류의 엔티티가 어디 있는지 좌표로 알려줘요. 가장 가까운 것을 찾아서 그 위치를 채팅으로 표시합니다.</div>
+
+    <div class="cmd-card" data-cmd-search="엔티티 위치 찾기 locate entity 텔레포트">
+      <div class="cmd-card-title">해당 엔티티에게 순간이동해서 위치 확인</div>
+      <div class="cmd-card-desc">가장 가까운 대상 옆으로 순간이동해요. 실행 후 좌표를 F3 화면에서 확인하면 돼요.</div>
+      <div class="cmd-controls">
+        <select class="cmd-select" id="locateEntitySelect"></select>
+      </div>
+      <div class="cmd-code-row">
+        <div class="cmd-code" id="locateEntityCode"></div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="엔티티 좌표 채팅 출력 tellraw data get">
+      <div class="cmd-card-title">좌표를 채팅으로 바로 출력</div>
+      <div class="cmd-card-desc">순간이동 없이, 가장 가까운 대상의 좌표를 채팅창에 숫자로 띄워줘요.</div>
+      <div class="cmd-controls">
+        <select class="cmd-select" id="locateEntitySelect2"></select>
+      </div>
+      <div class="cmd-code-row">
+        <div class="cmd-code" id="locateEntityCode2"></div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">/data 명령어 결과는 실행한 사람에게만 보이는 시스템 메시지로 표시돼요.</div>
+    </div>
+  </div>
+
+  <!-- 3. Scale -->
+  <div class="cmd-group" data-cmd-group="scale">
+    <div class="cmd-group-title">플레이어 / 엔티티 크기 변경</div>
+    <div class="cmd-group-desc">1.20.5부터 추가된 scale 속성으로 크기를 바꿔요. 히트박스도 같이 변합니다.</div>
+
+    <div class="cmd-card" data-cmd-search="크기 변경 스케일 scale attribute">
+      <div class="cmd-controls">
+        <select class="cmd-select" id="scaleTargetType">
+          <option value="@s">나 자신 (@s)</option>
+          <option value="@p">가장 가까운 플레이어 (@p)</option>
+          <option value="@e[type=ENTITY,limit=1,sort=nearest]">특정 엔티티</option>
+        </select>
+        <select class="cmd-select" id="scaleEntitySelect" style="display:none;"></select>
+        <select class="cmd-select" id="scaleValueSelect">
+          <option value="0.2">0.2배 (아주 작게)</option>
+          <option value="0.5">0.5배 (작게)</option>
+          <option value="1" selected>1 (기본 크기)</option>
+          <option value="2">2배 (크게)</option>
+          <option value="5">5배 (거대하게)</option>
+          <option value="custom">직접 입력...</option>
+        </select>
+        <input type="text" class="cmd-select" id="scaleCustomInput" style="display:none; width:70px;" placeholder="예: 1.5">
+      </div>
+      <div class="cmd-code-row">
+        <div class="cmd-code" id="scaleCode"></div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">되돌리려면 값을 1로 다시 설정하면 돼요.</div>
+    </div>
+  </div>
+
+  <!-- 4. Mannequin -->
+  <div class="cmd-group" data-cmd-group="mannequin">
+    <div class="cmd-group-title">마네킹 소환 (1.21.9+)</div>
+    <div class="cmd-group-desc">아머스탠드가 아니라, 플레이어처럼 생긴 NPC 형태의 새 엔티티예요. Copper Age 업데이트(1.21.9)부터 추가됐고, summon 명령어로만 소환할 수 있어요.</div>
+
+    <div class="cmd-card" data-cmd-search="마네킹 mannequin npc 소환">
+      <div class="cmd-code-row">
+        <div class="cmd-code">summon mannequin ~ ~ ~ {profile:"Notch"}</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">profile 값에 플레이어 이름을 넣으면 그 사람 스킨을 씌운 마네킹이 소환돼요. 삭제는 근처에서 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격해서 없앨 수 있어요.</div>
+    </div>
+  </div>
+
+  <!-- 5. fetchprofile -->
+  <div class="cmd-group" data-cmd-group="fetchprofile">
+    <div class="cmd-group-title">플레이어 프로필 조회 (fetchprofile)</div>
+    <div class="cmd-group-desc">닉네임이나 UUID로 플레이어의 스킨/UUID 정보를 서버에서 가져와요. 접속 이력이 없어도 조회 가능하고, 결과로 나온 헤드 아이템도 바로 받을 수 있어요.</div>
+
+    <div class="cmd-card" data-cmd-search="fetchprofile 프로필 조회 스킨 uuid">
+      <div class="cmd-controls">
+        <select class="cmd-select" id="fetchProfileType">
+          <option value="name">닉네임으로 조회</option>
+          <option value="id">UUID로 조회</option>
+          <option value="entity">인게임 엔티티로 조회</option>
+        </select>
+        <input type="text" class="cmd-select" id="fetchProfileInput" style="width:160px;" placeholder="Notch">
+      </div>
+      <div class="cmd-code-row">
+        <div class="cmd-code" id="fetchProfileCode"></div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">1.21.9(26.1)부터 추가된 명령어예요. 결과가 채팅에 뜨면 클릭으로 헤드 아이템을 바로 받거나 profile 컴포넌트를 복사할 수 있어요.</div>
+    </div>
+  </div>
+
+  <!-- 6. Extra useful commands -->
+  <div class="cmd-group" data-cmd-group="extra">
+    <div class="cmd-group-title">그 밖에 알아두면 좋은 명령어</div>
+    <div class="cmd-group-desc">막상 필요할 때 잘 기억이 안 나는 것들 모음이에요.</div>
+
+    <div class="cmd-card" data-cmd-search="시간 고정 날씨 낮 밤">
+      <div class="cmd-card-title">시간을 낮으로 고정</div>
+      <div class="cmd-card-desc">낮/밤이 자동으로 안 바뀌게 게임규칙을 끄고 시간을 고정해요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">gamerule doDaylightCycle false</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="날씨 고정 맑음 비">
+      <div class="cmd-card-title">날씨 고정 (맑음)</div>
+      <div class="cmd-card-desc">비/눈이 자동으로 안 오게 게임규칙을 끄고 날씨를 맑게 유지해요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">gamerule doWeatherCycle false</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="인벤토리 클리어 clear">
+      <div class="cmd-card-title">인벤토리 비우기</div>
+      <div class="cmd-card-desc">대상의 인벤토리를 전부 비워요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">clear @p</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="이름표 커스텀네임 setblock nbt">
+      <div class="cmd-card-title">엔티티 이름 지정 + 이름표 숨기기</div>
+      <div class="cmd-card-desc">이름은 있지만 머리 위 이름표는 안 보이게 하고 싶을 때.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">data merge entity @e[limit=1,sort=nearest] {CustomName:'{"text":"이름"}',CustomNameVisible:0b}</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="구조물 찾기 마을 요새 locate structure">
+      <div class="cmd-card-title">가장 가까운 구조물 찾기</div>
+      <div class="cmd-card-desc">마을, 요새 등 특정 구조물의 좌표를 알려줘요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">locate structure minecraft:village</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+      <div class="cmd-note">village 대신 stronghold, mansion, ancient_city 등으로 바꿀 수 있어요.</div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="파티클 지속 재생 particle">
+      <div class="cmd-card-title">특정 위치에 파티클 계속 뿌리기</div>
+      <div class="cmd-card-desc">반복 커맨드 블록에 넣으면 장식/이펙트용으로 계속 파티클이 나와요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">particle minecraft:totem_of_undying ~ ~1 ~ 0.3 0.3 0.3 0.01 20</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="이펙트 효과 부여 effect">
+      <div class="cmd-card-title">무한 효과 부여 (예: 야간투시)</div>
+      <div class="cmd-card-desc">infinite로 시간 제한 없이 효과를 유지해요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">effect give @p minecraft:night_vision infinite 0 true</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+
+    <div class="cmd-card" data-cmd-search="월드보더 크기 world border">
+      <div class="cmd-card-title">월드보더 크기 설정</div>
+      <div class="cmd-card-desc">플레이 가능 구역을 제한할 때. 숫자는 지름(블록 수)이에요.</div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">worldborder set 6000</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Saved custom commands -->
+  <div class="cmd-group" data-cmd-group="saved">
+    <div class="cmd-group-title">내가 저장한 명령어</div>
+    <div class="cmd-group-desc">자주 쓰는 커스텀 명령어를 직접 저장해두고 언제든 복사해서 쓰세요.</div>
+    <div class="cmd-save-box">
+      <div class="cmd-save-input-row" style="flex-direction:column;">
+        <input type="text" id="cmdSaveLabel" placeholder="이름 (예: 관리자 킷 지급)">
+        <textarea id="cmdSaveText" placeholder="명령어 내용을 붙여넣으세요"></textarea>
+        <button class="cmd-save-add-btn" id="cmdSaveBtn">저장하기</button>
+      </div>
+      <div class="cmd-saved-list" id="cmdSavedList">
+        <div class="cmd-saved-empty">아직 저장한 명령어가 없어요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Minecraft dye color data (vanilla leather armor dye colors) ----------
+const DYES = [
+  { name: '하양',   hex: '#F9FFFE' },
+  { name: '주황',   hex: '#F9801D' },
+  { name: '마젠타', hex: '#C74EBD' },
+  { name: '연파랑', hex: '#3AB3DA' },
+  { name: '노랑',   hex: '#FED83D' },
+  { name: '연두',   hex: '#80C71F' },
+  { name: '분홍',   hex: '#F38BAA' },
+  { name: '회색',   hex: '#474F52' },
+  { name: '연회색', hex: '#9D9D97' },
+  { name: '청록',   hex: '#169C9C' },
+  { name: '보라',   hex: '#8932B8' },
+  { name: '파랑',   hex: '#3C44AA' },
+  { name: '갈색',   hex: '#835432' },
+  { name: '초록',   hex: '#5E7C16' },
+  { name: '빨강',   hex: '#B02E26' },
+  { name: '검정',   hex: '#1D1D21' },
+];
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const num = parseInt(hex, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function rgbToHex({r, g, b}) {
+  return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+// Perceived luminance (0=black, 255=white). Used to pick a border color that stays
+// visible against the dark page background regardless of how dark the swatch itself is.
+function luminance({r, g, b}) {
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+function borderColorFor(hex) {
+  const rgb = hexToRgb(hex);
+  const lum = luminance(rgb);
+  // Dark swatches (e.g. black, navy) get a light border so they don't merge into the
+  // dark UI background; light/bright swatches keep a subtle dark border for definition.
+  if (lum < 60) return 'rgba(255,255,255,0.55)';
+  if (lum < 110) return 'rgba(255,255,255,0.3)';
+  return 'rgba(0,0,0,0.35)';
+}
+
+// ---------- Actual Minecraft leather-dye combination formula ----------
+// Source: Minecraft's DyeableLeatherItem#dyeArmor logic.
+// Combines current color (if any) plus all newly-added dye colors.
+function combineColors(colors) {
+  // colors: array of {r,g,b}, applied in sequence, one at a time (matches game: each dye applied individually)
+  let r = 0, g = 0, b = 0, maxSum = 0, count = 0;
+  let hasBase = false;
+  let curR = 0, curG = 0, curB = 0;
+
+  for (const c of colors) {
+    if (!hasBase) {
+      curR = c.r; curG = c.g; curB = c.b;
+      hasBase = true;
+      continue;
+    }
+    // Mix current color with next dye using the real formula:
+    // average of (existing color * count-so-far) plus new dye, then scale by brightness ratio
+    const totalR = curR + c.r;
+    const totalG = curG + c.g;
+    const totalB = curB + c.b;
+    // This simplistic 2-color average approximates vanilla for sequential application;
+    // but real vanilla always averages ALL dye colors applied so far together, not pairwise.
+    curR = totalR;
+    curG = totalG;
+    curB = totalB;
+  }
+  return { r: curR, g: curG, b: curB };
+}
+
+// Correct vanilla algorithm: it does NOT do pairwise mixing. It always recomputes from
+// the full set of source colors (base leather color, if previously dyed, counts as one
+// of the inputs) each time a new dye is applied. We replicate that by tracking the full
+// list of applied dye colors (colors list) and recomputing the whole average + max-scale
+// every time, which is exactly what vanilla does since the "current" armor color is itself
+// one of the averaged inputs alongside the new dye.
+function vanillaDyeMix(colorList) {
+  if (colorList.length === 0) return { r: 255, g: 255, b: 255 }; // undyed leather is off-white but treat as base
+  let rSum = 0, gSum = 0, bSum = 0, maxSum = 0;
+  for (const c of colorList) {
+    rSum += c.r; gSum += c.g; bSum += c.b;
+    maxSum += Math.max(c.r, c.g, c.b);
+  }
+  const count = colorList.length;
+  const rAvg = rSum / count, gAvg = gSum / count, bAvg = bSum / count;
+  const maxAvg = maxSum / count;
+  const maxOfAvg = Math.max(rAvg, gAvg, bAvg);
+  const gain = maxOfAvg === 0 ? 1 : maxAvg / maxOfAvg;
+  return {
+    r: Math.min(255, Math.round(rAvg * gain)),
+    g: Math.min(255, Math.round(gAvg * gain)),
+    b: Math.min(255, Math.round(bAvg * gain)),
+  };
+}
+
+// But vanilla actually treats each successive dye APPLICATION as adding to a running list
+// that includes the *previous resulting color* as a single accumulated entry, not the raw
+// history. I.e. dyeing twice = mix(mix(base, dye1), dye2) where the "current" color counts
+// as ONE input, not N inputs from history. We simulate step-by-step application here:
+function applySequentialDyes(dyeHexList) {
+  let current = null; // {r,g,b} or null if undyed
+  const steps = [];
+  for (const hex of dyeHexList) {
+    const dye = hexToRgb(hex);
+    const inputs = current ? [current, dye] : [dye];
+    current = vanillaDyeMix(inputs);
+    steps.push({ dyeHex: hex, result: { ...current } });
+  }
+  return { final: current, steps };
+}
+
+// ---------- State ----------
+let sequence = []; // array of dye hex strings, in order
+
+// ---------- Render dye palette ----------
+const dyeGrid = document.getElementById('dyeGrid');
+DYES.forEach(dye => {
+  const btn = document.createElement('button');
+  btn.className = 'dye-btn';
+  btn.style.background = dye.hex;
+  btn.style.borderColor = borderColorFor(dye.hex);
+  btn.title = dye.name;
+  btn.innerHTML = `<span class="dye-name">${dye.name}</span>`;
+  btn.addEventListener('click', () => {
+    sequence.push(dye.hex);
+    render();
+  });
+  dyeGrid.appendChild(btn);
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  sequence = [];
+  render();
+});
+
+// ---------- Render current state ----------
+const resultHexEl = document.getElementById('resultHex');
+const resultRgbEl = document.getElementById('resultRgb');
+const liquidEl = document.getElementById('liquid');
+const glowEl = document.getElementById('glow');
+const sequenceRow = document.getElementById('sequenceRow');
+
+let history = [];
+
+function render() {
+  if (sequence.length === 0) {
+    resultHexEl.textContent = '#5A5A5A';
+    resultRgbEl.textContent = 'RGB(90, 90, 90)';
+    liquidEl.setAttribute('fill', '#5a5a5a');
+    glowEl.style.background = 'transparent';
+    sequenceRow.innerHTML = '<div class="empty-state">왼쪽에서 염료를 클릭해서<br>순서대로 섞어보세요</div>';
+    return;
+  }
+
+  const { final, steps } = applySequentialDyes(sequence);
+  const hex = rgbToHex(final);
+  resultHexEl.textContent = hex;
+  resultRgbEl.textContent = `RGB(${final.r}, ${final.g}, ${final.b})`;
+  liquidEl.setAttribute('fill', hex);
+  glowEl.style.background = `radial-gradient(circle, ${hex} 0%, transparent 70%)`;
+
+  sequenceRow.innerHTML = '';
+  sequence.forEach((hexColor, i) => {
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'seq-arrow';
+      arrow.textContent = '+';
+      sequenceRow.appendChild(arrow);
+    }
+    const chip = document.createElement('button');
+    chip.className = 'seq-chip';
+    chip.style.background = hexColor;
+    chip.style.borderColor = borderColorFor(hexColor);
+    chip.title = `${dyeNameFromHex(hexColor)} — 클릭해서 빼기`;
+    chip.addEventListener('click', () => {
+      sequence.splice(i, 1);
+      render();
+    });
+    sequenceRow.appendChild(chip);
+  });
+
+  updateSaveBtnState();
+}
+
+function dyeNameFromHex(hex) {
+  const d = DYES.find(d => d.hex.toLowerCase() === hex.toLowerCase());
+  return d ? d.name : hex;
+}
+
+function updateSaveBtnState() {
+  const btn = document.getElementById('saveCurrentBtn');
+  if (btn) btn.disabled = sequence.length === 0;
+}
+
+function renderHistory() {
+  const listEl = document.getElementById('historyList');
+  if (history.length === 0) {
+    listEl.innerHTML = '<div class="history-empty">저장한 조합이 없어요.<br>가마솥에서 색을 만든 뒤<br>위 버튼으로 저장해보세요.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  history.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'history-item';
+    el.innerHTML = `
+      <div class="sw" style="background:${item.hex};border-color:${borderColorFor(item.hex)}"></div>
+      <div class="info">
+        <div class="hex">${item.hex}</div>
+        <div class="path">${item.seq.map(dyeNameFromHex).join(' + ')}</div>
+      </div>
+      <button class="del-btn" title="삭제">×</button>
+    `;
+    el.querySelector('.info').addEventListener('click', () => {
+      sequence = item.seq.slice();
+      render();
+    });
+    el.querySelector('.sw').addEventListener('click', () => {
+      sequence = item.seq.slice();
+      render();
+    });
+    el.querySelector('.del-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      history.splice(idx, 1);
+      renderHistory();
+    });
+    listEl.appendChild(el);
+  });
+}
+
+document.getElementById('saveCurrentBtn').addEventListener('click', () => {
+  if (sequence.length === 0) return;
+  const { final } = applySequentialDyes(sequence);
+  history.unshift({ seq: sequence.slice(), result: final, hex: rgbToHex(final) });
+  if (history.length > 40) history.pop();
+  renderHistory();
+  const toast = document.getElementById('saveToast');
+  toast.textContent = '저장됐어요';
+  setTimeout(() => { toast.textContent = ''; }, 1400);
+});
+
+// copy hex on click
+resultHexEl.addEventListener('click', () => {
+  navigator.clipboard?.writeText(resultHexEl.textContent).then(() => {
+    const hint = document.getElementById('copyHint');
+    const original = hint.textContent;
+    hint.textContent = '복사됐어요!';
+    setTimeout(() => { hint.textContent = original; }, 1200);
+  }).catch(() => {});
+});
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tabTarget').style.display = tab === 'target' ? 'block' : 'none';
+    document.getElementById('tabHistory').style.display = tab === 'history' ? 'block' : 'none';
+  });
+});
+
+// ---------- Target color finder ----------
+// Search strategy: BFS/greedy over dye sequences up to a max depth, tracking best match by color distance (weighted euclidean in RGB, perceptual-ish).
+const targetHexInput = document.getElementById('targetHexInput');
+const targetColorPicker = document.getElementById('targetColorPicker');
+const findBtn = document.getElementById('findBtn');
+const targetResultArea = document.getElementById('targetResultArea');
+
+targetColorPicker.addEventListener('input', () => {
+  targetHexInput.value = targetColorPicker.value.toUpperCase();
+});
+targetHexInput.addEventListener('input', () => {
+  let v = targetHexInput.value.trim();
+  if (/^#?[0-9a-fA-F]{6}$/.test(v)) {
+    if (!v.startsWith('#')) v = '#' + v;
+    targetColorPicker.value = v;
+  }
+});
+
+function colorDistance(a, b) {
+  // weighted for perceptual difference (rough)
+  const dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b;
+  return Math.sqrt(2 * dr * dr + 4 * dg * dg + 3 * db * db);
+}
+
+function findBestRoute(targetRgb, maxDepth = 5, beamWidth = 40) {
+  // Beam search: state = {seq: [hexes], current: {r,g,b}}
+  let beam = [{ seq: [], current: null, dist: Infinity }];
+  let best = null;
+
+  for (let depth = 0; depth < maxDepth; depth++) {
+    let candidates = [];
+    for (const state of beam) {
+      for (const dye of DYES) {
+        const dyeRgb = hexToRgb(dye.hex);
+        const inputs = state.current ? [state.current, dyeRgb] : [dyeRgb];
+        const mixed = vanillaDyeMix(inputs);
+        const dist = colorDistance(mixed, targetRgb);
+        const newSeq = [...state.seq, dye.hex];
+        candidates.push({ seq: newSeq, current: mixed, dist });
+        if (!best || dist < best.dist) {
+          best = { seq: newSeq, current: mixed, dist };
+        }
+      }
+    }
+    // keep top N by distance for next depth iteration
+    candidates.sort((a, b) => a.dist - b.dist);
+    beam = candidates.slice(0, beamWidth);
+    // early exit if perfect-ish match found
+    if (best && best.dist < 2) break;
+  }
+  return best;
+}
+
+findBtn.addEventListener('click', () => {
+  let hex = targetHexInput.value.trim();
+  if (!hex) hex = targetColorPicker.value;
+  if (!hex.startsWith('#')) hex = '#' + hex;
+  if (!/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    targetResultArea.innerHTML = '<div class="history-empty" style="color:#d97f7f;">올바른 헥스코드를 입력해주세요 (예: #7FB2E0)</div>';
+    return;
+  }
+  const targetRgb = hexToRgb(hex);
+
+  targetResultArea.innerHTML = '<div class="searching">가장 가까운 조합을 찾는 중...</div>';
+
+  setTimeout(() => {
+    const result = findBestRoute(targetRgb, 5, 60);
+    if (!result) {
+      targetResultArea.innerHTML = '<div class="history-empty">조합을 찾지 못했어요.</div>';
+      return;
+    }
+    const resultHex = rgbToHex(result.current);
+    const dist = result.dist;
+    let matchLabel, matchClass;
+    if (dist < 8) { matchLabel = '거의 완벽하게 일치'; matchClass = 'good'; }
+    else if (dist < 25) { matchLabel = '매우 근접'; matchClass = 'good'; }
+    else if (dist < 60) { matchLabel = '근접한 편'; matchClass = 'ok'; }
+    else { matchLabel = '차이가 다소 있음'; matchClass = 'bad'; }
+
+    targetResultArea.innerHTML = `
+      <div class="target-swatch-preview">
+        <div class="sw" style="background:${hex};border-color:${borderColorFor(hex)}"></div>
+        <div>
+          <div class="label">목표 색상</div>
+          <div class="val">${hex.toUpperCase()}</div>
+        </div>
+      </div>
+      <div class="route-result">
+        <div class="route-card">
+          <div class="route-diff">일치도: <span class="${matchClass}">${matchLabel}</span> (색상 거리 ${dist.toFixed(1)})</div>
+          <div class="route-steps" id="routeStepsChips"></div>
+          <div class="route-result-color">
+            <div class="sw" style="background:${resultHex};border-color:${borderColorFor(resultHex)}"></div>
+            <span>결과: ${resultHex} · RGB(${result.current.r}, ${result.current.g}, ${result.current.b})</span>
+          </div>
+          <button class="apply-route-btn" id="applyRouteBtn">이 조합을 왼쪽 가마솥에 적용</button>
+        </div>
+      </div>
+    `;
+
+    const chipsEl = document.getElementById('routeStepsChips');
+    result.seq.forEach((h, i) => {
+      if (i > 0) {
+        const arrow = document.createElement('span');
+        arrow.className = 'seq-arrow';
+        arrow.textContent = '+';
+        chipsEl.appendChild(arrow);
+      }
+      const chip = document.createElement('div');
+      chip.className = 'seq-chip';
+      chip.style.background = h;
+      chip.style.cursor = 'default';
+      chip.title = dyeNameFromHex(h);
+      chipsEl.appendChild(chip);
+    });
+
+    document.getElementById('applyRouteBtn').addEventListener('click', () => {
+      sequence = result.seq.slice();
+      render();
+      const btn = document.getElementById('applyRouteBtn');
+      const original = btn.textContent;
+      btn.textContent = '가마솥에 적용됨';
+      setTimeout(() => { btn.textContent = original; }, 1200);
+    });
+  }, 50);
+});
+
+// init
+render();
+renderHistory();
+
+// ================= TOOL TAB SWITCHING =================
+document.querySelectorAll('.tool-tab[data-tool]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tool-tab[data-tool]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tool = btn.dataset.tool;
+    document.getElementById('dyeView').style.display = tool === 'dye' ? 'grid' : 'none';
+    document.getElementById('commandsView').style.display = tool === 'commands' ? 'block' : 'none';
+  });
+});
+
+// ================= COMMANDS TAB =================
+
+// Common entity list for dropdowns (id -> Korean display name)
+const COMMON_ENTITIES = [
+  ['minecraft:zombie', '좀비'],
+  ['minecraft:skeleton', '스켈레톤'],
+  ['minecraft:creeper', '크리퍼'],
+  ['minecraft:spider', '거미'],
+  ['minecraft:enderman', '엔더맨'],
+  ['minecraft:villager', '주민'],
+  ['minecraft:wandering_trader', '떠돌이 상인'],
+  ['minecraft:iron_golem', '아이언 골렘'],
+  ['minecraft:cow', '소'],
+  ['minecraft:pig', '돼지'],
+  ['minecraft:sheep', '양'],
+  ['minecraft:chicken', '닭'],
+  ['minecraft:horse', '말'],
+  ['minecraft:wolf', '늑대'],
+  ['minecraft:cat', '고양이'],
+  ['minecraft:allay', '알레이'],
+  ['minecraft:axolotl', '아홀로틀'],
+  ['minecraft:bee', '꿀벌'],
+  ['minecraft:panda', '팬더'],
+  ['minecraft:fox', '여우'],
+  ['minecraft:frog', '개구리'],
+  ['minecraft:turtle', '거북이'],
+  ['minecraft:parrot', '앵무새'],
+  ['minecraft:llama', '라마'],
+  ['minecraft:goat', '염소'],
+  ['minecraft:camel', '낙타'],
+  ['minecraft:strider', '스트라이더'],
+  ['minecraft:piglin', '피글린'],
+  ['minecraft:hoglin', '호글린'],
+  ['minecraft:blaze', '블레이즈'],
+  ['minecraft:ghast', '가스트'],
+  ['minecraft:slime', '슬라임'],
+  ['minecraft:magma_cube', '마그마 큐브'],
+  ['minecraft:witch', '마녀'],
+  ['minecraft:pillager', '약탈자'],
+  ['minecraft:vindicator', '변명자'],
+  ['minecraft:evoker', '소환사'],
+  ['minecraft:ravager', '파괴수'],
+  ['minecraft:warden', '워든'],
+  ['minecraft:phantom', '팬텀'],
+  ['minecraft:drowned', '드라운드'],
+  ['minecraft:husk', '허스크'],
+  ['minecraft:stray', '스트레이'],
+  ['minecraft:guardian', '가디언'],
+  ['minecraft:elder_guardian', '엘더 가디언'],
+  ['minecraft:shulker', '셜커'],
+  ['minecraft:ender_dragon', '엔더 드래곤'],
+  ['minecraft:wither', '위더'],
+  ['minecraft:snow_golem', '눈 골렘'],
+  ['minecraft:bat', '박쥐'],
+  ['minecraft:squid', '오징어'],
+  ['minecraft:glow_squid', '빛나는 오징어'],
+  ['minecraft:dolphin', '돌고래'],
+  ['minecraft:mannequin', '마네킹'],
+  ['minecraft:armor_stand', '아머 스탠드'],
+  ['minecraft:player', '플레이어'],
+];
+
+function populateEntitySelect(selectEl, includeAny) {
+  selectEl.innerHTML = '';
+  if (includeAny) {
+    const optAny = document.createElement('option');
+    optAny.value = '';
+    optAny.textContent = '모든 종류';
+    selectEl.appendChild(optAny);
+  }
+  COMMON_ENTITIES.forEach(([id, label]) => {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = `${label} (${id.replace('minecraft:', '')})`;
+    selectEl.appendChild(opt);
+  });
+}
+
+// ---- 1. Locate entity ----
+const locateEntitySelect = document.getElementById('locateEntitySelect');
+populateEntitySelect(locateEntitySelect, false);
+locateEntitySelect.value = 'minecraft:villager';
+
+function updateLocateCode() {
+  const type = locateEntitySelect.value;
+  document.getElementById('locateEntityCode').textContent =
+    `tp @p @e[type=${type},limit=1,sort=nearest]`;
+}
+locateEntitySelect.addEventListener('change', updateLocateCode);
+updateLocateCode();
+
+const locateEntitySelect2 = document.getElementById('locateEntitySelect2');
+populateEntitySelect(locateEntitySelect2, false);
+locateEntitySelect2.value = 'minecraft:villager';
+
+function updateLocateCode2() {
+  const type = locateEntitySelect2.value;
+  document.getElementById('locateEntityCode2').textContent =
+    `data get entity @e[type=${type},limit=1,sort=nearest] Pos`;
+}
+locateEntitySelect2.addEventListener('change', updateLocateCode2);
+updateLocateCode2();
+
+// ---- 2. Scale ----
+const scaleTargetType = document.getElementById('scaleTargetType');
+const scaleEntitySelect = document.getElementById('scaleEntitySelect');
+const scaleValueSelect = document.getElementById('scaleValueSelect');
+const scaleCustomInput = document.getElementById('scaleCustomInput');
+populateEntitySelect(scaleEntitySelect, false);
+
+scaleTargetType.addEventListener('change', () => {
+  scaleEntitySelect.style.display = scaleTargetType.value.includes('ENTITY') ? 'inline-block' : 'none';
+  updateScaleCode();
+});
+scaleValueSelect.addEventListener('change', () => {
+  scaleCustomInput.style.display = scaleValueSelect.value === 'custom' ? 'inline-block' : 'none';
+  updateScaleCode();
+});
+scaleCustomInput.addEventListener('input', updateScaleCode);
+scaleEntitySelect.addEventListener('change', updateScaleCode);
+
+function updateScaleCode() {
+  let target = scaleTargetType.value;
+  if (target.includes('ENTITY')) {
+    target = target.replace('ENTITY', scaleEntitySelect.value.replace('minecraft:', ''));
+  }
+  let value = scaleValueSelect.value;
+  if (value === 'custom') {
+    value = scaleCustomInput.value.trim() || '1';
+  }
+  document.getElementById('scaleCode').textContent =
+    `attribute ${target} minecraft:scale base set ${value}`;
+}
+updateScaleCode();
+
+// ---- 3. fetchprofile ----
+const fetchProfileType = document.getElementById('fetchProfileType');
+const fetchProfileInput = document.getElementById('fetchProfileInput');
+
+function updateFetchProfileCode() {
+  const type = fetchProfileType.value;
+  const val = fetchProfileInput.value.trim() || (type === 'entity' ? '@s' : 'Notch');
+  document.getElementById('fetchProfileCode').textContent = `fetchprofile ${type} ${val}`;
+}
+fetchProfileType.addEventListener('change', () => {
+  fetchProfileInput.placeholder = fetchProfileType.value === 'entity' ? '@s' :
+    fetchProfileType.value === 'id' ? '069a79f4-44e9-4726-a5be-fca90e38aaf5' : 'Notch';
+  updateFetchProfileCode();
+});
+fetchProfileInput.addEventListener('input', updateFetchProfileCode);
+updateFetchProfileCode();
+
+// ---- Copy buttons (event delegation, works for all .cmd-code-row) ----
+document.getElementById('commandsView').addEventListener('click', (e) => {
+  const row = e.target.closest('.cmd-code-row');
+  if (!row) return;
+  const codeEl = row.querySelector('.cmd-code');
+  const btn = row.querySelector('.cmd-copy-btn');
+  const text = codeEl.textContent;
+  navigator.clipboard?.writeText('/' + text.replace(/^\//, '')).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1200);
+  }).catch(() => {});
+});
+
+// ---- Search filter ----
+const cmdSearch = document.getElementById('cmdSearch');
+cmdSearch.addEventListener('input', () => {
+  const q = cmdSearch.value.trim().toLowerCase();
+  document.querySelectorAll('.cmd-group').forEach(group => {
+    if (group.dataset.cmdGroup === 'saved') return; // never hide saved section
+    let groupHasMatch = false;
+    const cards = group.querySelectorAll('.cmd-card');
+    cards.forEach(card => {
+      const haystack = (card.dataset.cmdSearch || '') + ' ' + card.textContent.toLowerCase();
+      const match = q === '' || haystack.toLowerCase().includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) groupHasMatch = true;
+    });
+    group.style.display = (q === '' || groupHasMatch) ? '' : 'none';
+  });
+});
+
+// ---- Saved custom commands (in-memory only, per session) ----
+let savedCommands = [];
+
+function renderSavedCommands() {
+  const listEl = document.getElementById('cmdSavedList');
+  if (savedCommands.length === 0) {
+    listEl.innerHTML = '<div class="cmd-saved-empty">아직 저장한 명령어가 없어요.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  savedCommands.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'cmd-saved-item';
+    el.innerHTML = `
+      <div class="cmd-saved-item-top">
+        <span class="cmd-saved-item-label">${item.label}</span>
+        <button class="cmd-saved-del" title="삭제">×</button>
+      </div>
+      <div class="cmd-code-row">
+        <div class="cmd-code">${item.text.replace(/</g, '&lt;')}</div>
+        <button class="cmd-copy-btn">복사</button>
+      </div>
+    `;
+    el.querySelector('.cmd-saved-del').addEventListener('click', () => {
+      savedCommands.splice(idx, 1);
+      renderSavedCommands();
+    });
+    listEl.appendChild(el);
+  });
+}
+
+document.getElementById('cmdSaveBtn').addEventListener('click', () => {
+  const labelInput = document.getElementById('cmdSaveLabel');
+  const textInput = document.getElementById('cmdSaveText');
+  const label = labelInput.value.trim();
+  const text = textInput.value.trim();
+  if (!label || !text) return;
+  savedCommands.unshift({ label, text });
+  labelInput.value = '';
+  textInput.value = '';
+  renderSavedCommands();
+});
+
+renderSavedCommands();
+</script>
+
+</body>
+</html>
