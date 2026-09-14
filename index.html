@@ -1842,6 +1842,13 @@
           <div class="cmd-card-title">② 각도를 직접 지정해서 돌리기</div>
           <div class="cmd-card-desc">특정 대상을 추적하지 않고, 정확한 방향으로 고정하고 싶을 때 써요.</div>
           <div class="cmd-controls">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="rotateVersionSelect">
+              <option value="new">1.21.2 이상 (/rotate)</option>
+              <option value="old">1.19.4 ~ 1.21.1 (/tp facing)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
             <span class="cmd-num-label">대상</span>
             <div class="cmd-combo" id="rotateSourceSelectCombo" >
               <input type="text" class="cmd-combo-input" id="rotateSourceSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
@@ -1862,7 +1869,7 @@
           <div class="cmd-note">
             <strong>yaw(좌우 회전)</strong>: -180 또는 180 = 북쪽, -90 = 동쪽, 0 = 남쪽, 90 = 서쪽을 바라봐요.<br>
             <strong>pitch(상하 회전)</strong>: -90 = 정면 위(하늘), 0 = 수평, 90 = 정면 아래(땅)를 바라봐요.<br>
-            1.21.2 이상에서 쓸 수 있는 /rotate 명령어예요. 그 이전 버전은 tp의 facing 좌표 지정 방식을 써야 해요.
+            /rotate는 1.21.2에 추가된 명령어예요. 그 이전 버전(1.19.4~1.21.1)에서는 같은 자리로 tp하면서 방향만 지정하는 방식을 써야 해요.
           </div>
         </div>
       </div>
@@ -1947,6 +1954,14 @@
               <span class="cmd-combo-arrow">▾</span>
               <div class="cmd-combo-list" id="summonEntitySelectList"></div>
             </div>
+          </div>
+
+          <div class="cmd-controls" id="summonVariantVersionControls" style="display:none;">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="summonVariantVersionSelect">
+              <option value="new">1.21.5 이상 (variant 있음)</option>
+              <option value="old">1.21.4 이하 (variant 없음)</option>
+            </select>
           </div>
 
           <div class="cmd-controls" id="summonVariantControls" style="display:none;">
@@ -2057,6 +2072,13 @@
 
         <div class="cmd-card">
           <div class="cmd-controls">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="gameruleVersionSelect">
+              <option value="old">1.19.4 ~ 1.21.10 (기존 이름)</option>
+              <option value="new">1.21.11 이상 (새 snake_case 이름)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
             <div class="cmd-combo" id="gameruleSelectCombo" >
               <input type="text" class="cmd-combo-input" id="gameruleSelect" placeholder="게임규칙 선택" autocomplete="off" readonly>
               <span class="cmd-combo-arrow">▾</span>
@@ -2074,6 +2096,7 @@
             <div class="cmd-code" id="gameruleCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
+          <div class="cmd-note">1.21.11(스냅샷 25w44a)부터 모든 게임규칙 이름이 소문자+밑줄(snake_case) 형태로 전부 바뀌었어요. 서버 버전에 맞는 쪽을 선택하세요.</div>
         </div>
 
         <div class="cmd-card" id="gameruleFavoritesCard" style="display:none;">
@@ -2190,13 +2213,20 @@
       <!-- 9b. Custom potion -->
       <div class="cmd-group" data-cmd-group="custom-potion">
         <div class="cmd-group-title">커스텀 물약</div>
-        <div class="cmd-group-desc">효과 없이 색만 다른 물약처럼, 원하는 색과 효과 조합을 자유롭게 만들 수 있어요. (1.20.5 이상, potion_contents 컴포넌트 문법)</div>
+        <div class="cmd-group-desc">효과 없이 색만 다른 물약처럼, 원하는 색과 효과 조합을 자유롭게 만들 수 있어요.</div>
 
         <div class="cmd-card">
           <div class="cmd-controls">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="customPotionVersionSelect">
+              <option value="new">1.20.5 이상 (potion_contents 컴포넌트)</option>
+              <option value="old">1.19.4 ~ 1.20.4 (CustomPotionColor NBT)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
             <select class="cmd-select" id="customPotionType">
               <option value="potion">물약 (마시는 것)</option>
-              <option value="splash_potion">튀는 물약 (스플래시)</option>
+              <option value="splash_potion">투척용 물약</option>
               <option value="lingering_potion">잔류형 물약 (스플래시가 구름으로 남음)</option>
             </select>
           </div>
@@ -2230,7 +2260,7 @@
             <div class="cmd-code" id="customPotionCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
-          <div class="cmd-note">"효과도 같이 넣기"를 끄면 색만 있고 아무 효과도 없는 순수 장식용 물약이 돼요. 색상은 헥스코드로 직접 입력하거나 컬러피커로 고를 수 있어요.</div>
+          <div class="cmd-note" id="customPotionVersionNote">"효과도 같이 넣기"를 끄면 색만 있고 아무 효과도 없는 순수 장식용 물약이 돼요. 색상은 헥스코드로 직접 입력하거나 컬러피커로 고를 수 있어요.</div>
         </div>
       </div>
 
@@ -3380,11 +3410,17 @@ const rotateYawWarning = document.getElementById('rotateYawWarning');
 const rotatePitchWarning = document.getElementById('rotatePitchWarning');
 function updateRotateCode() {
   const source = rotateSourcePicker.getValue();
+  const version = document.getElementById('rotateVersionSelect').value;
   const yaw = validateRange(rotateYawInput, rotateYawWarning, -180, 180, false);
   const pitch = validateRange(rotatePitchInput, rotatePitchWarning, -90, 90, false);
-  document.getElementById('rotateCode').textContent =
-    `execute as @e[type=${source},sort=nearest,limit=1] run rotate @s ${yaw.value || '0'} ${pitch.value || '0'}`;
+  const yawVal = yaw.value || '0';
+  const pitchVal = pitch.value || '0';
+  const code = version === 'new'
+    ? `execute as @e[type=${source},sort=nearest,limit=1] run rotate @s ${yawVal} ${pitchVal}`
+    : `execute as @e[type=${source},sort=nearest,limit=1] at @s run tp @s ~ ~ ~ ${yawVal} ${pitchVal}`;
+  document.getElementById('rotateCode').textContent = code;
 }
+document.getElementById('rotateVersionSelect').addEventListener('change', updateRotateCode);
 const rotateSourcePicker = setupComboPicker(
   document.getElementById('rotateSourceSelect'),
   document.getElementById('rotateSourceSelectList'),
@@ -3476,14 +3512,15 @@ const ENTITY_VARIANTS = {
     ['snowy', '설원'], ['spotted', '점박이'], ['striped', '줄무늬'], ['woods', '숲'],
   ]},
   'minecraft:sheep': { label: '양털 색', values: DYES.map(d => [d.hex, d.name]) },
-};
-const ENTITY_VARIANT_COMPONENT = {
-  'minecraft:rabbit': 'rabbit/variant',
-  'minecraft:fox': 'fox/variant',
-  'minecraft:parrot': 'parrot/variant',
-  'minecraft:mooshroom': 'mooshroom/variant',
-  'minecraft:cat': 'cat/variant',
-  'minecraft:wolf': 'wolf/variant',
+  'minecraft:cow': { label: '기후(무늬)', values: [
+    ['temperate', '온화(기본)'], ['warm', '더운 지역'], ['cold', '추운 지역'],
+  ], minVersion: '1.21.5' },
+  'minecraft:pig': { label: '기후(무늬)', values: [
+    ['temperate', '온화(기본)'], ['warm', '더운 지역'], ['cold', '추운 지역'],
+  ], minVersion: '1.21.5' },
+  'minecraft:chicken': { label: '기후(무늬)', values: [
+    ['temperate', '온화(기본)'], ['warm', '더운 지역'], ['cold', '추운 지역'],
+  ], minVersion: '1.21.5' },
 };
 // Entities that support the "baby" spawn variant (Age:-2147483648)
 const BABY_CAPABLE = new Set([
@@ -3504,10 +3541,17 @@ const summonEntityPicker = setupComboPicker(
 function onSummonEntityChange() {
   const entityId = summonEntityPicker.getValue();
   const variantControls = document.getElementById('summonVariantControls');
+  const variantVersionControls = document.getElementById('summonVariantVersionControls');
   const variantSelect = document.getElementById('summonVariantSelect');
   const variantLabel = document.getElementById('summonVariantLabel');
+  const variantVersionSelect = document.getElementById('summonVariantVersionSelect');
   const variantData = ENTITY_VARIANTS[entityId];
-  if (variantData) {
+
+  variantVersionControls.style.display = (variantData && variantData.minVersion) ? 'flex' : 'none';
+
+  const versionTooOld = variantData && variantData.minVersion && variantVersionSelect.value === 'old';
+
+  if (variantData && !versionTooOld) {
     variantControls.style.display = 'flex';
     variantLabel.textContent = variantData.label;
     variantSelect.innerHTML = '';
@@ -3527,6 +3571,7 @@ function onSummonEntityChange() {
 
   updateSummonCode();
 }
+document.getElementById('summonVariantVersionSelect').addEventListener('change', onSummonEntityChange);
 
 function bindSummonCheckbox(checkboxId, inputId) {
   const checkbox = document.getElementById(checkboxId);
@@ -3566,15 +3611,17 @@ function updateSummonCode() {
   if (document.getElementById('summonSilentCheckbox').checked) nbtParts.push(`Silent:1b`);
 
   const variantData = ENTITY_VARIANTS[entityId];
-  if (variantData) {
+  const variantVersionTooOld = variantData && variantData.minVersion &&
+    document.getElementById('summonVariantVersionSelect').value === 'old';
+  if (variantData && !variantVersionTooOld) {
     const variantVal = document.getElementById('summonVariantSelect').value;
     if (entityId === 'minecraft:sheep') {
       // sheep color is a legacy dye-index NBT tag, not a variant component; use Color (0-15)
       const dyeIndex = DYES.findIndex(d => d.hex === variantVal);
       nbtParts.push(`Color:${dyeIndex}b`);
     } else {
-      const component = ENTITY_VARIANT_COMPONENT[entityId];
-      nbtParts.push(`variant:"${variantVal}"`);
+      // variant NBT is a namespaced string id, e.g. {variant:"minecraft:cold"}
+      nbtParts.push(`variant:"minecraft:${variantVal}"`);
     }
   }
 
@@ -3626,95 +3673,96 @@ updateFetchProfileCode();
 // ---- 6. Gamerule (curated list with descriptions, numeric ones get free input) ----
 const GAMERULES = [
   {
-    id: 'commandBlockOutput', label: '커맨드블록 실행 결과 채팅 표시', type: 'bool',
+    id: 'commandBlockOutput', newId: 'minecraft:command_block_output', label: '커맨드블록 실행 결과 채팅 표시', type: 'bool',
     desc: '커맨드블록이 명령어를 실행할 때마다 관리자 채팅에 뜨는 로그를 켜거나 꺼요. 커맨드블록이 많은 서버라면 꺼두는 편이 좋아요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'sendCommandFeedback', label: '명령어 실행 결과 채팅 표시', type: 'bool',
+    id: 'sendCommandFeedback', newId: 'minecraft:send_command_feedback', label: '명령어 실행 결과 채팅 표시', type: 'bool',
     desc: '플레이어나 콘솔이 실행한 일반 명령어의 결과 메시지(성공/실패 알림)를 켜거나 꺼요. commandBlockOutput과는 별개 설정이에요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'logAdminCommands', label: '관리자 명령어 콘솔 로그 기록', type: 'bool',
+    id: 'logAdminCommands', newId: 'minecraft:log_admin_commands', label: '관리자 명령어 콘솔 로그 기록', type: 'bool',
     desc: '오퍼레이터가 실행한 명령어를 서버 콘솔(터미널) 로그에 남길지 정해요. 위 두 개와 다르게 콘솔 로그 전용이에요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'randomTickSpeed', label: '랜덤 틱 속도 (작물/사탕수수 성장 등)', type: 'number', min: 0, max: 4096, defaultVal: '3',
+    id: 'randomTickSpeed', newId: 'minecraft:random_tick_speed', label: '랜덤 틱 속도 (작물/사탕수수 성장 등)', type: 'number', min: 0, max: 4096, defaultVal: '3',
     desc: '작물 성장, 나뭇잎 소멸, 눈 녹기처럼 "랜덤 틱"에 의존하는 현상이 얼마나 자주 일어날지 정해요. 기본값 3. 값을 올리면 빨라지지만 서버 부하도 늘어요. 0~4096 사이 정수. 서버 틱(TPS) 자체를 바꾸는 설정은 아니에요.',
   },
   {
-    id: 'mobGriefing', label: '몹그리핑 (지형/블록 파괴 몹 행동)', type: 'bool',
+    id: 'mobGriefing', newId: 'minecraft:mob_griefing', label: '몹그리핑 (지형/블록 파괴 몹 행동)', type: 'bool',
     desc: '크리퍼 폭발로 블록이 부서지는 것, 엔더맨이 블록 집어드는 것, 좀비가 문 부수는 것 등을 한 번에 막을지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'keepInventory', label: '사망 시 인벤토리 유지', type: 'bool',
+    id: 'keepInventory', newId: 'minecraft:keep_inventory', label: '사망 시 인벤토리 유지', type: 'bool',
     desc: '죽어도 아이템/경험치를 잃지 않게 할지 정해요.',
     values: [['true', '켜기 (true)'], ['false', '끄기 (false, 기본값)']]
   },
   {
-    id: 'doDaylightCycle', label: '낮/밤 자동 순환', type: 'bool',
+    id: 'doDaylightCycle', newId: 'minecraft:advance_time', label: '낮/밤 자동 순환', type: 'bool',
     desc: '시간이 자동으로 흘러가게 할지 정해요. 끄면 /time set 으로 고정한 시간이 유지돼요.',
     values: [['false', '끄기 (false, 시간 고정)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'doWeatherCycle', label: '날씨 자동 순환', type: 'bool',
+    id: 'doWeatherCycle', newId: 'minecraft:advance_weather', label: '날씨 자동 순환', type: 'bool',
     desc: '비/눈이 자동으로 오게 할지 정해요. 끄면 마지막 날씨 상태가 유지돼요.',
     values: [['false', '끄기 (false, 날씨 고정)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'naturalRegeneration', label: '자연 체력 회복', type: 'bool',
+    id: 'naturalRegeneration', newId: 'minecraft:natural_health_regeneration', label: '자연 체력 회복', type: 'bool',
     desc: '허기 게이지로 체력이 자연 회복되는 걸 켜거나 꺼요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'showDeathMessages', label: '사망 메시지 채팅 표시', type: 'bool',
+    id: 'showDeathMessages', newId: 'minecraft:show_death_messages', label: '사망 메시지 채팅 표시', type: 'bool',
     desc: '플레이어가 죽었을 때 "OO님이 좀비에게 살해당했습니다" 같은 메시지를 채팅에 띄울지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'maxCommandChainLength', label: '커맨드블록 체인 최대 길이', type: 'number', min: 1, max: 2147483647, defaultVal: '65536',
+    id: 'maxCommandChainLength', newId: 'minecraft:max_command_sequence_length', label: '커맨드블록 체인 최대 길이', type: 'number', min: 1, max: 2147483647, defaultVal: '65536',
     desc: '연쇄형 커맨드블록이 한 틱에 몇 개까지 이어서 실행될 수 있는지 정해요. 복잡한 기계식 커맨드블록 회로를 쓰는 서버라면 늘려야 할 수 있어요.',
   },
   {
-    id: 'maxEntityCramming', label: '엔티티 밀집 제한(끼임 데미지)', type: 'number', min: 0, max: 2147483647, defaultVal: '24',
+    id: 'maxEntityCramming', newId: 'minecraft:max_entity_cramming', label: '엔티티 밀집 제한(끼임 데미지)', type: 'number', min: 0, max: 2147483647, defaultVal: '24',
     desc: '한 칸에 이 숫자 이상 엔티티가 겹치면 끼임 데미지를 받기 시작해요. 0으로 하면 끼임 데미지가 없어져요. 몹 농장 설계에 영향을 줘요.',
   },
   {
-    id: 'spawnRadius', label: '리스폰 지점 주변 스폰 반경', type: 'number', min: 0, max: 2147483647, defaultVal: '10',
+    id: 'spawnRadius', newId: 'minecraft:respawn_radius', label: '리스폰 지점 주변 스폰 반경', type: 'number', min: 0, max: 2147483647, defaultVal: '10',
     desc: '플레이어가 리스폰될 때 스폰 좌표를 중심으로 얼마나 벗어난 곳에 놓일 수 있는지 정해요.',
   },
   {
-    id: 'fallDamage', label: '낙하 데미지', type: 'bool',
+    id: 'fallDamage', newId: 'minecraft:fall_damage', label: '낙하 데미지', type: 'bool',
     desc: '높은 곳에서 떨어질 때 데미지를 입을지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'fireDamage', label: '화염 데미지', type: 'bool',
+    id: 'fireDamage', newId: 'minecraft:fire_damage', label: '화염 데미지', type: 'bool',
     desc: '불에 타는 데미지를 입을지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'drowningDamage', label: '익사 데미지', type: 'bool',
+    id: 'drowningDamage', newId: 'minecraft:drowning_damage', label: '익사 데미지', type: 'bool',
     desc: '물속에서 숨을 못 쉴 때 데미지를 입을지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'doInsomnia', label: '불면증(팬텀 자동 스폰)', type: 'bool',
+    id: 'doInsomnia', newId: 'minecraft:spawn_phantoms', label: '불면증(팬텀 자동 스폰)', type: 'bool',
     desc: '오랫동안 잠을 안 자면 팬텀이 스폰되는 걸 켜거나 꺼요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'announceAdvancements', label: '발전과제 달성 채팅 공지', type: 'bool',
+    id: 'announceAdvancements', newId: 'minecraft:show_advancement_messages', label: '발전과제 달성 채팅 공지', type: 'bool',
     desc: '플레이어가 발전과제를 달성했을 때 전체 채팅에 알릴지 정해요.',
     values: [['false', '끄기 (false)'], ['true', '켜기 (true, 기본값)']]
   },
   {
-    id: 'disableRaids', label: '약탈(레이드) 비활성화', type: 'bool',
-    desc: '불길한 징조 효과로 시작되는 마을 약탈 이벤트를 아예 없앨지 정해요.',
-    values: [['true', '끄기 (true, 레이드 없음)'], ['false', '켜기 (false, 기본값)']]
+    id: 'disableRaids', newId: 'minecraft:raids', label: '약탈(레이드) 비활성화', type: 'bool',
+    desc: '불길한 징조 효과로 시작되는 마을 약탈 이벤트를 아예 없앨지 정해요. 1.21.11부터는 이름이 raids로 바뀌면서 의미도 반전돼요 (꺼짐=레이드 없음이 아니라 켜짐=레이드 있음이니 주의하세요).',
+    values: [['true', '끄기 (true, 레이드 없음) — 1.21.10 이하'], ['false', '켜기 (false, 기본값) — 1.21.10 이하']],
+    newValues: [['false', '끄기 (false, 레이드 없음) — 1.21.11 이상'], ['true', '켜기 (true, 기본값) — 1.21.11 이상']]
   },
 ];
 
@@ -3728,13 +3776,15 @@ function updateGameruleUI() {
   const rule = GAMERULES.find(r => r.id === gamerulePicker.getValue());
   if (!rule) return;
   gameruleDesc.textContent = rule.desc;
+  const isNewVersion = document.getElementById('gameruleVersionSelect').value === 'new';
 
   if (rule.type === 'bool') {
     gameruleValueSelect.style.display = '';
     gameruleValueInput.style.display = 'none';
     gameruleValueWarning.classList.remove('show');
     gameruleValueSelect.innerHTML = '';
-    rule.values.forEach(([val, label]) => {
+    const valueList = (isNewVersion && rule.newValues) ? rule.newValues : rule.values;
+    valueList.forEach(([val, label]) => {
       const opt = document.createElement('option');
       opt.value = val;
       opt.textContent = label;
@@ -3751,6 +3801,7 @@ function updateGameruleUI() {
 function updateGameruleCode() {
   const rule = GAMERULES.find(r => r.id === gamerulePicker.getValue());
   if (!rule) return;
+  const isNewVersion = document.getElementById('gameruleVersionSelect').value === 'new';
   let value;
   if (rule.type === 'bool') {
     value = gameruleValueSelect.value;
@@ -3758,8 +3809,10 @@ function updateGameruleCode() {
     const result = validateRange(gameruleValueInput, gameruleValueWarning, rule.min, rule.max, true);
     value = result.value || rule.defaultVal;
   }
-  document.getElementById('gameruleCode').textContent = `gamerule ${rule.id} ${value}`;
+  const ruleName = (isNewVersion && rule.newId) ? rule.newId : rule.id;
+  document.getElementById('gameruleCode').textContent = `gamerule ${ruleName} ${value}`;
 }
+document.getElementById('gameruleVersionSelect').addEventListener('change', updateGameruleUI);
 const gamerulePicker = setupComboPicker(
   gameruleInputEl,
   document.getElementById('gameruleSelectList'),
@@ -3990,27 +4043,63 @@ customPotionDurationInput.addEventListener('input', updateCustomPotionCode);
 customPotionLevelInput.addEventListener('input', updateCustomPotionCode);
 customPotionNameInput.addEventListener('input', updateCustomPotionCode);
 
+// Legacy numeric effect IDs, used by the pre-1.20.5 CustomPotionEffects NBT format.
+const LEGACY_EFFECT_NUMERIC_IDS = {
+  'minecraft:speed': 1, 'minecraft:slowness': 2, 'minecraft:haste': 3, 'minecraft:mining_fatigue': 4,
+  'minecraft:strength': 5, 'minecraft:instant_health': 6, 'minecraft:instant_damage': 7,
+  'minecraft:jump_boost': 8, 'minecraft:nausea': 9, 'minecraft:regeneration': 10, 'minecraft:resistance': 11,
+  'minecraft:fire_resistance': 12, 'minecraft:water_breathing': 13, 'minecraft:invisibility': 14,
+  'minecraft:blindness': 15, 'minecraft:night_vision': 16, 'minecraft:hunger': 17, 'minecraft:weakness': 18,
+  'minecraft:poison': 19, 'minecraft:wither': 20, 'minecraft:health_boost': 21, 'minecraft:absorption': 22,
+  'minecraft:saturation': 23, 'minecraft:glowing': 24, 'minecraft:levitation': 25, 'minecraft:luck': 26,
+  'minecraft:unluck': 27, 'minecraft:slow_falling': 28, 'minecraft:conduit_power': 29,
+  'minecraft:dolphins_grace': 30, 'minecraft:hero_of_the_village': 31,
+};
+
 function updateCustomPotionCode() {
   const itemType = customPotionType.value;
+  const version = document.getElementById('customPotionVersionSelect').value;
   const colorDec = hexToDecimalColor(customPotionColorHex.value.trim() || '#7FB2E0');
-  let contents = `custom_color:${colorDec}`;
-
-  if (customPotionAddEffectCheckbox.checked) {
-    const effectId = customPotionEffectPicker.getValue();
-    const duration = (parseInt(customPotionDurationInput.value.trim(), 10) || 30) * 20; // seconds -> ticks
-    const level = parseInt(customPotionLevelInput.value.trim(), 10) || 0;
-    contents += `,custom_effects:[{id:"${effectId}",amplifier:${level},duration:${duration}}]`;
-  }
-
-  let itemComponents = `potion_contents={${contents}}`;
+  const hasEffect = customPotionAddEffectCheckbox.checked;
+  const effectId = customPotionEffectPicker.getValue();
+  const durationSeconds = parseInt(customPotionDurationInput.value.trim(), 10) || 30;
+  const durationTicks = durationSeconds * 20;
+  const level = parseInt(customPotionLevelInput.value.trim(), 10) || 0;
   const name = customPotionNameInput.value.trim();
-  if (name) {
-    itemComponents = `custom_name={text:"${name}"},${itemComponents}`;
-  }
 
-  document.getElementById('customPotionCode').textContent =
-    `give @p minecraft:${itemType}[${itemComponents}]`;
+  if (version === 'old') {
+    // 1.19.4 ~ 1.20.4: legacy NBT tags on the item itself
+    let nbt = `CustomPotionColor:${colorDec}`;
+    if (hasEffect) {
+      const legacyId = LEGACY_EFFECT_NUMERIC_IDS[effectId];
+      if (legacyId) {
+        nbt += `,CustomPotionEffects:[{Id:${legacyId},Amplifier:${level},Duration:${durationTicks}}]`;
+      }
+    }
+    if (name) {
+      nbt += `,display:{Name:'{"text":"${name}"}'}`;
+    }
+    document.getElementById('customPotionCode').textContent =
+      `give @p minecraft:${itemType}{${nbt}}`;
+    document.getElementById('customPotionVersionNote').textContent =
+      '1.19.4~1.20.4 구버전 문법이에요. "효과도 같이 넣기"를 끄면 색만 있는 물약이 돼요.';
+  } else {
+    // 1.20.5+: item component format
+    let contents = `custom_color:${colorDec}`;
+    if (hasEffect) {
+      contents += `,custom_effects:[{id:"${effectId}",amplifier:${level},duration:${durationTicks}}]`;
+    }
+    let itemComponents = `potion_contents={${contents}}`;
+    if (name) {
+      itemComponents = `custom_name={text:"${name}"},${itemComponents}`;
+    }
+    document.getElementById('customPotionCode').textContent =
+      `give @p minecraft:${itemType}[${itemComponents}]`;
+    document.getElementById('customPotionVersionNote').textContent =
+      '"효과도 같이 넣기"를 끄면 색만 있고 아무 효과도 없는 순수 장식용 물약이 돼요. 색상은 헥스코드로 직접 입력하거나 컬러피커로 고를 수 있어요.';
+  }
 }
+document.getElementById('customPotionVersionSelect').addEventListener('change', updateCustomPotionCode);
 updateCustomPotionCode();
 
 // ---- 9c. Custom firework (multi-color, multi-explosion) ----
@@ -4748,7 +4837,7 @@ const BREWING_RECIPES = [
   { name: '독의 물약', effectId: 'poison', steps: [['potion', '어색한 물약', '🧪'], ['spider_eye', '거미 눈', '🕷']] },
   { name: '거북 도사의 물약', effectId: 'resistance', steps: [['potion', '어색한 물약', '🧪'], ['turtle_helmet', '거북 등딱지', '🐢']] },
   {
-    name: '야간 투시 → 투명화의 물약', effectId: 'invisibility',
+    name: '투명화의 물약', effectId: 'invisibility',
     steps: [['potion', '야간 투시의 물약', '🧪'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
     note: '반드시 야간 투시 물약을 먼저 만든 뒤 발효된 거미 눈을 넣어야 해요. 순서를 헷갈리기 쉬운 물약이에요.'
   },
@@ -4771,7 +4860,7 @@ const BREWING_RECIPES = [
 const BREWING_MODIFIERS = [
   { icon: ['redstone', '레드스톤', '🔴'], label: '레드스톤 가루', desc: '지속시간을 늘려요 (즉시 효과 포션 제외).' },
   { icon: ['glowstone_dust', '발광석 가루', '💡'], label: '발광석 가루', desc: '효과 레벨을 올려요 (예: 힘 I → 힘 II). 지속시간은 줄어들어요.' },
-  { icon: ['gunpowder', '화약', '💥'], label: '화약', desc: '물병 → 투척용 물약.' },
+  { icon: ['gunpowder', '화약', '💥'], label: '화약', desc: '물병 → 투척용 물약으로 바꿔요.' },
   { icon: ['dragon_breath', '드래곤의 숨결', '🐉'], label: '드래곤의 숨결', desc: '투척용 물약 → 잔류형 물약(구름으로 남아 지속되는 물약)으로 바꿔요.' },
 ];
 
