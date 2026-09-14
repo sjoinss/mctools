@@ -609,6 +609,31 @@
     border-radius: 4px;
   }
   .cmd-nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+  /* Top-level command category tabs, sit above the detailed nav */
+  .cmd-cat-nav {
+    display: flex;
+    gap: 4px;
+    padding: 10px 16px 0;
+    background: var(--bg-panel);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .cmd-cat-nav::-webkit-scrollbar { display: none; }
+  .cmd-cat-item {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-faint);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cmd-cat-item.active { color: #b8e0c8; border-bottom-color: #4a7a5f; }
+  .cmd-cat-item:hover:not(.active) { color: var(--text-dim); }
   .cmd-nav-item {
     flex-shrink: 0;
     white-space: nowrap;
@@ -942,9 +967,550 @@
     text-align: center;
   }
 
+  /* ---- Color code maker ---- */
+  .colorcode-swatches {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .colorcode-swatch {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s ease;
+  }
+  .colorcode-swatch:hover { transform: scale(1.08); }
+  .colorcode-swatch .code-label {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 9px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 2px #000, 0 0 2px #000;
+  }
+  .colorcode-format-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .colorcode-format-btn {
+    padding: 6px 12px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .colorcode-format-btn:hover { color: var(--text); border-color: #4a5064; }
+  .colorcode-input-area {
+    width: 100%;
+    min-height: 60px;
+    background: #0f1116;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    resize: vertical;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  .colorcode-preview {
+    background: #000;
+    border-radius: 7px;
+    padding: 12px 14px;
+    font-family: 'Minecraft', 'Courier New', monospace;
+    font-size: 15px;
+    margin-bottom: 12px;
+    min-height: 24px;
+    word-break: break-all;
+  }
+  .colorcode-output-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .colorcode-output-row select {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 9px;
+    font-size: 12.5px;
+  }
+
+  /* ---- Target selector builder ---- */
+  .selector-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .selector-row:last-of-type { border-bottom: none; }
+  .selector-row label {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 110px;
+  }
+
+  /* ---- Beacon color calculator ---- */
+  .beacon-glass-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .beacon-glass-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    cursor: pointer;
+  }
+  .beacon-sequence {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 34px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .beacon-sequence-chip {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    cursor: pointer;
+    position: relative;
+  }
+  .beacon-sequence-chip:hover::after {
+    content: '×';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border-radius: 5px;
+  }
+  .beacon-result-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-panel-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .beacon-result-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    flex-shrink: 0;
+  }
+
+  /* ---- Anvil cost calculator ---- */
+  .anvil-result-box {
+    background: var(--bg-panel-2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .anvil-result-total {
+    font-size: 22px;
+    font-weight: 700;
+    color: #b8e0c8;
+    margin-bottom: 4px;
+  }
+  .anvil-result-total.too-expensive { color: #e08a7a; }
+  .anvil-result-breakdown {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* ---- Custom firework: multi-explosion, multi-color builder ---- */
+  .firework-explosion-card {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .firework-explosion-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .firework-explosion-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+  .firework-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .firework-remove-btn:hover { color: #d97f7f; background: rgba(217,127,127,0.1); }
+  .firework-color-swatches {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .firework-color-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    border: 1.5px solid rgba(0,0,0,0.3);
+    cursor: pointer;
+    position: relative;
+  }
+  .firework-color-swatch.selected::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    text-shadow: 0 0 3px #000, 0 0 3px #000;
+  }
+  .firework-color-swatch.fade-selected::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    text-shadow: 0 0 3px #000, 0 0 3px #000;
+  }
+  .firework-color-group-label {
+    font-size: 10.5px;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+  }
+
   @media (max-width: 700px) {
     .cmd-content { padding: 18px 16px 50px; }
     .cmd-nav { padding: 10px 12px; }
+    .recipe-card { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ================= RECIPES TAB ================= */
+  .recipes-view {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 32px 60px;
+  }
+  .recipes-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line-soft);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+    cursor: grab;
+  }
+  .recipes-nav.dragging { cursor: grabbing; user-select: none; }
+  .recipes-nav::-webkit-scrollbar { height: 4px; background: transparent; }
+  .recipes-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+  .recipes-nav-item {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    color: var(--text-faint);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .recipes-nav-item.active { background: #2e4a3a; border-color: #3d6650; color: #b8e0c8; }
+  .recipes-nav-item:hover:not(.active) { color: var(--text-dim); }
+
+  .recipes-group { display: none; }
+  .recipes-group.active { display: block; }
+  .recipes-group-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .recipes-group-desc {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .recipe-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .recipe-step-icon { user-select: none; -webkit-user-select: none; }
+  .recipe-card-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+    background: var(--bg-panel-2);
+    border-radius: 5px;
+    padding: 3px;
+  }
+  .recipe-card-icon-fallback {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-panel-2);
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  .recipe-card-body { flex: 1; min-width: 0; }
+  .recipe-card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .recipe-steps {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .recipe-steps span {
+    display: inline-flex;
+    align-items: center;
+  }
+  .recipe-step-icon {
+    width: 26px;
+    height: 26px;
+    image-rendering: pixelated;
+    display: inline-block;
+    vertical-align: middle;
+    background: #0f1116;
+    border-radius: 4px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .recipe-arrow { color: var(--text-faint); font-size: 12px; display: inline-flex; align-items: center; }
+
+  .crafting-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 28px);
+    grid-template-rows: repeat(3, 28px);
+    gap: 2px;
+    background: #05060a;
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  .crafting-grid-cell {
+    width: 28px;
+    height: 28px;
+    background: #14161c;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .crafting-grid-cell.empty {
+    background: #0d0e12;
+  }
+  .crafting-grid-cell .recipe-step-icon {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: transparent;
+  }
+  .recipe-note {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* Brewing: clickable effect icon grid + detail panel below */
+  .brewing-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .brewing-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .brewing-icon-btn:hover { border-color: #4a5064; }
+  .brewing-icon-btn.active {
+    background: #223a2c;
+    border-color: #3d6650;
+  }
+  .brewing-icon-btn img, .brewing-icon-btn .recipe-card-icon-fallback {
+    width: 28px;
+    height: 28px;
+  }
+  .brewing-icon-btn .brewing-icon-label {
+    font-size: 10.5px;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+  .brewing-icon-btn.active .brewing-icon-label { color: #cde5d3; font-weight: 600; }
+
+  /* ================= LINKS TAB ================= */
+  .links-view {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 28px 32px 60px;
+  }
+  .links-intro {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .link-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+  }
+  .link-card:hover { border-color: #4a5064; }
+  .link-card-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: var(--bg-panel-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .link-card-body { flex: 1; min-width: 0; }
+  .link-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .link-card-url {
+    font-size: 11px;
+    color: #7a9db0;
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+  .link-card-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .links-section-title {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 600;
+    margin: 24px 0 10px;
+    text-transform: none;
+  }
+  .links-section-title:first-of-type { margin-top: 0; }
+
+  /* mini coordinate calculator embedded in the links tab */
+  .coord-calc-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .coord-calc-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .coord-calc-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .coord-calc-row input {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    width: 90px;
+  }
+  .coord-calc-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .coord-calc-arrow {
+    color: var(--text-faint);
+    font-size: 16px;
+  }
+  .coord-calc-result {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #b8e0c8;
+    font-weight: 600;
   }
 
   ::selection { background: rgba(255,255,255,0.15); }
@@ -958,12 +1524,21 @@
     <p>마크 하면서 쓸 수 있는 작은 도구 모음</p>
   </div>
   <div class="tool-tabs">
-    <button class="tool-tab active" data-tool="dye">염색 조합기</button>
+    <button class="tool-tab active" data-tool="dye">색상 도구</button>
     <button class="tool-tab" data-tool="commands">명령어 모음</button>
+    <button class="tool-tab" data-tool="recipes">양조법/조합법</button>
+    <button class="tool-tab" data-tool="links">유용한 사이트</button>
   </div>
 </header>
 
-<div class="layout" id="dyeView">
+<div id="colorToolsView">
+  <nav class="cmd-nav" id="colorToolsNav">
+    <button class="cmd-nav-item" data-color-nav="dye-mixer">염색 조합기</button>
+    <button class="cmd-nav-item" data-color-nav="colorcode">컬러코드 메이커</button>
+    <button class="cmd-nav-item" data-color-nav="beacon">비콘 색상 계산기</button>
+  </nav>
+
+<div class="layout color-subview" id="dyeView" data-color-group="dye-mixer">
 
   <!-- LEFT: dye palette -->
   <div class="panel palette-panel">
@@ -988,6 +1563,7 @@
       <div class="cauldron-glow" id="glow"></div>
       <svg class="cauldron-svg" viewBox="0 0 200 200" id="cauldronSvg">
         <!-- cauldron body -->
+
         <ellipse cx="100" cy="175" rx="70" ry="10" fill="#000" opacity="0.25"/>
         <path d="M 40 90 L 48 165 Q 50 175 62 175 L 138 175 Q 150 175 152 165 L 160 90 Z"
               fill="#3a3d45" stroke="#25272e" stroke-width="3"/>
@@ -1049,23 +1625,113 @@
 
 </div>
 
+<div class="cmd-view color-subview" id="colorcodeView" data-color-group="colorcode" style="display:none;">
+  <div class="cmd-body">
+    <div class="cmd-content">
+      <div class="cmd-group active" data-cmd-group="colorcode">
+        <div class="cmd-group-title">컬러코드(§) 메이커</div>
+        <div class="cmd-group-desc">채팅, 사인, 이름표, MOTD 등에 쓰는 색상/서식 코드를 만들어요. 색상을 클릭하고 서식을 고른 다음, 텍스트를 입력하면 미리보기와 코드가 같이 나와요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">색상 선택</div>
+          <div class="colorcode-swatches" id="colorcodeSwatches"></div>
+
+          <div class="cmd-card-title">서식 선택</div>
+          <div class="colorcode-format-row" id="colorcodeFormatRow"></div>
+
+          <div class="cmd-card-title">텍스트 입력</div>
+          <textarea class="colorcode-input-area" id="colorcodeTextInput" placeholder="여기에 텍스트를 입력하면 선택한 색상/서식 코드가 앞에 붙어요">서버에 오신 걸 환영해요!</textarea>
+
+          <div class="cmd-card-title">미리보기</div>
+          <div class="colorcode-preview" id="colorcodePreview"></div>
+
+          <div class="colorcode-output-row">
+            <span class="cmd-num-label">코드 형식</span>
+            <select id="colorcodeFormatSelect">
+              <option value="section">§ (일반 채팅/명령어)</option>
+              <option value="amp">&amp; (플러그인 설정 파일)</option>
+              <option value="unicode">\u00A7 (server.properties)</option>
+            </select>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="colorcodeOutput"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">색상 코드 뒤에 서식 코드를 붙이는 순서예요 (예: §6§l보물상자). 색상 코드를 다시 쓰면 이전 서식은 초기화돼요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cmd-view color-subview" id="beaconView" data-color-group="beacon" style="display:none;">
+  <div class="cmd-body">
+    <div class="cmd-content">
+      <div class="cmd-group active" data-cmd-group="beacon">
+        <div class="cmd-group-title">비콘 색상 계산기</div>
+        <div class="cmd-group-desc">비콘 빔 위에 스테인드글라스를 쌓으면 색이 섞여요. 아래 순서대로 유리를 추가하면 최종 빔 색을 계산해줘요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">유리 색 추가 (아래쪽부터 순서대로)</div>
+          <div class="beacon-glass-row" id="beaconGlassRow"></div>
+
+          <div class="cmd-card-title">추가한 순서</div>
+          <div class="beacon-sequence" id="beaconSequence">
+            <div class="cmd-note" style="margin:0;">유리를 클릭해서 순서대로 추가해보세요.</div>
+          </div>
+
+          <div class="beacon-result-preview">
+            <div class="beacon-result-swatch" id="beaconResultSwatch"></div>
+            <div>
+              <div style="font-family:'Courier New',monospace; font-size:15px;" id="beaconResultHex">#FFFFFF</div>
+              <div class="cmd-note" style="margin:2px 0 0;">최종 빔 색상</div>
+            </div>
+          </div>
+          <button class="clear-btn" id="beaconClearBtn" style="width:auto; padding:8px 14px;">전부 비우기</button>
+          <div class="cmd-note" style="margin-top:10px;">계산 방식: 첫 유리가 시작 색이 되고, 그다음부터는 (현재 빔 색 + 새 유리 색) ÷ 2 로 한 단계씩 평균을 내요. 그래서 나중에 놓는 유리일수록 최종 색에 영향을 더 많이 줘요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
 <!-- ================= COMMANDS VIEW ================= -->
 <div class="cmd-view" id="commandsView" style="display:none;">
 
+  <nav class="cmd-cat-nav" id="cmdCatNav">
+    <button class="cmd-cat-item" data-cat="items">아이템 생성</button>
+    <button class="cmd-cat-item" data-cat="entities">엔티티 조작</button>
+    <button class="cmd-cat-item" data-cat="world">월드·서버 설정</button>
+    <button class="cmd-cat-item" data-cat="tools">텍스트·데이터 도구</button>
+    <button class="cmd-cat-item" data-cat="mine">내 저장소</button>
+  </nav>
+
   <nav class="cmd-nav" id="cmdNav">
-    <button class="cmd-nav-item" data-nav="invisible-frame">투명 아이템 액자</button>
-    <button class="cmd-nav-item" data-nav="locate-entity">엔티티 위치 찾기</button>
-    <button class="cmd-nav-item" data-nav="look-at">엔티티 고개 돌리기</button>
-    <button class="cmd-nav-item" data-nav="scale">크기 변경</button>
-    <button class="cmd-nav-item" data-nav="mannequin">마네킹</button>
-    <button class="cmd-nav-item" data-nav="fetchprofile">프로필 조회</button>
-    <button class="cmd-nav-item" data-nav="gamerule">게임규칙</button>
-    <button class="cmd-nav-item" data-nav="chair">의자 만들기</button>
-    <button class="cmd-nav-item" data-nav="effect">효과 부여</button>
-    <button class="cmd-nav-item" data-nav="structure">구조물 찾기</button>
-    <button class="cmd-nav-item" data-nav="worldborder">월드보더</button>
-    <button class="cmd-nav-item" data-nav="etc">그 밖의 명령어</button>
-    <button class="cmd-nav-item" data-nav="saved">내가 저장한 명령어</button>
+    <button class="cmd-nav-item" data-nav="invisible-frame" data-cat="items">투명 아이템 액자</button>
+    <button class="cmd-nav-item" data-nav="custom-potion" data-cat="items">커스텀 물약</button>
+    <button class="cmd-nav-item" data-nav="custom-firework" data-cat="items">커스텀 폭죽</button>
+
+    <button class="cmd-nav-item" data-nav="locate-entity" data-cat="entities">엔티티 위치 찾기</button>
+    <button class="cmd-nav-item" data-nav="look-at" data-cat="entities">엔티티 고개 돌리기</button>
+    <button class="cmd-nav-item" data-nav="scale" data-cat="entities">크기 변경</button>
+    <button class="cmd-nav-item" data-nav="mannequin" data-cat="entities">마네킹</button>
+    <button class="cmd-nav-item" data-nav="summon" data-cat="entities">엔티티 소환하기</button>
+    <button class="cmd-nav-item" data-nav="effect" data-cat="entities">효과 부여</button>
+    <button class="cmd-nav-item" data-nav="ride" data-cat="entities">탈것 태우기/내리기</button>
+
+    <button class="cmd-nav-item" data-nav="gamerule" data-cat="world">게임규칙</button>
+    <button class="cmd-nav-item" data-nav="chair" data-cat="world">의자 만들기</button>
+    <button class="cmd-nav-item" data-nav="structure" data-cat="world">구조물 찾기</button>
+    <button class="cmd-nav-item" data-nav="worldborder" data-cat="world">월드보더</button>
+    <button class="cmd-nav-item" data-nav="etc" data-cat="world">그 밖의 명령어</button>
+
+    <button class="cmd-nav-item" data-nav="fetchprofile" data-cat="tools">프로필 조회</button>
+    <button class="cmd-nav-item" data-nav="selector" data-cat="tools">타겟 셀렉터 빌더</button>
+    <button class="cmd-nav-item" data-nav="anvil" data-cat="tools">모루 비용 계산기</button>
+
+    <button class="cmd-nav-item" data-nav="saved" data-cat="mine">내가 저장한 명령어</button>
   </nav>
 
   <div class="cmd-body">
@@ -1240,6 +1906,13 @@
         <div class="cmd-card">
           <div class="cmd-card-title">소환 (스킨 + 이름표 + NPC 문구 설정)</div>
           <div class="cmd-controls">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="mannequinVersionSelect">
+              <option value="new">26.2 이상 (true/false 표기)</option>
+              <option value="old">1.21.9 ~ 26.1 (1b/0b 표기)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
             <span class="cmd-num-label">스킨으로 쓸 플레이어 아이디</span>
             <input type="text" class="cmd-num-input" id="mannequinNameInput" value="Notch" style="width:140px;">
           </div>
@@ -1257,7 +1930,101 @@
             <div class="cmd-code" id="mannequinSummonCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
-          <div class="cmd-note">이름표는 CustomName으로 항상 표시돼요. "NPC" 문구는 마네킹 고유의 기본 설명(description)인데, 체크를 끄면 hide_description이 적용돼서 그 문구만 안 보이게 할 수 있어요. 삭제는 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격하면 돼요.</div>
+          <div class="cmd-note">이름표는 CustomName으로 항상 표시돼요. "NPC" 문구는 마네킹 고유의 기본 설명(description)인데, 체크를 끄면 hide_description이 적용돼서 그 문구만 안 보이게 할 수 있어요. 26.2부터는 SNBT가 true/false를 직접 지원하고, 그 이전 버전은 1b/0b로 써야 해요 — 버전을 선택하면 알맞은 표기로 바뀝니다. 삭제는 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격하면 돼요.</div>
+        </div>
+      </div>
+
+      <!-- Entity summon builder -->
+      <div class="cmd-group" data-cmd-group="summon">
+        <div class="cmd-group-title">엔티티 소환하기</div>
+        <div class="cmd-group-desc">종류, 크기, 체력, 공격력, 이름, 그리고 종류별 색상/무늬(변종)까지 골라서 소환 명령어를 만들어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">엔티티 종류</span>
+            <div class="cmd-combo" id="summonEntitySelectCombo">
+              <input type="text" class="cmd-combo-input" id="summonEntitySelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="summonEntitySelectList"></div>
+            </div>
+          </div>
+
+          <div class="cmd-controls" id="summonVariantControls" style="display:none;">
+            <span class="cmd-num-label" id="summonVariantLabel">색상/무늬</span>
+            <select class="cmd-select" id="summonVariantSelect"></select>
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonNameCheckbox">
+              이름표 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonNameInput" placeholder="이름표" style="display:none; width:130px;">
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonHealthCheckbox">
+              체력(최대 HP) 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonHealthInput" placeholder="예: 40" style="display:none; width:70px;">
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonDamageCheckbox">
+              공격력 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonDamageInput" placeholder="예: 10" style="display:none; width:70px;">
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonScaleCheckbox">
+              크기 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonScaleInput" placeholder="예: 2" style="display:none; width:70px;">
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonSpeedCheckbox">
+              이동속도 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonSpeedInput" placeholder="예: 0.3" style="display:none; width:70px;">
+          </div>
+
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonBabyCheckbox">
+              아기 상태로 소환
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonNoAiCheckbox">
+              AI 없음 (제자리 고정)
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonInvulnerableCheckbox">
+              무적
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonGlowingCheckbox">
+              발광 효과
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonSilentCheckbox">
+              소리 없음
+            </label>
+          </div>
+
+          <div class="cmd-range-warning" id="summonHealthWarning">체력은 0보다 커야 해요.</div>
+          <div class="cmd-range-warning" id="summonScaleWarning">크기는 0.0625 ~ 16 사이여야 해요.</div>
+
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="summonCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">체력을 늘렸다면 소환 직후 <code>/effect give @e[limit=1,sort=nearest] instant_health 1 255</code> 등으로 채워주는 게 좋아요 (기본은 최대 체력의 시작값으로 스폰돼요). "아기 상태"와 "색상/무늬"는 지원하는 종류에서만 나타나요.</div>
         </div>
       </div>
 
@@ -1420,6 +2187,79 @@
         </div>
       </div>
 
+      <!-- 9b. Custom potion -->
+      <div class="cmd-group" data-cmd-group="custom-potion">
+        <div class="cmd-group-title">커스텀 물약</div>
+        <div class="cmd-group-desc">효과 없이 색만 다른 물약처럼, 원하는 색과 효과 조합을 자유롭게 만들 수 있어요. (1.20.5 이상, potion_contents 컴포넌트 문법)</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <select class="cmd-select" id="customPotionType">
+              <option value="potion">물약 (마시는 것)</option>
+              <option value="splash_potion">튀는 물약 (스플래시)</option>
+              <option value="lingering_potion">잔류형 물약 (스플래시가 구름으로 남음)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">색상</span>
+            <input type="color" id="customPotionColorPicker" value="#7fb2e0">
+            <input type="text" class="cmd-num-input" id="customPotionColorHex" value="#7FB2E0" style="width:90px;">
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="customPotionAddEffectCheckbox">
+              효과도 같이 넣기
+            </label>
+          </div>
+          <div class="cmd-controls" id="customPotionEffectControls" style="display:none;">
+            <div class="cmd-combo" id="customPotionEffectSelectCombo">
+              <input type="text" class="cmd-combo-input" id="customPotionEffectSelect" placeholder="효과 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="customPotionEffectSelectList"></div>
+            </div>
+            <span class="cmd-num-label">지속(초)</span>
+            <input type="text" class="cmd-num-input" id="customPotionDurationInput" value="30" style="width:60px;">
+            <span class="cmd-num-label">레벨</span>
+            <input type="text" class="cmd-num-input" id="customPotionLevelInput" value="0" style="width:50px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">이름표(선택)</span>
+            <input type="text" class="cmd-num-input" id="customPotionNameInput" placeholder="예: 수상한 약" style="width:140px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="customPotionCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">"효과도 같이 넣기"를 끄면 색만 있고 아무 효과도 없는 순수 장식용 물약이 돼요. 색상은 헥스코드로 직접 입력하거나 컬러피커로 고를 수 있어요.</div>
+        </div>
+      </div>
+
+      <!-- 9c. Custom firework -->
+      <div class="cmd-group" data-cmd-group="custom-firework">
+        <div class="cmd-group-title">커스텀 폭죽</div>
+        <div class="cmd-group-desc">색은 여러 개를 섞어서 한 폭발에 랜덤하게 나오게 할 수 있고, 폭발 자체도 여러 겹 쌓아서 한 로켓에서 순서대로 터지게 만들 수 있어요. (1.20.5 이상, fireworks 컴포넌트 문법)</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">비행 시간</span>
+            <select class="cmd-select" id="fireworkFlightSelect">
+              <option value="1">1 (짧게)</option>
+              <option value="2" selected>2 (보통)</option>
+              <option value="3">3 (길게)</option>
+            </select>
+          </div>
+
+          <div class="cmd-card-title" style="margin-top:14px;">폭발 목록 (순서대로 함께 터져요)</div>
+          <div id="fireworkExplosionList"></div>
+          <button class="clear-btn" id="fireworkAddExplosionBtn" style="width:auto; padding:8px 16px; margin-top:4px;">+ 폭발 추가</button>
+
+          <div class="cmd-code-row" style="margin-top:16px;">
+            <div class="cmd-code" id="fireworkCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
       <!-- 10. Structure -->
       <div class="cmd-group" data-cmd-group="structure">
         <div class="cmd-group-title">가장 가까운 구조물 찾기</div>
@@ -1455,6 +2295,181 @@
             <div class="cmd-code" id="worldborderCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Ride command -->
+      <div class="cmd-group" data-cmd-group="ride">
+        <div class="cmd-group-title">탈것 태우기/내리기 (ride)</div>
+        <div class="cmd-group-desc">엔티티를 다른 엔티티에 태우거나(mount) 내리게(dismount) 만들어요. 말 타기, 커스텀 탈것, 의자 등 여러 곳에 응용할 수 있어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">태우기 (mount)</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">탈 엔티티</span>
+            <div class="cmd-combo" id="rideRiderSelectCombo">
+              <input type="text" class="cmd-combo-input" id="rideRiderSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="rideRiderSelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">태워질(탈것) 엔티티</span>
+            <div class="cmd-combo" id="rideVehicleSelectCombo">
+              <input type="text" class="cmd-combo-input" id="rideVehicleSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="rideVehicleSelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="rideMountCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">가장 가까운 대상 기준으로 만들어져요. 특정 대상 하나만 정확히 지정하고 싶으면 selector 부분을 원하는 조건으로 바꾸면 돼요.</div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">내리기 (dismount)</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">내릴 엔티티</span>
+            <div class="cmd-combo" id="rideDismountSelectCombo">
+              <input type="text" class="cmd-combo-input" id="rideDismountSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="rideDismountSelectList"></div>
+            </div>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="rideDismountCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target selector builder -->
+      <div class="cmd-group" data-cmd-group="selector">
+        <div class="cmd-group-title">타겟 셀렉터 빌더</div>
+        <div class="cmd-group-desc">@e, @a, @p 등에 붙는 조건([...])을 체크박스와 입력칸으로 조합해서 만들어요. 완성된 셀렉터는 다른 명령어에도 그대로 붙여 쓸 수 있어요.</div>
+
+        <div class="cmd-card">
+          <div class="selector-row">
+            <label>기본 대상</label>
+            <select class="cmd-select" id="selectorBaseSelect">
+              <option value="@e">모든 엔티티 (@e)</option>
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="@r">무작위 플레이어 (@r)</option>
+              <option value="@s">나 자신 (@s)</option>
+            </select>
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorTypeCheckbox"> 종류(type)</label>
+            <div class="cmd-combo" id="selectorTypeSelectCombo" style="display:none;">
+              <input type="text" class="cmd-combo-input" id="selectorTypeSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
+              <span class="cmd-combo-arrow">▾</span>
+              <div class="cmd-combo-list" id="selectorTypeSelectList"></div>
+            </div>
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorNameCheckbox"> 이름(name)</label>
+            <input type="text" class="cmd-num-input" id="selectorNameInput" placeholder="이름표" style="display:none;">
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorDistanceCheckbox"> 거리(distance)</label>
+            <span class="cmd-num-label" id="selectorDistanceControls" style="display:none;">
+              최소 <input type="text" class="cmd-num-input" id="selectorDistanceMinInput" style="width:55px;" placeholder="예: 0">
+              최대 <input type="text" class="cmd-num-input" id="selectorDistanceMaxInput" style="width:55px;" placeholder="예: 10">
+            </span>
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorGamemodeCheckbox"> 게임모드(gamemode)</label>
+            <select class="cmd-select" id="selectorGamemodeSelect" style="display:none;">
+              <option value="survival">생존</option>
+              <option value="creative">크리에이티브</option>
+              <option value="adventure">어드벤처</option>
+              <option value="spectator">관전자</option>
+            </select>
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorLimitCheckbox"> 개수 제한(limit)</label>
+            <span class="cmd-num-label" id="selectorLimitControls" style="display:none;">
+              <input type="text" class="cmd-num-input" id="selectorLimitInput" value="1" style="width:55px;">
+              정렬:
+              <select class="cmd-select" id="selectorSortSelect">
+                <option value="nearest">가장 가까운</option>
+                <option value="furthest">가장 먼</option>
+                <option value="random">무작위</option>
+                <option value="arbitrary">순서 없음</option>
+              </select>
+            </span>
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorTagCheckbox"> 태그(tag)</label>
+            <input type="text" class="cmd-num-input" id="selectorTagInput" placeholder="태그 이름" style="display:none;">
+          </div>
+
+          <div class="selector-row">
+            <label><input type="checkbox" id="selectorScoreCheckbox"> 점수판(scores)</label>
+            <span class="cmd-num-label" id="selectorScoreControls" style="display:none;">
+              <input type="text" class="cmd-num-input" id="selectorScoreNameInput" placeholder="오브젝티브" style="width:90px;">
+              최소 <input type="text" class="cmd-num-input" id="selectorScoreMinInput" style="width:50px;">
+              최대 <input type="text" class="cmd-num-input" id="selectorScoreMaxInput" style="width:50px;">
+            </span>
+          </div>
+
+          <div class="cmd-code-row" style="margin-top:14px;">
+            <div class="cmd-code" id="selectorCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anvil cost calculator -->
+      <div class="cmd-group" data-cmd-group="anvil">
+        <div class="cmd-group-title">모루 비용 계산기</div>
+        <div class="cmd-group-desc">모루로 인챈트북을 합치거나 아이템을 합칠 때 드는 경험치 레벨을 계산해요. 이미 작업한 횟수가 많을수록 비용이 기하급수적으로 늘어나요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">왼쪽(대상) 아이템 — 이전 모루 작업 횟수</span>
+            <input type="text" class="cmd-num-input" id="anvilTargetPriorInput" value="0" style="width:60px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">오른쪽(재료) 아이템 — 이전 모루 작업 횟수</span>
+            <input type="text" class="cmd-num-input" id="anvilSacrificePriorInput" value="0" style="width:60px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">전이할 인챈트 레벨 (합쳐진 후 최종 레벨)</span>
+            <input type="text" class="cmd-num-input" id="anvilEnchantLevelInput" value="1" style="width:60px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">인챈트 등급</span>
+            <select class="cmd-select" id="anvilRaritySelect">
+              <option value="1">일반/비범 (곱 1배)</option>
+              <option value="2">희귀 (곱 2배)</option>
+              <option value="4">영웅 (곱 4배)</option>
+            </select>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim);">
+              <input type="checkbox" id="anvilFromItemCheckbox">
+              재료가 책이 아니라 도구/장비
+            </label>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim);">
+              <input type="checkbox" id="anvilRenameCheckbox">
+              이름도 같이 바꾸기 (+1 레벨)
+            </label>
+          </div>
+          <div class="anvil-result-box">
+            <div class="anvil-result-total" id="anvilResultTotal">0 레벨</div>
+            <div class="anvil-result-breakdown" id="anvilResultBreakdown"></div>
+          </div>
+          <div class="cmd-note">아이템에 직접(책이 아니라) 도구/장비로 전이하면 배수가 2배가 돼요. 두 아이템 다 40레벨 넘으면 생존 모드에서 "너무 비쌉니다"로 막혀요. 정확한 순서 최적화까지는 아니고, 한 번의 합성 비용만 계산해요.</div>
         </div>
       </div>
 
@@ -1509,6 +2524,50 @@
 
     </div>
   </div>
+</div>
+
+<!-- ================= RECIPES VIEW ================= -->
+<div class="recipes-view" id="recipesView" style="display:none;">
+  <nav class="recipes-nav" id="recipesNav">
+    <button class="recipes-nav-item" data-recipes-nav="brewing">물약 양조법</button>
+    <button class="recipes-nav-item" data-recipes-nav="crafting">헷갈리는 조합법</button>
+  </nav>
+
+  <div class="recipes-group" data-recipes-group="brewing">
+    <div class="recipes-group-title">물약 양조법</div>
+    <div class="recipes-group-desc">양조대에서 물병 → 어색한 물약 → 재료 순서로 넣어요. 재료 하나가 효과를 결정하고, 레드스톤(지속시간↑) · 발광석(효과 강화) · 발효된 거미 눈(효과 반전)으로 변형해요. 아래 효과 아이콘을 눌러 조합법을 확인하세요.</div>
+    <div class="brewing-icon-grid" id="brewingIconGrid"></div>
+    <div id="brewingDetail"></div>
+
+    <div class="recipes-group-title" style="font-size:14px; margin-top:28px;">변형 재료 (모든 물약에 적용 가능)</div>
+    <div id="brewingModifiers"></div>
+  </div>
+
+  <div class="recipes-group" data-recipes-group="crafting">
+    <div class="recipes-group-title">자주 잊어버리는 조합법</div>
+    <div class="recipes-group-desc">많이 쓰는데 막상 순서가 잘 기억 안 나는 것들이에요.</div>
+    <div id="craftingList"></div>
+  </div>
+</div>
+
+<!-- ================= LINKS VIEW ================= -->
+<div class="links-view" id="linksView" style="display:none;">
+  <p class="links-intro">마인크래프트 서버 운영/스킨/리소스팩 제작할 때 쓸만한 외부 도구 사이트 모음이에요.</p>
+
+  <div class="coord-calc-box">
+    <div class="coord-calc-title">좌표 변환기 (오버월드 ↔ 네더)</div>
+    <div class="coord-calc-row">
+      <span class="coord-calc-label">오버월드</span>
+      <input type="text" id="coordOverworldX" placeholder="X" value="0">
+      <input type="text" id="coordOverworldZ" placeholder="Z" value="0">
+      <span class="coord-calc-arrow">⇄</span>
+      <span class="coord-calc-label">네더</span>
+      <span class="coord-calc-result" id="coordNetherResult">X: 0, Z: 0</span>
+    </div>
+    <div class="cmd-note" style="margin-top:10px;">오버월드 8칸 = 네더 1칸이에요. 오버월드 좌표를 입력하면 네더 쪽 좌표가 자동으로 계산돼요.</div>
+  </div>
+
+  <div id="linksList"></div>
 </div>
 
 <script>
@@ -1964,26 +3023,66 @@ document.querySelectorAll('.tool-tab[data-tool]').forEach(btn => {
     document.querySelectorAll('.tool-tab[data-tool]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const tool = btn.dataset.tool;
-    document.getElementById('dyeView').style.display = tool === 'dye' ? 'grid' : 'none';
+    document.getElementById('colorToolsView').style.display = tool === 'dye' ? 'block' : 'none';
     document.getElementById('commandsView').style.display = tool === 'commands' ? 'flex' : 'none';
+    document.getElementById('recipesView').style.display = tool === 'recipes' ? 'block' : 'none';
+    document.getElementById('linksView').style.display = tool === 'links' ? 'block' : 'none';
   });
 });
+
+// ---- Color tools sub-tab navigation ----
+function showColorSubview(name) {
+  document.querySelectorAll('.color-subview').forEach(el => {
+    el.style.display = el.dataset.colorGroup === name ? (name === 'dye-mixer' ? 'grid' : 'flex') : 'none';
+  });
+  document.querySelectorAll('#colorToolsNav .cmd-nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.colorNav === name);
+  });
+}
+document.querySelectorAll('#colorToolsNav .cmd-nav-item').forEach(item => {
+  item.addEventListener('click', () => showColorSubview(item.dataset.colorNav));
+});
+showColorSubview('dye-mixer');
 
 // ================= COMMANDS TAB =================
 
 // ---- Category navigation ----
 function showCmdGroup(groupName) {
-  document.querySelectorAll('.cmd-group').forEach(g => {
+  document.querySelectorAll('#commandsView .cmd-group').forEach(g => {
     g.classList.toggle('active', g.dataset.cmdGroup === groupName);
   });
-  document.querySelectorAll('.cmd-nav-item').forEach(item => {
+  document.querySelectorAll('#commandsView .cmd-nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.nav === groupName);
   });
   document.getElementById('cmdContent').scrollTop = 0;
 }
-document.querySelectorAll('.cmd-nav-item').forEach(item => {
+document.querySelectorAll('#commandsView .cmd-nav-item').forEach(item => {
   item.addEventListener('click', () => showCmdGroup(item.dataset.nav));
 });
+
+// ---- Top-level category filter: shows only the detail-nav items in that category ----
+function showCmdCategory(catName) {
+  document.querySelectorAll('#cmdCatNav .cmd-cat-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.cat === catName);
+  });
+  const items = document.querySelectorAll('#cmdNav .cmd-nav-item');
+  let firstVisible = null;
+  items.forEach(item => {
+    const matches = item.dataset.cat === catName;
+    item.style.display = matches ? '' : 'none';
+    if (matches && !firstVisible) firstVisible = item;
+  });
+  // If the currently active detail item isn't in this category, jump to the first one that is
+  const currentActive = document.querySelector('#cmdNav .cmd-nav-item.active');
+  if (!currentActive || currentActive.dataset.cat !== catName) {
+    if (firstVisible) showCmdGroup(firstVisible.dataset.nav);
+  }
+  document.getElementById('cmdNav').scrollLeft = 0;
+}
+document.querySelectorAll('#cmdCatNav .cmd-cat-item').forEach(item => {
+  item.addEventListener('click', () => showCmdCategory(item.dataset.cat));
+});
+showCmdCategory('items');
 showCmdGroup('invisible-frame'); // default view
 
 // ---- Drag-to-scroll for the horizontal category nav ----
@@ -2041,7 +3140,7 @@ const COMMON_ENTITIES = [
   ['minecraft:panda', '팬더'],
   ['minecraft:fox', '여우'],
   ['minecraft:frog', '개구리'],
-  ['minecraft:turtle', '거북이'],
+  ['minecraft:turtle', '거북'],
   ['minecraft:parrot', '앵무새'],
   ['minecraft:llama', '라마'],
   ['minecraft:goat', '염소'],
@@ -2071,8 +3170,32 @@ const COMMON_ENTITIES = [
   ['minecraft:snow_golem', '눈 골렘'],
   ['minecraft:bat', '박쥐'],
   ['minecraft:squid', '오징어'],
-  ['minecraft:glow_squid', '빛나는 오징어'],
+  ['minecraft:glow_squid', '발광 오징어'],
   ['minecraft:dolphin', '돌고래'],
+  ['minecraft:rabbit', '토끼'],
+  ['minecraft:ocelot', '오셀롯'],
+  ['minecraft:polar_bear', '북극곰'],
+  ['minecraft:mooshroom', '무시룸'],
+  ['minecraft:panda', '팬더'],
+  ['minecraft:sniffer', '스니퍼'],
+  ['minecraft:armadillo', '아르마딜로'],
+  ['minecraft:trader_llama', '상인 라마'],
+  ['minecraft:donkey', '당나귀'],
+  ['minecraft:mule', '노새'],
+  ['minecraft:tropical_fish', '열대어'],
+  ['minecraft:pufferfish', '복어'],
+  ['minecraft:salmon', '연어'],
+  ['minecraft:cod', '대구'],
+  ['minecraft:zombie_villager', '좀비 주민'],
+  ['minecraft:zombified_piglin', '좀비화된 피글린'],
+  ['minecraft:piglin_brute', '피글린 브루트'],
+  ['minecraft:cave_spider', '동굴 거미'],
+  ['minecraft:silverfish', '좀벌레'],
+  ['minecraft:endermite', '엔더마이트'],
+  ['minecraft:vex', '벡스'],
+  ['minecraft:breeze', '브리즈'],
+  ['minecraft:bogged', '보그드'],
+  ['minecraft:copper_golem', '구리 골렘'],
   ['minecraft:mannequin', '마네킹'],
   ['minecraft:armor_stand', '아머 스탠드'],
   ['minecraft:player', '플레이어'],
@@ -2082,7 +3205,7 @@ const COMMON_ENTITIES = [
 // selection; listEl is the (initially empty) dropdown panel. Clicking the input opens
 // the panel with a search box pinned to the top; typing filters the option list live.
 // Returns { getValue, setValue } where value is the underlying id (e.g. "minecraft:zombie").
-function setupComboPicker(inputEl, listEl, items, defaultId, onChange) {
+function setupComboPicker(inputEl, listEl, items, defaultId, onChange, iconFn) {
   let currentId = defaultId || items[0][0];
 
   function labelFor(id) {
@@ -2128,7 +3251,9 @@ function setupComboPicker(inputEl, listEl, items, defaultId, onChange) {
       filtered.forEach(([id, label]) => {
         const opt = document.createElement('div');
         opt.className = 'cmd-combo-option' + (id === currentId ? ' selected' : '');
-        opt.textContent = `${label} (${id.replace('minecraft:', '')})`;
+        opt.style.cssText = 'display:flex; align-items:center; gap:8px;';
+        const iconHtml = iconFn ? iconFn(id) : '';
+        opt.innerHTML = `${iconHtml}<span>${label} (${id.replace('minecraft:', '')})</span>`;
         opt.addEventListener('mousedown', (e) => {
           e.preventDefault(); // keep focus handling predictable, avoid input blur race
           setValue(id);
@@ -2310,12 +3435,15 @@ updateScaleCode();
 const mannequinNameInput = document.getElementById('mannequinNameInput');
 const mannequinShowDescCheckbox = document.getElementById('mannequinShowDescCheckbox');
 const mannequinCustomNameInput = document.getElementById('mannequinCustomNameInput');
+const mannequinVersionSelect = document.getElementById('mannequinVersionSelect');
 function updateMannequinSummonCode() {
   const skin = mannequinNameInput.value.trim() || 'Notch';
   const showDesc = mannequinShowDescCheckbox.checked;
   const customName = mannequinCustomNameInput.value.trim() || '이름표';
-  let nbt = `{profile:"${skin}",CustomName:'{"text":"${customName}"}',CustomNameVisible:1b`;
-  if (!showDesc) nbt += `,hide_description:1b`;
+  const isNew = mannequinVersionSelect.value === 'new';
+  const trueVal = isNew ? 'true' : '1b';
+  let nbt = `{profile:"${skin}",CustomName:'{"text":"${customName}"}',CustomNameVisible:${trueVal}`;
+  if (!showDesc) nbt += `,hide_description:${trueVal}`;
   nbt += `}`;
   document.getElementById('mannequinSummonCode').textContent =
     `summon minecraft:mannequin ~ ~ ~ ${nbt}`;
@@ -2323,7 +3451,161 @@ function updateMannequinSummonCode() {
 mannequinNameInput.addEventListener('input', updateMannequinSummonCode);
 mannequinShowDescCheckbox.addEventListener('change', updateMannequinSummonCode);
 mannequinCustomNameInput.addEventListener('input', updateMannequinSummonCode);
+mannequinVersionSelect.addEventListener('change', updateMannequinSummonCode);
 updateMannequinSummonCode();
+
+// ---- Entity summon builder ----
+// Entities with a namespaced-id "variant" component (registry-based, version-dependent set)
+// vs a simple enum variant. We keep a curated common subset for each.
+const ENTITY_VARIANTS = {
+  'minecraft:rabbit': { label: '색상', values: [
+    ['brown', '갈색'], ['white', '흰색'], ['black', '검은색'], ['white_splotched', '흰 반점'],
+    ['gold', '금색'], ['salt', '소금무늬'], ['evil', '킬러버니(악)'],
+  ]},
+  'minecraft:fox': { label: '색상', values: [['red', '빨강'], ['snow', '흰눈']] },
+  'minecraft:parrot': { label: '색상', values: [
+    ['red_blue', '빨강-파랑'], ['blue', '파랑'], ['green', '초록'], ['yellow_blue', '노랑-파랑'], ['gray', '회색'],
+  ]},
+  'minecraft:mooshroom': { label: '색상', values: [['red', '빨강(기본)'], ['brown', '갈색(번개맞음)']] },
+  'minecraft:cat': { label: '무늬', values: [
+    ['tabby', '태비'], ['black', '검은고양이'], ['red', '주황'], ['siamese', '샴'], ['british_shorthair', '브리티시 숏헤어'],
+    ['calico', '캘리코'], ['persian', '페르시안'], ['ragdoll', '랙돌'], ['white', '흰색'], ['jellie', '젤리'], ['all_black', '올블랙'],
+  ]},
+  'minecraft:wolf': { label: '무늬', values: [
+    ['pale', '기본(창백)'], ['ashen', '잿빛'], ['black', '검정'], ['chestnut', '밤색'], ['rusty', '녹슨색'],
+    ['snowy', '설원'], ['spotted', '점박이'], ['striped', '줄무늬'], ['woods', '숲'],
+  ]},
+  'minecraft:sheep': { label: '양털 색', values: DYES.map(d => [d.hex, d.name]) },
+};
+const ENTITY_VARIANT_COMPONENT = {
+  'minecraft:rabbit': 'rabbit/variant',
+  'minecraft:fox': 'fox/variant',
+  'minecraft:parrot': 'parrot/variant',
+  'minecraft:mooshroom': 'mooshroom/variant',
+  'minecraft:cat': 'cat/variant',
+  'minecraft:wolf': 'wolf/variant',
+};
+// Entities that support the "baby" spawn variant (Age:-2147483648)
+const BABY_CAPABLE = new Set([
+  'minecraft:villager', 'minecraft:zombie', 'minecraft:zombie_villager', 'minecraft:piglin',
+  'minecraft:hoglin', 'minecraft:cow', 'minecraft:pig', 'minecraft:sheep', 'minecraft:chicken',
+  'minecraft:horse', 'minecraft:wolf', 'minecraft:cat', 'minecraft:panda', 'minecraft:fox',
+  'minecraft:turtle', 'minecraft:llama', 'minecraft:goat', 'minecraft:camel', 'minecraft:axolotl',
+  'minecraft:rabbit', 'minecraft:bee', 'minecraft:strider', 'minecraft:polar_bear', 'minecraft:dolphin',
+]);
+
+const summonEntityPicker = setupComboPicker(
+  document.getElementById('summonEntitySelect'),
+  document.getElementById('summonEntitySelectList'),
+  COMMON_ENTITIES, 'minecraft:zombie',
+  onSummonEntityChange
+);
+
+function onSummonEntityChange() {
+  const entityId = summonEntityPicker.getValue();
+  const variantControls = document.getElementById('summonVariantControls');
+  const variantSelect = document.getElementById('summonVariantSelect');
+  const variantLabel = document.getElementById('summonVariantLabel');
+  const variantData = ENTITY_VARIANTS[entityId];
+  if (variantData) {
+    variantControls.style.display = 'flex';
+    variantLabel.textContent = variantData.label;
+    variantSelect.innerHTML = '';
+    variantData.values.forEach(([val, label]) => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = label;
+      variantSelect.appendChild(opt);
+    });
+  } else {
+    variantControls.style.display = 'none';
+  }
+
+  const babyCheckbox = document.getElementById('summonBabyCheckbox');
+  babyCheckbox.parentElement.style.display = BABY_CAPABLE.has(entityId) ? '' : 'none';
+  if (!BABY_CAPABLE.has(entityId)) babyCheckbox.checked = false;
+
+  updateSummonCode();
+}
+
+function bindSummonCheckbox(checkboxId, inputId) {
+  const checkbox = document.getElementById(checkboxId);
+  const input = inputId ? document.getElementById(inputId) : null;
+  checkbox.addEventListener('change', () => {
+    if (input) input.style.display = checkbox.checked ? 'inline-block' : 'none';
+    updateSummonCode();
+  });
+  if (input) input.addEventListener('input', updateSummonCode);
+}
+bindSummonCheckbox('summonNameCheckbox', 'summonNameInput');
+bindSummonCheckbox('summonHealthCheckbox', 'summonHealthInput');
+bindSummonCheckbox('summonDamageCheckbox', 'summonDamageInput');
+bindSummonCheckbox('summonScaleCheckbox', 'summonScaleInput');
+bindSummonCheckbox('summonSpeedCheckbox', 'summonSpeedInput');
+bindSummonCheckbox('summonBabyCheckbox');
+bindSummonCheckbox('summonNoAiCheckbox');
+bindSummonCheckbox('summonInvulnerableCheckbox');
+bindSummonCheckbox('summonGlowingCheckbox');
+bindSummonCheckbox('summonSilentCheckbox');
+document.getElementById('summonVariantSelect').addEventListener('change', updateSummonCode);
+
+function updateSummonCode() {
+  const entityId = summonEntityPicker.getValue();
+  const nbtParts = [];
+
+  if (document.getElementById('summonNameCheckbox').checked) {
+    const name = document.getElementById('summonNameInput').value.trim() || '이름';
+    nbtParts.push(`CustomName:'{"text":"${name}"}'`, `CustomNameVisible:1b`);
+  }
+  if (document.getElementById('summonBabyCheckbox').checked && BABY_CAPABLE.has(entityId)) {
+    nbtParts.push(`Age:-2147483648`);
+  }
+  if (document.getElementById('summonNoAiCheckbox').checked) nbtParts.push(`NoAI:1b`);
+  if (document.getElementById('summonInvulnerableCheckbox').checked) nbtParts.push(`Invulnerable:1b`);
+  if (document.getElementById('summonGlowingCheckbox').checked) nbtParts.push(`Glowing:1b`);
+  if (document.getElementById('summonSilentCheckbox').checked) nbtParts.push(`Silent:1b`);
+
+  const variantData = ENTITY_VARIANTS[entityId];
+  if (variantData) {
+    const variantVal = document.getElementById('summonVariantSelect').value;
+    if (entityId === 'minecraft:sheep') {
+      // sheep color is a legacy dye-index NBT tag, not a variant component; use Color (0-15)
+      const dyeIndex = DYES.findIndex(d => d.hex === variantVal);
+      nbtParts.push(`Color:${dyeIndex}b`);
+    } else {
+      const component = ENTITY_VARIANT_COMPONENT[entityId];
+      nbtParts.push(`variant:"${variantVal}"`);
+    }
+  }
+
+  const attributeCmds = [];
+  if (document.getElementById('summonHealthCheckbox').checked) {
+    const result = validateRange(document.getElementById('summonHealthInput'), document.getElementById('summonHealthWarning'), 0.01, 1024, false);
+    const hp = result.value || '20';
+    attributeCmds.push(`attribute @e[type=${entityId},limit=1,sort=nearest] minecraft:max_health base set ${hp}`);
+  }
+  if (document.getElementById('summonDamageCheckbox').checked) {
+    const dmg = document.getElementById('summonDamageInput').value.trim() || '1';
+    attributeCmds.push(`attribute @e[type=${entityId},limit=1,sort=nearest] minecraft:attack_damage base set ${dmg}`);
+  }
+  if (document.getElementById('summonScaleCheckbox').checked) {
+    const result = validateRange(document.getElementById('summonScaleInput'), document.getElementById('summonScaleWarning'), 0.0625, 16, false);
+    const scale = result.value || '1';
+    attributeCmds.push(`attribute @e[type=${entityId},limit=1,sort=nearest] minecraft:scale base set ${scale}`);
+  }
+  if (document.getElementById('summonSpeedCheckbox').checked) {
+    const speed = document.getElementById('summonSpeedInput').value.trim() || '0.1';
+    attributeCmds.push(`attribute @e[type=${entityId},limit=1,sort=nearest] minecraft:movement_speed base set ${speed}`);
+  }
+
+  const nbtStr = nbtParts.length > 0 ? ` {${nbtParts.join(',')}}` : '';
+  let fullCommand = `summon ${entityId} ~ ~ ~${nbtStr}`;
+  if (attributeCmds.length > 0) {
+    fullCommand += '\n' + attributeCmds.join('\n');
+  }
+  document.getElementById('summonCode').textContent = fullCommand;
+}
+onSummonEntityChange();
 
 // ---- 5. fetchprofile ----
 const fetchProfileType = document.getElementById('fetchProfileType');
@@ -2565,10 +3847,10 @@ updateChairResizeCode();
 
 // ---- 8. Effect ----
 const POTION_EFFECTS = [
-  ['minecraft:speed', '신속'],
-  ['minecraft:slowness', '구속'],
+  ['minecraft:speed', '속도 증가'],
+  ['minecraft:slowness', '속도 감소'],
   ['minecraft:haste', '성급함'],
-  ['minecraft:mining_fatigue', '피로'],
+  ['minecraft:mining_fatigue', '채굴 피로'],
   ['minecraft:strength', '힘'],
   ['minecraft:instant_health', '즉시 회복'],
   ['minecraft:instant_damage', '즉시 피해'],
@@ -2585,9 +3867,9 @@ const POTION_EFFECTS = [
   ['minecraft:glowing', '발광'],
   ['minecraft:levitation', '부유'],
   ['minecraft:luck', '행운'],
-  ['minecraft:slow_falling', '천천히 낙하'],
-  ['minecraft:conduit_power', '기원의 힘'],
-  ['minecraft:dolphins_grace', '돌고래의 은총'],
+  ['minecraft:slow_falling', '느린 낙하'],
+  ['minecraft:conduit_power', '전달체의 힘'],
+  ['minecraft:dolphins_grace', '돌고래의 가호'],
   ['minecraft:hero_of_the_village', '마을의 영웅'],
   ['minecraft:weakness', '나약함'],
   ['minecraft:poison', '독'],
@@ -2661,28 +3943,218 @@ const effectPicker = setupComboPicker(
   document.getElementById('effectTypeSelect'),
   document.getElementById('effectTypeSelectList'),
   POTION_EFFECTS, 'minecraft:night_vision',
-  onEffectTypeChange
+  onEffectTypeChange,
+  (id) => effectIconImg(id, '\u2728', 20)
 );
 onEffectTypeChange();
+
+// ---- 9b. Custom potion ----
+function hexToDecimalColor(hex) {
+  return parseInt(hex.replace('#', ''), 16);
+}
+const customPotionType = document.getElementById('customPotionType');
+const customPotionColorPicker = document.getElementById('customPotionColorPicker');
+const customPotionColorHex = document.getElementById('customPotionColorHex');
+const customPotionAddEffectCheckbox = document.getElementById('customPotionAddEffectCheckbox');
+const customPotionEffectControls = document.getElementById('customPotionEffectControls');
+const customPotionDurationInput = document.getElementById('customPotionDurationInput');
+const customPotionLevelInput = document.getElementById('customPotionLevelInput');
+const customPotionNameInput = document.getElementById('customPotionNameInput');
+
+const customPotionEffectPicker = setupComboPicker(
+  document.getElementById('customPotionEffectSelect'),
+  document.getElementById('customPotionEffectSelectList'),
+  POTION_EFFECTS, 'minecraft:luck',
+  updateCustomPotionCode,
+  (id) => effectIconImg(id, '\u2728', 20)
+);
+
+customPotionColorPicker.addEventListener('input', () => {
+  customPotionColorHex.value = customPotionColorPicker.value.toUpperCase();
+  updateCustomPotionCode();
+});
+customPotionColorHex.addEventListener('input', () => {
+  let v = customPotionColorHex.value.trim();
+  if (/^#?[0-9a-fA-F]{6}$/.test(v)) {
+    if (!v.startsWith('#')) v = '#' + v;
+    customPotionColorPicker.value = v;
+  }
+  updateCustomPotionCode();
+});
+customPotionType.addEventListener('change', updateCustomPotionCode);
+customPotionAddEffectCheckbox.addEventListener('change', () => {
+  customPotionEffectControls.style.display = customPotionAddEffectCheckbox.checked ? 'flex' : 'none';
+  updateCustomPotionCode();
+});
+customPotionDurationInput.addEventListener('input', updateCustomPotionCode);
+customPotionLevelInput.addEventListener('input', updateCustomPotionCode);
+customPotionNameInput.addEventListener('input', updateCustomPotionCode);
+
+function updateCustomPotionCode() {
+  const itemType = customPotionType.value;
+  const colorDec = hexToDecimalColor(customPotionColorHex.value.trim() || '#7FB2E0');
+  let contents = `custom_color:${colorDec}`;
+
+  if (customPotionAddEffectCheckbox.checked) {
+    const effectId = customPotionEffectPicker.getValue();
+    const duration = (parseInt(customPotionDurationInput.value.trim(), 10) || 30) * 20; // seconds -> ticks
+    const level = parseInt(customPotionLevelInput.value.trim(), 10) || 0;
+    contents += `,custom_effects:[{id:"${effectId}",amplifier:${level},duration:${duration}}]`;
+  }
+
+  let itemComponents = `potion_contents={${contents}}`;
+  const name = customPotionNameInput.value.trim();
+  if (name) {
+    itemComponents = `custom_name={text:"${name}"},${itemComponents}`;
+  }
+
+  document.getElementById('customPotionCode').textContent =
+    `give @p minecraft:${itemType}[${itemComponents}]`;
+}
+updateCustomPotionCode();
+
+// ---- 9c. Custom firework (multi-color, multi-explosion) ----
+const FIREWORK_DYE_COLORS = DYES; // reuse the 16 vanilla dye colors used for real firework stars
+const fireworkFlightSelect = document.getElementById('fireworkFlightSelect');
+let fireworkExplosions = [
+  { shape: 'large_ball', colors: ['#FF0000'], fadeColors: [], trail: false, twinkle: false }
+];
+
+function renderFireworkExplosions() {
+  const container = document.getElementById('fireworkExplosionList');
+  container.innerHTML = '';
+
+  fireworkExplosions.forEach((explosion, index) => {
+    const card = document.createElement('div');
+    card.className = 'firework-explosion-card';
+
+    const colorSwatchesHtml = FIREWORK_DYE_COLORS.map(dye => {
+      const selected = explosion.colors.includes(dye.hex);
+      return `<button class="firework-color-swatch${selected ? ' selected' : ''}" style="background:${dye.hex};border-color:${borderColorFor(dye.hex)}" data-hex="${dye.hex}" data-role="color" title="${dye.name}"></button>`;
+    }).join('');
+    const fadeSwatchesHtml = FIREWORK_DYE_COLORS.map(dye => {
+      const selected = explosion.fadeColors.includes(dye.hex);
+      return `<button class="firework-color-swatch${selected ? ' fade-selected' : ''}" style="background:${dye.hex};border-color:${borderColorFor(dye.hex)}" data-hex="${dye.hex}" data-role="fade" title="${dye.name}"></button>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="firework-explosion-head">
+        <span class="firework-explosion-title">폭발 ${index + 1}</span>
+        ${fireworkExplosions.length > 1 ? `<button class="firework-remove-btn" data-action="remove">삭제</button>` : ''}
+      </div>
+      <div class="cmd-controls">
+        <span class="cmd-num-label">모양</span>
+        <select class="cmd-select firework-shape-select">
+          <option value="small_ball">작은 공</option>
+          <option value="large_ball">큰 공</option>
+          <option value="star">별 모양</option>
+          <option value="creeper">크리퍼 모양</option>
+          <option value="burst">폭발형</option>
+        </select>
+      </div>
+      <div class="firework-color-group-label">색상 (여러 개 선택하면 무작위로 섞여요)</div>
+      <div class="firework-color-swatches" data-role="color">${colorSwatchesHtml}</div>
+      <div class="firework-color-group-label">페이드 색상 (선택, 터진 뒤 바뀌는 색 — 여러 개 가능)</div>
+      <div class="firework-color-swatches" data-role="fade">${fadeSwatchesHtml}</div>
+      <div class="cmd-controls">
+        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim);">
+          <input type="checkbox" class="firework-trail-checkbox">
+          꼬리 효과 (trail)
+        </label>
+        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim);">
+          <input type="checkbox" class="firework-twinkle-checkbox">
+          반짝임 효과 (twinkle)
+        </label>
+      </div>
+    `;
+
+    card.querySelector('.firework-shape-select').value = explosion.shape;
+    card.querySelector('.firework-trail-checkbox').checked = explosion.trail;
+    card.querySelector('.firework-twinkle-checkbox').checked = explosion.twinkle;
+
+    card.querySelector('.firework-shape-select').addEventListener('change', (e) => {
+      explosion.shape = e.target.value;
+      updateFireworkCode();
+    });
+    card.querySelector('.firework-trail-checkbox').addEventListener('change', (e) => {
+      explosion.trail = e.target.checked;
+      updateFireworkCode();
+    });
+    card.querySelector('.firework-twinkle-checkbox').addEventListener('change', (e) => {
+      explosion.twinkle = e.target.checked;
+      updateFireworkCode();
+    });
+
+    card.querySelectorAll('.firework-color-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const hex = btn.dataset.hex;
+        const role = btn.dataset.role;
+        const list = role === 'color' ? explosion.colors : explosion.fadeColors;
+        const idx = list.indexOf(hex);
+        if (idx === -1) list.push(hex); else list.splice(idx, 1);
+        renderFireworkExplosions();
+        updateFireworkCode();
+      });
+    });
+
+    const removeBtn = card.querySelector('[data-action="remove"]');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => {
+        fireworkExplosions.splice(index, 1);
+        renderFireworkExplosions();
+        updateFireworkCode();
+      });
+    }
+
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('fireworkAddExplosionBtn').addEventListener('click', () => {
+  fireworkExplosions.push({ shape: 'large_ball', colors: ['#00FF00'], fadeColors: [], trail: false, twinkle: false });
+  renderFireworkExplosions();
+  updateFireworkCode();
+});
+fireworkFlightSelect.addEventListener('change', updateFireworkCode);
+
+function updateFireworkCode() {
+  const flight = fireworkFlightSelect.value;
+  const explosionsStr = fireworkExplosions.map(explosion => {
+    const colorsDec = explosion.colors.length > 0 ? explosion.colors : ['#FFFFFF'];
+    let str = `{shape:"${explosion.shape}",colors:[I;${colorsDec.map(hexToDecimalColor).join(',')}]`;
+    if (explosion.fadeColors.length > 0) {
+      str += `,fade_colors:[I;${explosion.fadeColors.map(hexToDecimalColor).join(',')}]`;
+    }
+    if (explosion.trail) str += `,has_trail:true`;
+    if (explosion.twinkle) str += `,has_twinkle:true`;
+    str += `}`;
+    return str;
+  }).join(',');
+
+  document.getElementById('fireworkCode').textContent =
+    `give @p firework_rocket[fireworks={flight_duration:${flight},explosions:[${explosionsStr}]}]`;
+}
+renderFireworkExplosions();
+updateFireworkCode();
 
 // ---- 9. Structure ----
 const STRUCTURES = [
   ['minecraft:village', '마을'],
   ['minecraft:pillager_outpost', '약탈자 전초기지'],
   ['minecraft:mansion', '삼림 대저택'],
-  ['minecraft:stronghold', '요새(엔드 포탈)'],
-  ['minecraft:monument', '해저 신전'],
+  ['minecraft:stronghold', '근거지(엔드 포탈)'],
+  ['minecraft:monument', '바다 유적'],
   ['minecraft:ancient_city', '고대 도시'],
-  ['minecraft:trial_chambers', '시련의 방'],
-  ['minecraft:desert_pyramid', '사막 사원'],
+  ['minecraft:trial_chambers', '시련의 회당'],
+  ['minecraft:desert_pyramid', '사막 피라미드'],
   ['minecraft:jungle_pyramid', '정글 사원'],
   ['minecraft:igloo', '이글루'],
   ['minecraft:swamp_hut', '늪지 오두막'],
   ['minecraft:shipwreck', '난파선'],
-  ['minecraft:buried_treasure', '보물 상자'],
-  ['minecraft:ocean_ruin', '해저 유적'],
-  ['minecraft:ruined_portal', '파괴된 포탈'],
-  ['minecraft:trail_ruins', '오솔길 유적'],
+  ['minecraft:buried_treasure', '땅에 묻힌 보물'],
+  ['minecraft:ocean_ruin', '해저 폐허'],
+  ['minecraft:ruined_portal', '무너진 차원문'],
+  ['minecraft:trail_ruins', '흔적 폐허'],
   ['minecraft:fortress', '네더 요새'],
   ['minecraft:bastion_remnant', '보루 잔해'],
   ['minecraft:nether_fossil', '네더 화석'],
@@ -2708,6 +4180,313 @@ function updateWorldborderCode() {
 }
 worldborderInput.addEventListener('input', updateWorldborderCode);
 updateWorldborderCode();
+
+// ---- Ride command (mount/dismount) ----
+const rideRiderPicker = setupComboPicker(
+  document.getElementById('rideRiderSelect'),
+  document.getElementById('rideRiderSelectList'),
+  COMMON_ENTITIES, 'minecraft:player',
+  updateRideMountCode
+);
+const rideVehiclePicker = setupComboPicker(
+  document.getElementById('rideVehicleSelect'),
+  document.getElementById('rideVehicleSelectList'),
+  COMMON_ENTITIES, 'minecraft:horse',
+  updateRideMountCode
+);
+function updateRideMountCode() {
+  const rider = rideRiderPicker.getValue();
+  const vehicle = rideVehiclePicker.getValue();
+  document.getElementById('rideMountCode').textContent =
+    `ride @e[type=${rider},limit=1,sort=nearest] mount @e[type=${vehicle},limit=1,sort=nearest]`;
+}
+updateRideMountCode();
+
+const rideDismountPicker = setupComboPicker(
+  document.getElementById('rideDismountSelect'),
+  document.getElementById('rideDismountSelectList'),
+  COMMON_ENTITIES, 'minecraft:player',
+  updateRideDismountCode
+);
+function updateRideDismountCode() {
+  const target = rideDismountPicker.getValue();
+  document.getElementById('rideDismountCode').textContent =
+    `ride @e[type=${target},limit=1,sort=nearest] dismount`;
+}
+updateRideDismountCode();
+
+// ---- Color code maker ----
+const MC_COLORS = [
+  ['0', '검정', '#000000'], ['1', '진한 파랑', '#0000AA'], ['2', '진한 초록', '#00AA00'], ['3', '진한 하늘색', '#00AAAA'],
+  ['4', '진한 빨강', '#AA0000'], ['5', '진한 보라', '#AA00AA'], ['6', '금색', '#FFAA00'], ['7', '회색', '#AAAAAA'],
+  ['8', '진한 회색', '#555555'], ['9', '파랑', '#5555FF'], ['a', '초록', '#55FF55'], ['b', '하늘색', '#55FFFF'],
+  ['c', '빨강', '#FF5555'], ['d', '분홍', '#FF55FF'], ['e', '노랑', '#FFFF55'], ['f', '하양', '#FFFFFF'],
+];
+const MC_FORMATS = [
+  ['l', '굵게 (Bold)'], ['o', '기울임 (Italic)'], ['n', '밑줄 (Underline)'],
+  ['m', '취소선 (Strikethrough)'], ['k', '난독화 (Obfuscated)'], ['r', '초기화 (Reset)'],
+];
+
+let colorcodeSelectedColor = 'f';
+let colorcodeSelectedFormats = new Set();
+
+function renderColorcodeSwatches() {
+  const container = document.getElementById('colorcodeSwatches');
+  container.innerHTML = '';
+  MC_COLORS.forEach(([code, name, hex]) => {
+    const btn = document.createElement('button');
+    btn.className = 'colorcode-swatch';
+    btn.style.background = hex;
+    btn.title = `${name} (§${code})`;
+    btn.innerHTML = `<span class="code-label" style="color:${borderColorForText(hex)}">${code}</span>`;
+    btn.addEventListener('click', () => {
+      colorcodeSelectedColor = code;
+      updateColorcodePreview();
+    });
+    container.appendChild(btn);
+  });
+}
+function borderColorForText(hex) {
+  const rgb = hexToRgb(hex);
+  return luminance(rgb) < 128 ? '#fff' : '#000';
+}
+
+function renderColorcodeFormats() {
+  const container = document.getElementById('colorcodeFormatRow');
+  container.innerHTML = '';
+  MC_FORMATS.forEach(([code, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'colorcode-format-btn';
+    btn.textContent = label;
+    btn.dataset.code = code;
+    btn.addEventListener('click', () => {
+      if (code === 'r') {
+        colorcodeSelectedFormats.clear();
+      } else if (colorcodeSelectedFormats.has(code)) {
+        colorcodeSelectedFormats.delete(code);
+      } else {
+        colorcodeSelectedFormats.add(code);
+      }
+      renderColorcodeFormatActiveState();
+      updateColorcodePreview();
+    });
+    container.appendChild(btn);
+  });
+}
+function renderColorcodeFormatActiveState() {
+  document.querySelectorAll('.colorcode-format-btn').forEach(btn => {
+    const active = colorcodeSelectedFormats.has(btn.dataset.code);
+    btn.style.background = active ? '#2e4a3a' : '';
+    btn.style.color = active ? '#b8e0c8' : '';
+    btn.style.borderColor = active ? '#3d6650' : '';
+  });
+}
+
+const CSS_TEXT_DECORATIONS = { m: 'line-through', n: 'underline' };
+function updateColorcodePreview() {
+  const text = document.getElementById('colorcodeTextInput').value || '';
+  const colorEntry = MC_COLORS.find(c => c[0] === colorcodeSelectedColor);
+  const preview = document.getElementById('colorcodePreview');
+  preview.style.color = colorEntry[2];
+  preview.style.fontWeight = colorcodeSelectedFormats.has('l') ? '700' : '400';
+  preview.style.fontStyle = colorcodeSelectedFormats.has('o') ? 'italic' : 'normal';
+  const decorations = [];
+  if (colorcodeSelectedFormats.has('m')) decorations.push('line-through');
+  if (colorcodeSelectedFormats.has('n')) decorations.push('underline');
+  preview.style.textDecoration = decorations.join(' ') || 'none';
+  preview.textContent = colorcodeSelectedFormats.has('k') ? text.replace(/[^\s]/g, '▓') : text;
+
+  const formatMode = document.getElementById('colorcodeFormatSelect').value;
+  const prefix = formatMode === 'section' ? '§' : formatMode === 'amp' ? '&' : '\\u00A7';
+  let code = `${prefix}${colorcodeSelectedColor}`;
+  colorcodeSelectedFormats.forEach(f => { code += `${prefix}${f}`; });
+  document.getElementById('colorcodeOutput').textContent = `${code}${text}`;
+}
+document.getElementById('colorcodeTextInput').addEventListener('input', updateColorcodePreview);
+document.getElementById('colorcodeFormatSelect').addEventListener('change', updateColorcodePreview);
+renderColorcodeSwatches();
+renderColorcodeFormats();
+updateColorcodePreview();
+
+// ---- Target selector builder ----
+const selectorTypePicker = setupComboPicker(
+  document.getElementById('selectorTypeSelect'),
+  document.getElementById('selectorTypeSelectList'),
+  COMMON_ENTITIES, 'minecraft:zombie',
+  updateSelectorCode
+);
+
+function bindSelectorCheckbox(checkboxId, controlsId) {
+  const checkbox = document.getElementById(checkboxId);
+  const controls = document.getElementById(controlsId);
+  checkbox.addEventListener('change', () => {
+    if (controls) controls.style.display = checkbox.checked ? '' : 'none';
+    updateSelectorCode();
+  });
+}
+bindSelectorCheckbox('selectorTypeCheckbox', 'selectorTypeSelectCombo');
+bindSelectorCheckbox('selectorNameCheckbox', 'selectorNameInput');
+bindSelectorCheckbox('selectorDistanceCheckbox', 'selectorDistanceControls');
+bindSelectorCheckbox('selectorGamemodeCheckbox', 'selectorGamemodeSelect');
+bindSelectorCheckbox('selectorLimitCheckbox', 'selectorLimitControls');
+bindSelectorCheckbox('selectorTagCheckbox', 'selectorTagInput');
+bindSelectorCheckbox('selectorScoreCheckbox', 'selectorScoreControls');
+
+['selectorBaseSelect', 'selectorNameInput', 'selectorDistanceMinInput', 'selectorDistanceMaxInput',
+ 'selectorGamemodeSelect', 'selectorLimitInput', 'selectorSortSelect', 'selectorTagInput',
+ 'selectorScoreNameInput', 'selectorScoreMinInput', 'selectorScoreMaxInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateSelectorCode);
+  document.getElementById(id).addEventListener('change', updateSelectorCode);
+});
+
+function updateSelectorCode() {
+  const base = document.getElementById('selectorBaseSelect').value;
+  const conditions = [];
+
+  if (document.getElementById('selectorTypeCheckbox').checked) {
+    conditions.push(`type=${selectorTypePicker.getValue()}`);
+  }
+  if (document.getElementById('selectorNameCheckbox').checked) {
+    const name = document.getElementById('selectorNameInput').value.trim();
+    if (name) conditions.push(`name="${name}"`);
+  }
+  if (document.getElementById('selectorDistanceCheckbox').checked) {
+    const min = document.getElementById('selectorDistanceMinInput').value.trim();
+    const max = document.getElementById('selectorDistanceMaxInput').value.trim();
+    conditions.push(`distance=${min || '0'}..${max || ''}`);
+  }
+  if (document.getElementById('selectorGamemodeCheckbox').checked) {
+    conditions.push(`gamemode=${document.getElementById('selectorGamemodeSelect').value}`);
+  }
+  if (document.getElementById('selectorLimitCheckbox').checked) {
+    const limit = document.getElementById('selectorLimitInput').value.trim() || '1';
+    const sort = document.getElementById('selectorSortSelect').value;
+    conditions.push(`limit=${limit}`, `sort=${sort}`);
+  }
+  if (document.getElementById('selectorTagCheckbox').checked) {
+    const tag = document.getElementById('selectorTagInput').value.trim();
+    if (tag) conditions.push(`tag=${tag}`);
+  }
+  if (document.getElementById('selectorScoreCheckbox').checked) {
+    const scoreName = document.getElementById('selectorScoreNameInput').value.trim();
+    const min = document.getElementById('selectorScoreMinInput').value.trim();
+    const max = document.getElementById('selectorScoreMaxInput').value.trim();
+    if (scoreName) conditions.push(`scores={${scoreName}=${min || '0'}..${max || ''}}`);
+  }
+
+  const selector = conditions.length > 0 ? `${base}[${conditions.join(',')}]` : base;
+  document.getElementById('selectorCode').textContent = selector;
+}
+updateSelectorCode();
+
+// ---- Beacon color calculator ----
+const BEACON_GLASS_COLORS = DYES; // reuse the same 16 vanilla colors (dye == stained glass palette)
+let beaconSequence = [];
+
+function renderBeaconGlassRow() {
+  const container = document.getElementById('beaconGlassRow');
+  container.innerHTML = '';
+  BEACON_GLASS_COLORS.forEach(dye => {
+    const btn = document.createElement('button');
+    btn.className = 'beacon-glass-btn';
+    btn.style.background = dye.hex;
+    btn.style.borderColor = borderColorFor(dye.hex);
+    btn.title = dye.name;
+    btn.addEventListener('click', () => {
+      beaconSequence.push(dye.hex);
+      renderBeaconSequence();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function beaconMix(colorList) {
+  if (colorList.length === 0) return { r: 255, g: 255, b: 255 };
+  let current = hexToRgb(colorList[0]);
+  for (let i = 1; i < colorList.length; i++) {
+    const next = hexToRgb(colorList[i]);
+    current = {
+      r: (current.r + next.r) / 2,
+      g: (current.g + next.g) / 2,
+      b: (current.b + next.b) / 2,
+    };
+  }
+  return {
+    r: Math.round(current.r),
+    g: Math.round(current.g),
+    b: Math.round(current.b),
+  };
+}
+
+function renderBeaconSequence() {
+  const container = document.getElementById('beaconSequence');
+  container.innerHTML = '';
+  if (beaconSequence.length === 0) {
+    container.innerHTML = '<div class="cmd-note" style="margin:0;">유리를 클릭해서 순서대로 추가해보세요.</div>';
+  } else {
+    beaconSequence.forEach((hex, i) => {
+      const chip = document.createElement('button');
+      chip.className = 'beacon-sequence-chip';
+      chip.style.background = hex;
+      chip.style.borderColor = borderColorFor(hex);
+      chip.title = `${i + 1}번째 — 클릭해서 빼기`;
+      chip.addEventListener('click', () => {
+        beaconSequence.splice(i, 1);
+        renderBeaconSequence();
+      });
+      container.appendChild(chip);
+    });
+  }
+  const result = beaconMix(beaconSequence);
+  const resultHex = rgbToHex(result);
+  document.getElementById('beaconResultSwatch').style.background = resultHex;
+  document.getElementById('beaconResultSwatch').style.borderColor = borderColorFor(resultHex);
+  document.getElementById('beaconResultHex').textContent = resultHex;
+}
+document.getElementById('beaconClearBtn').addEventListener('click', () => {
+  beaconSequence = [];
+  renderBeaconSequence();
+});
+renderBeaconGlassRow();
+renderBeaconSequence();
+
+// ---- Anvil cost calculator ----
+function priorWorkPenalty(n) {
+  return Math.pow(2, n) - 1;
+}
+function updateAnvilCost() {
+  const targetPrior = parseInt(document.getElementById('anvilTargetPriorInput').value.trim(), 10) || 0;
+  const sacrificePrior = parseInt(document.getElementById('anvilSacrificePriorInput').value.trim(), 10) || 0;
+  const level = parseInt(document.getElementById('anvilEnchantLevelInput').value.trim(), 10) || 1;
+  const rarityMult = parseInt(document.getElementById('anvilRaritySelect').value, 10);
+  const fromItem = document.getElementById('anvilFromItemCheckbox').checked;
+  const rename = document.getElementById('anvilRenameCheckbox').checked;
+
+  const targetPenalty = priorWorkPenalty(targetPrior);
+  const sacrificePenalty = priorWorkPenalty(sacrificePrior);
+  const effectiveMult = fromItem ? rarityMult * 2 : rarityMult;
+  const enchantCost = level * effectiveMult;
+  const renameCost = rename ? 1 : 0;
+  const total = targetPenalty + sacrificePenalty + enchantCost + renameCost;
+
+  const totalEl = document.getElementById('anvilResultTotal');
+  totalEl.textContent = `${total} 레벨`;
+  totalEl.classList.toggle('too-expensive', total >= 40);
+
+  document.getElementById('anvilResultBreakdown').innerHTML = `
+    대상 아이템 이전 작업 페널티: ${targetPenalty} 레벨<br>
+    재료 아이템 이전 작업 페널티: ${sacrificePenalty} 레벨<br>
+    인챈트 전이 비용: ${level} × ${effectiveMult} = ${enchantCost} 레벨<br>
+    ${rename ? '이름 변경: 1 레벨<br>' : ''}
+    ${total >= 40 ? '<strong style="color:#e08a7a;">⚠ 40레벨 이상 — 생존 모드에서 "너무 비쌉니다"로 막혀요.</strong>' : ''}
+  `;
+}
+['anvilTargetPriorInput', 'anvilSacrificePriorInput', 'anvilEnchantLevelInput', 'anvilRaritySelect', 'anvilFromItemCheckbox', 'anvilRenameCheckbox'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateAnvilCost);
+  document.getElementById(id).addEventListener('change', updateAnvilCost);
+});
+updateAnvilCost();
+
 
 // ---- 11. Etc ----
 const customNameInput = document.getElementById('customNameInput');
@@ -2735,7 +4514,8 @@ document.getElementById('commandsView').addEventListener('click', (e) => {
   const codeEl = row.querySelector('.cmd-code');
   const btn = row.querySelector('.cmd-copy-btn');
   const text = codeEl.textContent;
-  navigator.clipboard?.writeText('/' + text.replace(/^\//, '')).then(() => {
+  const withSlashes = text.split('\n').map(line => '/' + line.replace(/^\//, '')).join('\n');
+  navigator.clipboard?.writeText(withSlashes).then(() => {
     const original = btn.textContent;
     btn.textContent = '복사됨';
     btn.classList.add('copied');
@@ -2807,6 +4587,469 @@ document.getElementById('cmdSaveBtn').addEventListener('click', () => {
 
 loadSavedCommands();
 renderSavedCommands();
+
+// ================= ITEM ICON HELPER =================
+// Real vanilla item textures (16x16 pixel art) embedded directly as base64 data URIs,
+// so icons render with no external network request (avoids any host that blocks or
+// fails to load third-party image URLs). Falls back to an emoji if the id isn't in
+// this embedded set.
+const ITEM_ICON_DATA = {
+  "baked_potato": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAoklEQVQ4y2NgGN5gVijDf3RMksb1LS7/b64KBOMT063AmKAhIAXImuaW62FgnIbANCNrvLrG/P+Hs1FgDGJvneGA3wCYZmSNMM0wQ7F6BeZnfJqRwyLXnPE/VueDFKI7GaYZZkBbph12A5CdD9OIrhkmhtUAkARII7qtIK/BNGO1HQZAEjDNIA3IfobZilMzsiEgW0C2wgKVKI3ohiBjmuYXAIWEFz1/IEijAAAAAElFTkSuQmCC",
+  "blaze_powder": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA3UlEQVR42mNgoBWYaszwnyLN//9v/U+yITANQBrMBtFEuwps6z/D/8iGYMgvZsDtKmy2IivG5SoUxeiaYTbichWK4uetqM6D2QgyhGCAooc6zNb///PA9KkeThQ57AbcdPr/e78hisb/pyGa/z9AWLDCH0tAwpz6YzGqBjAbSIO9AYwhEH2pgRmrAXBvgGz9f8MJbMjZMKgryqBhcd/t/4lEhv+r7RhwG/K7ByIJ03w2FUi/8v3/qgvi/BWe8JjBnxbAhqRCbANpAmmG2YwzOpHjGskwdExS3sDA6AAADiD3CAFQdVwAAAAASUVORK5CYII=",
+  "bowl": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAaklEQVQ4y2NgGAW0Afba3P+xYaI1Blty/i/054djEB+E8RoE0+hswA3HMI3I4iC2vCjTf6wGWKmzgTGyIcgYJo/TAJhzYQrRMcw1WA0AAQNFVL+jY7yaYQCkAISRAxKmkaBmbAaRrHHoAQAnaW6jfE4B3QAAAABJRU5ErkJggg==",
+  "brown_mushroom": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAUklEQVQ4y2NgGAWjAA84M7PiPwxPzA39T7ZmmAFFYc7EGQJSjKwRGRNlSJafNVwxiA3CIDaMT5JXUkO9/vvYGv8nOyC3Tqn9DzKEopgAGUJTAwC0DFIPHLDd5AAAAABJRU5ErkJggg==",
+  "bucket": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAiUlEQVQ4y7WT7QnAIAxEXcpN/O8ODuMMjuQ2liucaIip/Qo8Cmnz7IXWuT/Ke980tgdTSi3n3CmlnJgiDoIYY4c9SnFVJWhiIITQkQLKlwIyCkaJuQ80a61TVgljmIIRLo/ZtwWolYBvqApw85UAD1wJlhG0PUiBOSxjUMCvcUsgJbdO/+RnelIHlx5daQ1EbF8AAAAASUVORK5CYII=",
+  "carrot": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAoUlEQVQ4jWNgoCUw3mfwH4TlZ8n8J9sQkGaQIczpzP9hhhI0EFkTLjZRNoMUomsm2julGkz///dx/r+cxQs2AGYIQwADYRessWQAa/6/3B6MQYaADIRphrkOvwEgzQfLITTUJciG4HQJSDNIMVgzCEM1g8RBBsC8Q9h2JJuRbQepwWkA3HYkzTCb8QYaeuAh20qWZpJsRXc+SbYiA7I1UgoAM8C+lVpMNzUAAAAASUVORK5CYII=",
+  "coal": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAApklEQVQ4y82SMQrDMAxFc4QsJUtICNQdPXgwZMmY+99I5Rl+ENSmDl1q+Fiy9Z/kkGH4yzXPi3ndNscYLaVURNwNoTCEYDln24+zAMhRF4QizBjUXXsXhILX8izyk7BrmiZE46ubhyCdAxrHhzU/nn87ueShTUDNJJHreegDIoCkbjISr9N27VUAFyr23STdVwEsDrn0IMUyNs01iDd4ff2hbht+WW94i68UZJYHPAAAAABJRU5ErkJggg==",
+  "cobblestone": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0ElEQVQ4y22S0Q2FMAwDMyMbMABvjcck3YD5QKl01WHxUVDcxElc1+847n3f7zHGPNu2zRjsuq75P//nxPpvrJzYQJ8m6diJ4JB04xdBB/33RBQaT5JiXICMjUPGOk1W/XECYxNDCM7hrvqiCVIHjwxmTZYGqbB390o0Md6E5WRYc2+vRQ53ZTbUzmJIrQnalYtTeU9Ed686Rcyi7EKhReUllgZO8J7e3S+CS5cGTk5N0okWeVk5PW8rf73My8p2Vlr3q9i+mSKmZb9I3DVf7AEDw33Q7E89pwAAAABJRU5ErkJggg==",
+  "cooked_rabbit": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAtklEQVQ4y2NgoBeospX5D8NEKUJWCGJf6kv6f3tpI5jGagiyImSFMPHn+xeBMVZDQJyV8UZwzTDF2DBMTYe74v9IXZH/KLbDXEBIMwiDLMQwACQIcwmyJpg4siUoBsAMAWmAGQSiQc6EsWEGwgxB8QIIgDgwRSBNMAUgNrpXQAagaIYZALMJphlGo7sAQzO6ITAFIBqGYU7H8Ds2Q9AVwFwDC0wM/xMDYAaDNJNlALpBZBtAdQAA9ChH+/pe+lQAAAAASUVORK5CYII=",
+  "dragon_breath": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAlklEQVQ4y2NgGNTgSq7nfxBe6a76n3TNT7//P7N+KRxvPv+GNENAGkA2g/B0czHSDYAZctSj+X9s/6H/ZIUByIA1OtXkGQAKA5BmGCbJEJDms6VLwP4G0SADiPYKsmaQpntzj4Lxu0vPwOIEDUE2AKYRGRM0AOZsZM3fXr0j3gCQAnTNMAwSJyocYIaQpRnZEHRMkwwHAAR38+5JNgpOAAAAAElFTkSuQmCC",
+  "egg": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbklEQVQ4y2NgGL6gJDvwPzImWfPmpbX/75+bDcYgNtGGwDR/eHYMbgAI9zVFE2cISBFIM7oBIEND/az/k2U7zACQK/AaAjIAXSOyAQRdQTMDYJqJMgA5+tA1EwwDEAApAClE1ki0ZmRDsOHBmWcA96X3a1dSPKUAAAAASUVORK5CYII=",
+  "feather": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAX0lEQVQ4jdWRsQ0AMQgDs/8AjMMSDJSXi5MoManeEh1nG3HO71RV99lgbSIwIq60giUM7BakZ6YHkyxQBmOYReoCj+r3RRsmtSeP7yax39w1MgG0awP1yqt/00Jjgxt9z1vednhJVDEAAAAASUVORK5CYII=",
+  "fermented_spider_eye": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgUlEQVQ4y2NgGAV4gSur4n9kTLLmal71/3PldMEYxCbaIEs2BbjGy7M6/h+Jz4YbAsJaDAL/iTIApBhZM4wmygCYbcg2gwwjaACy30F0Kps2GBPlBZDmUCYlMEY3BESDxAk6H2SIBqcSHCMbSFAzNgDSBDIA5AqyDSDbdmRDaJbcAU4hd4EagRJEAAAAAElFTkSuQmCC",
+  "flint": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAjElEQVQ4jc2S0QnAIAxEncAZpP92Al3DdVzHLS0nHIT2kLRfFQ5p8D3TYAi/X0dKk/kE11LmmfMSxBj9EsJMa80vAIxbCSK9d59EwWOMtaO2Fai2AfObcimxA0PYNmEOcisgjCiYkbOwAkIKRg3yhwCF+29YmEIJW4mFbUfut8BO7K2M+yHhoIoLfrsup8O3xfYwaLEAAAAASUVORK5CYII=",
+  "ghast_tear": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATUlEQVQ4y2NgGAV4gUVExH9zL6//ZGveevv2//mHD5NnCMiA8x8/gg0h2QCY7SADQJhkV8BsBwGyDQC5AATIDgeQBooCEWYI2ZpHEAAALQlb55AbNLUAAAAASUVORK5CYII=",
+  "glass_bottle": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbElEQVQ4y2NgGNTgSq7nfxBe6a76n3TNT7//P7N+KRxvPv+GNENAGkA2g/B0czHSDYAZAqJj+w/9JysMKDIAFAbIfJIMgWlG9zdRhuDSTLQhFBuAS2P32gvEBSguBUQbgE0RSZqRDUHHNMlwADOSe7Rn5KNOAAAAAElFTkSuQmCC",
+  "glistering_melon_slice": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAyUlEQVQ4y2NgGHRgVonE/40tMv/J1nxmusL/e+tW/d9vqPyfLJv/nz4G1nzSk4M0Q2C2/3/7/P/1OtH/H0+y/l8vxk28ISADQJpABoA0wjQftNElzhC4C4BeAGkGuQIEYF4haAgsDGABCMIgQ0A0sotwGhAXwg034FRhLFwTyAUgr8EMImgIzBvIGkCGgNggg/DGDsgA5LAAuQTmHWQvgVyJM7HBDIF5B4RBhoFiB4yBbJAFIHV4vYJsEAiDNMEwXs3YDELHVM18APZq+HhRdvIkAAAAAElFTkSuQmCC",
+  "glowstone_dust": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhklEQVQ4y2NgGN6gzkPxPwiTrfn1Kr////fEkW4ISANI488rc8D0lkKH/1GWMv/J0gxyBYhNlCEwzTCM7AKQHF5DYH5GthmkAcRHZveF6WE3BGY7LODQDSLoCpAgSBKmGcSGaUY2BKcL0A2BaYLZCjOIYECCFIAwyCZ0W4mOSmSDSNZIdwAAKI7YMTDfEVkAAAAASUVORK5CYII=",
+  "gold_ingot": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAkklEQVQ4y2NgGDJgU4rgfxAmSxMI/7rmBcYEDUHW9PdrPFaMYQi6Tbg0wjBITakG03+45v9/HxDUBMMgtTD1YENgtuIzBKYJpubONGGEK5CdjWwIuqaXG0XBGmEYqwFgl4AADk0gDBKDxQjcAJAgzABiNcIDERaQMAXoBoDYIAzThKIRPSphhhCtCVciIknTgAMAo+98XbTSNS4AAAAASUVORK5CYII=",
+  "golden_carrot": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAoUlEQVQ4jWNgoCUoDOD4D8Lhtmz/yTYEpBlkSLAmxBCiDETWhItNlM0gheiaifZOiBDn/zenXf/fXiQMNgBmiIEYA2EXbEoRBGt+9S4cjEGGgAyEaYa5Dq8BII3//j8D0zCXIBuC0yUgzSDFIM0gDNMMEgcZAPMOQduRbUa2HaQGpwEw25E1w2zGG2jogYdsK1maSbIV3fkk2YoMyNZIKQAA9e/FQC16lYAAAAAASUVORK5CYII=",
+  "gunpowder": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAfklEQVQ4jd2Ruw3AIAwFWYgV6OkomIQxWJroIj3JspIAKVIEyeJ7ZwMh/LuVUgbxGq61jtbavgQAsPd+9jnnEWNck3iYKhgvSQQrbAXsPUp0Z5sZgLnGrKeUriXKrofzomkVLCqLh3UN4rYCLxGsrFPYSggOe3D5K61oG/y8HSF7rZudiJMQAAAAAElFTkSuQmCC",
+  "iron_ingot": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVQ4y9WSwQnAIBAEbcpefFmEJViNJdmNYQ82OeVUzCdkYfEgzhhinPtNYowNfQWhpRRpSqkdQbXWrqZkBy0lgJAdxDKYRcJTVxIdgmC8949glIxQzllAFLMpoMSCWL33FtDID7gC8QygwPoWKLFeV0MdOF4lJVhDCHto9hMdQZ/nAqzufev6TWmcAAAAAElFTkSuQmCC",
+  "magma_cream": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAvUlEQVQ4y2NgGLQgqFTzPzImWWP3Ksf/S455/T92JxxMg8QSJaT+E6X5y0s/MAZphmGQgQQNASkAKf737x8Yoxv07LQ+bgNgzgZpQDbg1XJ1sOarrQr/9zpI/N8iYYXdEJABMD8j2wzSCGKDbAcZcDRWArcByH6GGQRyAbLtIBqvAci2gzSDbAYZAMIg23F6AWYISAMswJBtB2nGaTsMgCRBhoA0gjBIA7rNBNMCTBFIA0gjSZqxGUSyRroDAKxADoUc20p+AAAAAElFTkSuQmCC",
+  "nether_wart": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXklEQVR42mNgGAVYwT57r//LVA1AmAFEx4hKgTDxBkA1gw0AafYTFANh4g2AaUK2HdlQopwP1Qi3HSROlFdAGmCacRlGVBggG0RyICLbRlYsIMcE1CDSYgHdFcMcAAAMflPjVS1cZAAAAABJRU5ErkJggg==",
+  "oak_planks": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA00lEQVQ4y31TMQ4CMQzzg9iZ7wFILMxIt/ABZiZ2FsSGeMKtzHysyJVcGRMYfGmTqImdHJ7XfVsuu0b7us9f+Oe/HacGHvQIQefjvBmPZlx35hCoEmWVJOQjvQN+TvO6g2fdD9tVh2I6u58W4sgKyTN9ToUx3j8oKCDreiRV5cP5eQUJWgnpuiC5pgYZzxz4nL1KNfvUo3fgo8t2c4RupREqdavZZ3x04ByrPfCY74QAzTu1UIVqLzwXv3Y82801F+CJ+R/4HlT6DA2Sm+vhmlT78QZ+7nLGaC/6FAAAAABJRU5ErkJggg==",
+  "phantom_membrane": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAzElEQVQ4T81SMQoCQQy8L/oFa0WwU0FBC+EQOyttLH2CneArBP+y3sSbMMnpNTYuDGyymZkkd1X1F6eU0ov1eFqI5XAR3j4KsPhy3Nr9fj2X5+NmULEGXQESgEzer+Ye4z4ZjN4tZDIJp3pjhU0ngdwroAUkAYzbPRiCAN3VTR2RZ3zYzYyMhQaB7KqjKJkCvkSdXZ0Yf2s/CHBuEBS5I3UPAto+nfNXyQK+AySUDGImc3Zt3/9EKCGZi9pCh5I7AhQRohVpTvNB4JfzAsBQARErqYPaAAAAAElFTkSuQmCC",
+  "potion": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAbElEQVQ4y2NgGNTgSq7nfxBe6a76n3TNT7//P7N+KRxvPv+GNENAGkA2g/B0czHSDYAZAqJj+w/9JysMKDIAFAbIfJIMgWlG9zdRhuDSTLQhFBuAS2P32gvEBSguBUQbgE0RSZqRDUHHNMlwADOSe7Rn5KNOAAAAAElFTkSuQmCC",
+  "pufferfish": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABbUlEQVQ4T7WRzytEURTHz9JCGhkLIys1K5aysLNTlJqysbGYjcnOZtJr8mN4YYGRhYZEyqTEijJedkopZcPKztYf8Kjrfg/f+94brOTWt3PufefzPefeJ/If6+2oWW7mUvK41orcIGKP81ItcPpxbYy3y53fpqDNzdNWRiP2F8W0bK4WAJtvJuwKETS3TSqaQdflTsCqif16ZPA1ousWh2FGER6sXkYG9oMEXtp1hgASDsPQdPVkNQcIA69SloqfE73H9noBJtodhQCwx7hxwRCxb6VmzotZzfkg7sFwyPh6X1VxDwh6OBzR+oPJDhGOBNGVMKaBABB8f7lSLYy2GD+XEhnbq6sJx0I3RgAQJwGIiDMY7E516wSSX54Xb3pYcMhCFscjJ0Ad8uOZ3s+/YDtC7gMNfjNBHWCbRwY7+YyclvoTU9CsEU50j6+zpSF5DhZdEe9OkJ0T3ePLwmpyMjugk8QFEzyazRuxv60PJ4fNLz2hHtkAAAAASUVORK5CYII=",
+  "quartz": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0klEQVQ4ja2RPQoCMRCF95yCZ7Cw9AQ2gjew8AaChQewsF7s1GobS0EsI9/Ck0fGkRQGhsxk3k8y6bqGtdusi6IFH8j34TpGKpA5OPn1fJTlYp4LCChQTb70xzYBOXFGTgy3c+lPh98CNZgzcgL3/Xb1Ef46C5oiAAYE0d3JMUmHCUjukCUgd3rU4Sm6Fg13V3A2m05GAfZ0iBJhBwyZXQISD3OAxNv0jQAlUJM1pyAAwUWo3d0x4Uv1PoVqyH4DFwxzcBK5SC6Qkl3EAV7Xvb+tN3zT2A4f9QtQAAAAAElFTkSuQmCC",
+  "rabbit_foot": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgElEQVQ4y2NgGDKgKcHxPwiTrXlLdzQYp/pZ/ifLgOPz0v/f2NQIxiQbAjIAphlkENEGwPwN0gRzAUFvwDTBbAVpBGmCGYLXAHS/IjsbZghezSBFyJpgNMwAgraDJJFdQLRmEABJwgxADjiYRqJCHqQIpAHmHaI1YnMJWSluQAAAlYDLdZcOquAAAAAASUVORK5CYII=",
+  "redstone": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgElEQVQ4y2NgGN4ghp3hPwiTrbmIgeH/Kn5G0g0BaQBp/A81wJGV4b8uA5GGoGsGuQLEJsoQmGYYRnYBSA6vITA/I9sM0gDiw9ggcRM2VuyGwGyHBRy6QQRdoYtkC7pmmDdAGKcL0A2BaYbZSlAzsiEgDFKMrpHoqEQ2iGSNdAcASrN+xY/M7FgAAAAASUVORK5CYII=",
+  "redstone_torch": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVQ4y2NgGAW0BX8ZGP6DMNma/98A4n4yDQEb8H/6fxCgyBXrydUMAlNL3f6HuuqRb8D8+oD/TqZKlBlAkQso9kJuuNl/WwNZyrxgrSdNmQvMtcTxGgAA/k03zVOyqGEAAAAASUVORK5CYII=",
+  "spider_eye": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZklEQVQ4y2NgGAW0A9W86v9BOJRJCYxJ1jxXTvf/g5NnwDSIr8UgQLwhIBsfrNvy/0h8NtiAVDZt0g0AaYTZTpYBMI0gDOKTZAAIgDQgY7IMQXcRWQbAwoPkcED2CtmakQ2hWYoFACSiSEOc11stAAAAAElFTkSuQmCC",
+  "stick": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAT0lEQVQ4y2NgGAjg4uICxmRr9jQT/a8hx/2fbM2d6eqkG0AVzRl+cqM2EwvIthmmGWbztGnTGExNTcmzGaSZJAPQnQ3SSJLtII1k+ZlSAAChYkrlEehYfgAAAABJRU5ErkJggg==",
+  "stone": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAnklEQVQ4y4VTQRIAMQTzXA9w7xM8uXti0jS6B8OYEiK1zNxoa60dETsiOnb3I4dmFWABPypz925Wbw1REImRp8Y9Aa5QnvM4bZlhZ0YrzzxhjTGiMl6pfGaeEzAKxuMVsDsjvNbrBqwBReC0Yp9R8aCKlejM3S8h8UossOOMarTX2LyuKYLUn2Apl7fpE03MY+6a4CWmiUj7U5/iBME+eeR3wyunqoUAAAAASUVORK5CYII=",
+  "string": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAeklEQVQ4y72TQQrAMAgE8yNfIf7/7EM82pOw2FglLQ2EnJwdTbLWX0tV/bjYzJxY3Mz8VTqxnAEifdRGpUksfRuq6p0msexNYlAIC+2cujVBasBwZ9DNAqk7TQSVs8KkKKjaLG8kK+MZxXlejyDc05sqH9EoubP5/JdeEy/Pqf6iszsAAAAASUVORK5CYII=",
+  "sugar": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcklEQVQ4y92RuxHAIAxDGdJDsKJmcE1NzxJK5ZwuIeFTpIgqmvckHyn9O4ATcG7DrTWSXJcATk0plWaZW3CsmJJcYV0A+LtEb47mUurtDXhfEu0qUXi4wiyfLb0VKnk8QyUBR+sQVolZ7oLTX6miZfDzHC+WJmA7QlTNAAAAAElFTkSuQmCC",
+  "turtle_helmet": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAX0lEQVQ4y2NgGAVYgXS04X9smGjN9kuc/rvv90LBIDEuQ4n/RGk2KLJHMQRZDK8hIANgmkAasLGJMgBkE7LfQZpgLiJoAMg2mCZ0DJIjaADMn9gw0QGJTRHMkNFEjgkA/VV4u/43bYYAAAAASUVORK5CYII=",
+  "wheat": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAqUlEQVQ4y2NgIBL0ltv+ZyAHhAVa/K/PMv6/bGrwf5IMAmkE0TDNII0gNtGugtkMUnR2YySYBhmEbCBeF2DTjEwT9AJM4Z3dqSgGwWgQhnkTpwEgxSADYIYRrRnmT5hmZNtBfFhY4DQE2XZ0Q2AacWqGKUDWTJRGZM0wGtmpIIwtLaDEOcyPMA3oNmITg9sM0wyiCToVW0aBORdv6OIzAGYrWQag+5MUvQCceQkNes7MbQAAAABJRU5ErkJggg==",
+};
+function iconImg(id, fallbackEmoji, size) {
+  const s = size || 26;
+  const emoji = fallbackEmoji || '❌';
+  const b64 = ITEM_ICON_DATA[id];
+  if (!b64) {
+    return `<span class="recipe-card-icon-fallback" style="width:${s}px;height:${s}px;font-size:${Math.floor(s*0.6)}px;display:inline-flex;align-items:center;justify-content:center;">${emoji}</span>`;
+  }
+  return `<img src="data:image/png;base64,${b64}" class="recipe-step-icon" style="width:${s}px;height:${s}px;" alt="${id}">`;
+}
+
+// Status-effect icons (the icon shown in the player's HUD/inventory when the effect is
+// active), distinct from item textures — used for the brewing effect picker and anywhere
+// an effect itself (not an ingredient) needs a recognizable icon.
+const EFFECT_ICON_DATA = {
+  "speed": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA0ElEQVR42tWUQQrCMBREuxFEcOXCtaAncCN4hkLpESp4Gc/iJXKcXCIygVc+nya1xY2BoUnbvMz8pG2av2hd1yWuj2HIUr89Hkathmvy63bNel5O07AQQuIqxRhH4eC+32XAu2+zijDbzttNmnIgmMYC8awIE0QvaBKrA8PVbERAmuxXt67Ut+NqNFyxunVl61bdagsiCg4AVJ14V7YuX0WZAwkAjHtFIGdJZ4ex+t6Vr9cqV/4MLQIRizi22MWI7KD9UC3MO1oUD2cl/fzX8wEVtRMiJRoYXgAAAABJRU5ErkJggg==",
+  "slowness": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAuklEQVR42rWSOw7CMBBEc4aUFGkJNT0+AXXOwFFSc2CjifTQxEHYaymWRv7tPo13PQxnj3G85FJdkHm+55Sem7SWQjAFK3lZXl85sAmGEyWv63sTMBw2wdxNCQKiOQQqFQYR/AsyTdf2p9GhsmMhkD/Pk5G7DcFcQHWvPeuun126lLMDkKJqrsGVrFjydhBdEvgPxhBI/2znyA+pTw3ECw6W/c/QEa+BJ2p9e6RcLa72XgdcctbcsZ7xASp1+QgOhc9NAAAAAElFTkSuQmCC",
+  "haste": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAr0lEQVR42mNgQAKbUgT/wzADuQCk+eVG0f9//5eBMUUGwjTTxUAZXlYwpsjAdw8C/pdqMP3Ptlcm3TCYgSBDkA0jyyAdEbb/MMNArrszTRhsGMmG2Cvxg70D0gwyBGQYSQYhGwKiQd4h2TBshsDkQAYQZRDIEDk5dayGwAwi6CqYIfb2vmAaV+zgdRWxhuB1FSmGoBsGNwg5YIk1BMMgfLFDrGFw15BrCAYgK0ejAQAfKOrVTb4YqQAAAABJRU5ErkJggg==",
+  "mining_fatigue": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAn0lEQVR42mNgGAhgaBb2HxmTbcjpC19RMMmGwQxZu+XJ/7yS2f8Tkhv+t3ZvAIsJiJr8J8kQkEaQATAMMpBig0CGgDDIhSQbBNIEMgyEQYaQ7TWQQciGkewamCbk2CLbEJBXQBqRMdmGkJReQBpAhiCHB8mGgAyARSkoHMhyCcwVsMCkyCXIsUO2a2AGwRIbyYYgBzIs2ZNtCLJhlBgCAKC8EJUNqYlqAAAAAElFTkSuQmCC",
+  "strength": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAsUlEQVR42q2RwQnDMAxFfe854FOuzQSZwJdeukYKnqQLeBzP4W2UfMMvJhhqKfkgZIP1/CU5p1ApRdwdkkM8hxCEYQahGO4Q3nsdKOcMjiADwDwEwsNWvbu6LTqiG3VL7UzY2l9IbwuE0NGQExTFGH+wFsKsaiOlVH9GMc6mNROEgDsTpNeiGfJaJ/m85wrg8NUwQL7bU5b5UQsBIHB4Wwg4IaQVgcMzMc/j/ONl0B3aARFi4/u1ZHtUAAAAAElFTkSuQmCC",
+  "instant_health": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGOfPtRkwAAAIlJREFUOMtjYBgFAwv+//8PxjkCPP9BGMS2ZmH6D8IwOaINAhvAxvb/mJI12AAQvZCPC24YUQBmyP/GRggNNRDZMNIMQsIwg2AuJNogkAZshhDtIliggjBIEzZDCIYRUsxgGIZsCFEGIQMQH+RNmCGx7CwMRBuE7qJcbg4GZJcQnY6Qw2g0a4IBAAd4tjgd8CljAAAAAElFTkSuQmCC",
+  "instant_damage": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGOfPtRkwAAAHxJREFUOMtjYBgFZIH///+DcY4Az38QBrGtWZj+gzBMjmiDQAZIMTGCMcgAZDbRBiEbgg2DDKO/QceUrP//Z2MDYxAbhhfycRFvECyMQJqwGUIwjGAxg4xhhiEbQpRByADEh7kMxI5lZ2Eg2iB0nMvNwYDsEpLS0SigDQAARu2cDqc/5pcAAAAASUVORK5CYII=",
+  "jump_boost": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA6ElEQVR42mOQ4WVlQMbIIGr9eRRMFgBpzN9zF0T/B2Eom3xDZt34BcYkG4bNEJINw2cI0YaBJIKXHMZrCLJhULXYDXLtX/0fhnF5DU0Ndlf5z9/L4DNzO4Pn1E1gQ9ENAomB5EBqQGoJhhVQAwPMVcguhLKJj36QjTADfv36BcYwPkiO6Ogv3XEOHOgwQ2AYJAaVIz76733+hGEQSIzk6Ec3BIZJjn6QBmRXgdiwmMMb/SBBWPSHzd0FNhTdIJAYSI7k6Ie5Cs01xEc/zCAcGL9mq1VH4BhqEIPT1I1wDBOzn7Mdrg4ZAAA1Zu9KuCOmXAAAAABJRU5ErkJggg==",
+  "regeneration": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAj0lEQVR42s3SwQmAMAwF0CLSg4g4g2t0JZfoKC7jWpFUIjFtaGMvFj49xD4+Qed+f/Z1Boo2C+MAVeTcAoD36eYPcHYsU5rhrWIcoRCG0WY6EuMd9oCaSChrhtDzkYC0IJS1ekGNUSG5gxaouHRLq2KbL63UNhasirRgzQgd+QPSTkyIxLoQiXUhHOtGLOcCk5k4Dg3AxEIAAAAASUVORK5CYII=",
+  "resistance": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABFElEQVQ4jZ2TPQoCMRSE9yRWIloIi9oIsoIWiiCChQgKgthrJWJppwewEU8g2HgAj7Y6S16Y7MuuP4Eh4WXmS/aRDQIzov5SKT0+elCYrfaYY9FoulEhU7Mek1EnxefrLdHhdIk5wMKe+ExNg+arnWO8P56O+CB4c0Hr7TEx5gmer0Dt/iLR36DhZG1NWENZIOwpUL01dkDSA4bhhtJDBiFrRznsBoViwwGlYXw7ASGDrB3vggXJqWkY90xqyCCrQHx9+RyB8CGYUfOCStUogfETYCjWsocZXpNxfxP+vLy3xP1REAFVGz11K9/7gcd4NUhgtebA6RfCApC+GI8fwrBK2LEwFmpmLx/ig7F+gjDMp6zxAg6ky4nMi+ElAAAAAElFTkSuQmCC",
+  "fire_resistance": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAAT1JREFUOMuVkLFOAlEQRd83mFjYUBIpbMRECgIEChMTjFqqQEJBQQMloYPCxMTaxsJeEztrP8Av4BeoqWwee58z47ydJ8IkN5udvffszDhH1a9dGOXrXw8a0+4AT88aX96aEPXEQxnzJ//28hT0fD/3OqCFb+yjngVN7oaR8fPjPZL+EbwbQQ+jWTCy/GvdrxYHUQ+enUApyFagUbuTBOGZB8FrQNflRgRCkMMpmAYhK9U6LLuTQjGaSK+kV1w+7od3eJFBViprCAi76wlkou+FvMPDIGQNqFe/+QVlQQ1hOCaCB94kqFb8WQ8mBggwE6/0dbUXPPBSxnnv0+vxwUOYpgEA73xoPY0BnR1VZCo+OgAawtOQ14IYdn5cje6FMAP4LuSRnAExrFk6FZgWevTNbVUaprUTJHd8o79qDY4A9i4qxYBnAAAAAElFTkSuQmCC",
+  "water_breathing": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABBUlEQVQ4jdWUvQrCQBCE9ykt/NdKROx8AS1srAVLO0UlaJFGLITgbyBRG1GDoI22vsCZOXIhyiUm6VwYDi6573ZnQog8lVQMLlRhsqOSeqDIJSC2GGRDoGgwL6Rt3Khj3qm5sABhucGKEt1ZJBCHvBhj0Oj0pHRPA4SFBmXHJgehEweE1QVhDVWOsQzjoBNA0GVmuHHHE+PjUt8ghKk4VFS2VFb3VJkeeZc4BIUOApuOsfzFuv5g1dk5XhDYxEN0VJtbZMP+NAhpydIJCkJqOACt9fUjHdwoJAsiqBtuaEO7UKq/dA2VBfHTWEBiGfptbF7R+c1QoKF+JfsoMUas/1IkLzz1BrHpl0JjeK8nAAAAAElFTkSuQmCC",
+  "invisibility": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAwUlEQVR42r2TMQrCQBBFc4Ug3iuH8AJpPIqFt9ADWHiKFCnsxMbSQpCVN/BhiAs7mcKBz4bNzOPv7E7X/SPOu754pQCP07Z8yt70vA0m9sJAElU8Xu6m4/S2dRWMREEAENdX+YGF3HgIwbfEv6YrD6pB5AxXIZAvkgTV8cKgJQSwmk9OE+QbXYOEQTRSIH9b/hk0QcR82BjM39ISQk7oQQpWg6x+3cA0GhoV9lIzR6FXavI1KqxykobJVeo4NWcRJ19xibdQzzz2YAAAAABJRU5ErkJggg==",
+  "night_vision": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA20lEQVR42mNgoAKQkJBgGIlAXiwEKybZACWFNBD9HxlDxfAbCFNgYVwNN0DXft7/lt5PYBqECRoIElBWzoEbgKz53YOA//+/dILp6JTTKAZC9UAMEeDWZZCXj2CAuQCGQZpghlzb7o4iB7MIbCBQL8gMMAHE//VsOsEKtOVKwGxk18AMBtEgeRgGqQPphRskJe0NNgymAKYB5BKQYSAaWTNMDUgPVC/Ce5KCLgxQ01FsRTYM5mKYOkmZIIQhMAD1IoMYvx2KgTAXIBsAVYNpCCEDSTIAl4HoeAQCAMT9z5NKEFmnAAAAAElFTkSuQmCC",
+  "health_boost": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABBklEQVR42p2TPQ7CMAyFLVTaqi0/A4KBjWv0AAyMTAzcAI7AUEYmLsDAZbhWqdO+4rpJimrpKVESf3Ecm8hil2XWk9w7JhEd4inlwcSIXJBXlvBYQo/1tgU287ICGJ2jwA8pw9Dos8sN7L7aEIvnvMZ6zxMDcz2phhRFLQEDRF5ihblANnmjAkjfjojYQa4xpAdiyHP2yw+c5QgnAKyQ3rMUTOeER0Rp/W4+jK915YX3AOF6Mia/G4fkzTIauQ5IW5D6OTYnndhG3aqWxadBiHAQApAuMh2RbAlnf6F32MkH2Vc9Ndikt0XagQFyqpPZTarPNAxdjQj+gkjYNY1JQkbbqAga+wJ/mE6uDH2UrQAAAABJRU5ErkJggg==",
+  "absorption": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABq0lEQVR42p2SsUtCURTGz1/TEERKktJQUtBQSxC0SOOrMFqKIN4g1qMhlApLl0gbUsxAEkFc6jUULUU1tLU2FET/QS+/4zu3+wzUPHDEd+53fve791yiRvTNL9FcoU4jpRvHfPkgo3pLk5kiDe3nuRY6qtDAism16TOba+GTGvmsDPeqMPJVFJzTz2/Ohad3B9/LV8/cFIglnUj5mjVYQ6KOb8BUmJf3BECmdM4ZS+cVVIcjsSY6wMaPK01I44N2Xr8YNGNaHmHZtj2pbwQtwFMXdxQ8LDZBIAvI2E6xsF1CIyA5OoOiD2+EYi8gQIaTWWJbs/VHBo0tbnQNghZuJoo2NWCEHy70CsLT4IAtgf0XhD6cSBwR7IkjmVy7hEYcAcYgBN4Civ2RaNcgaLH5aNp1hPBvpvjVAtZpcjIxOEFPeDf3+yABci12vCf9oqEfXIs3HcmDxKUHtw6onSvdTSiRVYPSQZwYpTiT+0KzAFCTCUMrE1N3pMHYmX/dIoHpycdJ5HhD/Jc+FQKRBezgW40rd+6aE9greE4gPa0gDx0wuONj5Gp/1lt7fgAW4rdsXCneAAAAAABJRU5ErkJggg==",
+  "saturation": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGOfPtRkwAAAQhJREFUOMtjYBhZ4MzJjQyb1/X8B+El0xoZUhwNGCKVhRh8xYVJMwhkwP//f8G4ui77f5q+0H+gIf/j1CRIMyw+yQ9syPOHu/8vVVcC4yZXFbBhofIkuMxKkO8/yDCQAXctDP5f1FMDGwRzGdGGgQwCaYIZAjJwfZACimFEGwTSBPMSyBAYhnkRp0FQSTCGuQhmCIhGNpCgQaDABQEQjWwYOg1Sm+3vAIpd7AYhA5BBMMNgGGYIKCJASeTI/tmohsG8hM0gdAwzBORqEL1x/QTs3oIBmPeAmAGG3XSUGbISfMHpDCQPwqAEixFT6GGEI7Ey9PQUgQ0D4alTa7BHOz5DSAJUMYQSAADGVBp6Nx469QAAAABJRU5ErkJggg==",
+  "glowing": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABAUlEQVR42rVUwQ3DIAxkvayVf7NI1Q2yQJQnqtRHf1GfHaAhkdtzMSLEpvnU0gli8HG2Ic5VjIgSDpkVEH2kEakxeYACy78/RAkig0idW1KPml67nKjve8blfEnzHLB1fVaJSIjGYSDvPZNhBODD2iuMZDWBiZb14bBJAqdp4kD5FmDPvNzUjjlIjYu7QI3oAxeWOx/OhHlKcQOn0DQNQ9LJv2XfJsVSERZRFyl027YM8QGcWvCsJinKU4RU0HenLikogbWfxZb0pM1lbcSvFlsMEiW1I4jq7dajG9I9jHO4um9NeHSZGjIfbSTbPMx4g/kmR6JU4Nqjrd34//yrSnsDwiYEXw4oSLYAAAAASUVORK5CYII=",
+  "levitation": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA7UlEQVR42rWRsQrCQAyG76F8FO1zuLiKi6jQ0U1wcReKiAiuRRBxcXJREHVycRBxiua8lORM6RUx8NNr0nz9/9aYnGrM96pKFS70Vye8ApfrhUNGm7OFbK83gOfdCs8OqC9WmrGIEqdHCyEAF/bdXAf5UbgTLnJFMAGsDqaml17UKNo9iwidxc7UhzPxdyA5PHJdoPgcz6g3BNqT9QdGIN8BB+GSP6M+wgSIHvbj+BDu8AvkstomB3IQFz0romHhAdUaLwVQg+Ksm6TZTgbhpQF9CQdFxd+mqbBqURSsEAgEKB9WApLB/uvo12/0Ajn1ZQ1i0JfjAAAAAElFTkSuQmCC",
+  "luck": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAoklEQVQ4jWNgoCWQTpH/rz3B4D+6OEgMJEeSIc6n3FAMQxaT8JEhbBhMAwyDNIEwuhhOA2AasBmGzIe5Eqs30b0DMhCZj2wIuhyKYdhcAHMliI0cLrjU4g0bdC+jhxW2mIWHE7oXkQ2GuY6oAIcZgmwQtrDBaRBVvEa1wMYX/chJgGD0IxuGbis+1xIV4PiyCM5oRzeIUKYluQRAFyfJEHIBABx+WYBGAo6ZAAAAAElFTkSuQmCC",
+  "slow_falling": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAArElEQVR42rWU0QmAMAxEu7A/juAAjuEAbuEa/oobCJEUroQ0JkVrIaRg+kjuWhMRpR6RuoOsde4bIdN15NA1IQiHOXNMw5gD8BCEQkAkQENckO5iXea852yNb4IwDh9CF5YuIQiCtkCKBJX9CiId84yoQFITQC0IOufaXKdB0CWCoJsyvgZJh1xxRTemRvwxBUverXLb34AAkW42vTULAkcf7feW90z++418jRsUj6gNV6WPBAAAAABJRU5ErkJggg==",
+  "conduit_power": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA9UlEQVR42mP4//8/AzUwA9UNwga4rXz/I2NsavAaBNPIH1H6Xza3F4xBbGwG4jQIxYBDF8FYftrG/4oNC1EMxGsQuiEat96BMT7DcBoEUgjSBNL859eP/8+PF/0/P18FLIZsGE6DQBK8HvFghTCDYIbMr5aDGwYzCKSWQyHkP1aDQE6GGQTCMENSNeUxDAKpJWgQzDCQZhcFIbBBIANhcgQNAjkXpAimAeYaZINgyQGn10AAJIHsKphBpQGqYDbMJSAapBZnrIEksbkK3RCYt/AmSGTDsGGYl4jKIiCFMANBtoMwzABkQwgahG4gNgNwGjRoyiMAq/Kos4cBUuYAAAAASUVORK5CYII=",
+  "dolphins_grace": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAlElEQVR42mNgGJLAKrzsPwhTbMjqfZfBmCzDYK6AGdKxeB9pBsEMAGlENsTIM4k0Q5ANQMYg8fDiif9JMuTsnbcoGN0wnF4k5BJ0jNMwZIPY2WWwakTGOA1Djx1kA0CBDMPohqEYBDMEXSOyJliMYZODJ1aYt5A1IGvCFu24LGLApQEXQDaIpPSFyyCKDEE2bHAXNQCZKTUSGTTZUAAAAABJRU5ErkJggg==",
+  "hero_of_the_village": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAvklEQVQ4y2NgoAsIZviPgsk15Pb/1/8dP7eAsfjdJDIMgxqy/u9ZuEEMq3QghukSaxiSIegGkWYY0CCQASANIAwzEGzQVE0ITa5BTd/WQgyolhgEBoEMQTaI7DACGQIObJBrgGFEcszBAxdkANQQsMvwGbJakOH/Y3EIxmUYuktg6kF6GZAF67i4UAVBAKQRGaNZDtKDYjlMEOYyQj6HuQTDcpAAjEb2Ji4MMwRZLwqAGUQMxmoAqYYRNIQSAABM5C+qTH5H5wAAAABJRU5ErkJggg==",
+  "weakness": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAoElEQVR42mNgGDZAQkLiP1kaXVxc/iMbkp2d/Z9kw0CG3Lhx4z+6YSS7ABufaEOmTZv2nyzNuFxEsstACrBpQg4bolwKkgTFBLImkCHoGonyLsxGUIzs27cPzAbRZEUzSDMIg1xHliHYvEi2IZ5mov8z/OTABsACn2TDQIZ0pqv/15Dj/g9LuTADiTIMZjPIJTBD0DMn0QaRlQFx2UipQQAMAo4kaBgGRwAAAABJRU5ErkJggg==",
+  "poison": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAhElEQVR42mNgoDewypf6j4zNvEX/k2VIyjKr/2W3feAYxCfJMGRDsNFEGwYyCKTJv0cTjNHZZBmE7BKyDEIOH5gBZIUTSDFJgY0cvegGwbyGTGM1CKR5/8sCuI3YDEPHeAOVLL+jG0TQ2aQEKl5nUzOvUWwILCIoMgw5dVPsbZqHHQwAALBLzw8SnbTmAAAAAElFTkSuQmCC",
+  "wither": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABOUlEQVR42rWTz2qDQBDG5ylySLGNG10NSgRFtC2lOaRQAjnkVEjuvfeSZ8h75JBjHnHjrI6dXf9AA10YxvXb/TmfOwvwHyMWohO2lgof8rmEdy8ahrwuYsyKIvdDmE4mWlsvs1arICp98rQ2CNkXK3X8/NK5WqiW7hwyT2qN3iMItcT14EVGNbAPQkEw0giAUYgASG9BHHL6/lHX80VnnNNmnmNnhv+Ig39BVAGH2FYQkM98/aMLV6IlJacOBJudCaKKuD27qgakn7dJCR9RCs+7Q9caVWFXRLBShBrEP5K8rWtQESwMe/zkcCG3R3PjMCrLvNnaDWOVEYy3QNtPvAU4yG4FCgSED4+AlfQ2JbZ/Xz9xkHHkY3etuRYdWxyCRz4KwoELGt+GnT9BhmB3Qfpgd0M4jMfYuAGNiSy/YolsBgAAAABJRU5ErkJggg==",
+  "hunger": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAA/klEQVQ4jWNgGNRg87oeFEy2IWdObgTR/0F4ybRGhhRHA4ZIZSEGX3Fh4g3q7MgFG/L//18wrq7L/p+mL/QfaMj/ODUJ4g3LS/BliE/yAxvy/OHu/0vVlcC4yVUFbFioPJEuc9NRZrAS5PsPMgxkwF0Lg/8X9dTABsFcRpRhQEPABoE0wQwBGbg+SAHFMKINAmmCeQlkCAzDvEiSi2CGgGhkA4k2yEOaH8UwdBpkULa/A+E0hm4YDMMMAUUEKIkc2T+bNMOQMcwQUNIA0RvXT2AApjWiwguOQUkjC5rOQAaBMCjBEjQIGwAawtDTUwQ2DISnTq0h7CJ8hiHjwQ0AvdXXPVodcDAAAAAASUVORK5CYII=",
+  "nausea": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABUklEQVR42mNgAAIBURMUDANW+VIMFskSDGbeov/Nw8VANANZAGQQEP8HYZBhIINm7d4OxyQbBDLEOlGKAeSqjOY0uPz///+JN8i1QonBv0cT7qqoWjeGWWtmkmYYzEUpy6z+l932AdMgw4r7IvBrBJl+5u5tDINAhsAwzLDGKRW4DUF3JrqLYBhkkH+6LWaAoxswe8cshqgOPwa7ElmwQaAwQncRRlJANgTEnrO9h8GjUQUe7TAMMgCGYS4CAbirYGFy98VzFEPQvQNzDch1IINglmMYBPKOY4U8UYaEljsxYBgES6WgMIGFB8wL2AyxS5CGp6PdF89jBjjMNbDEBzMMZgDckKVdcD3ISQUOPJpUGGCanLLlGWCaQdgmWoohvMAbI0VjTdXIBpkFQXI6Mkb2Ak5DQMClVhEjpyMDkEEgr4Aw3vyFXPZgTXCkAHTvkAIAB208qg9dvTcAAAAASUVORK5CYII=",
+  "blindness": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABGElEQVR42tXSOwrCQBAG4BTBLk1ASGETC1FIo5WPQsVSCy1EsbUR7Cw8h7VV8BIWXsAzeIEcY9x/shM2Gx8pdeBnl4T5mN3ECYLAMfO7FTR6L1Oq7q5LyMN1sUcjmelO1+VAIFSpMIbG8+1KUtgLGI1m7zG80JMQbVpprAK2PB4Ym6y2RQwP9It0CjWVYGEYcub7XWG6HFZApARTa5IkFMfxZ6watouIKkzBmA4gfmYdFb0wGPJrLT67DUVRRPIBEBtCD3oZUhun2R8zZk6FY2AKGzOnQY/uTe8Jm+FinWESYHLZJ98n+c8E0T35L2diGNkEJYJhvXieo9bX/5J5TBuU+zCxt5BgSL0zyEAJGvUk3yEbtPM/9QTc1m3VWibPjQAAAABJRU5ErkJggg==",
+  "unluck": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAnUlEQVR42mNgGAgQ7Kn4H4QpNuTocr//dXlG/21NRf+T7QqQASCDQJhkg5BdATMExAbJgWiivYnuEpi3YGIEDYNJwjQhhwuywcguxOkKmEYQjcwmyhBkg2CGIQcwTJxggGOLHVxhg9MgXFGMz2sYhmGLHVyBjWwYhsuQDUL3BjYN2CzAMAw9inGFB7KXsQKC4UAsQPYW2YYQ7WxaAgC76RU9qyGKuwAAAABJRU5ErkJggg==",
+};
+function effectIconImg(effectId, fallbackEmoji, size) {
+  const s = size || 26;
+  const emoji = fallbackEmoji || '✨';
+  const key = effectId.replace('minecraft:', '');
+  const b64 = EFFECT_ICON_DATA[key];
+  if (!b64) {
+    return `<span class="recipe-card-icon-fallback" style="width:${s}px;height:${s}px;font-size:${Math.floor(s*0.6)}px;display:inline-flex;align-items:center;justify-content:center;">${emoji}</span>`;
+  }
+  return `<img src="data:image/png;base64,${b64}" class="recipe-step-icon" style="width:${s}px;height:${s}px;image-rendering:pixelated;" alt="${effectId}">`;
+}
+
+// ================= RECIPES TAB =================
+
+// ---- Recipes category navigation ----
+function showRecipesGroup(name) {
+  document.querySelectorAll('.recipes-group').forEach(g => {
+    g.classList.toggle('active', g.dataset.recipesGroup === name);
+  });
+  document.querySelectorAll('.recipes-nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.recipesNav === name);
+  });
+}
+document.querySelectorAll('.recipes-nav-item').forEach(item => {
+  item.addEventListener('click', () => showRecipesGroup(item.dataset.recipesNav));
+});
+showRecipesGroup('brewing');
+
+// drag-to-scroll for recipes nav (same pattern as the commands nav)
+(function enableRecipesDragScroll() {
+  const nav = document.getElementById('recipesNav');
+  let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+  nav.addEventListener('mousedown', (e) => {
+    isDown = true; moved = false; nav.classList.add('dragging');
+    startX = e.pageX - nav.offsetLeft; scrollLeft = nav.scrollLeft;
+  });
+  window.addEventListener('mouseup', () => { isDown = false; nav.classList.remove('dragging'); });
+  nav.addEventListener('mouseleave', () => { isDown = false; nav.classList.remove('dragging'); });
+  nav.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - nav.offsetLeft;
+    const walk = x - startX;
+    if (Math.abs(walk) > 5) moved = true;
+    nav.scrollLeft = scrollLeft - walk;
+  });
+  nav.addEventListener('click', (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
+
+// ---- Brewing data ----
+// Each potion: base awkward potion + one defining ingredient, plus optional modifiers.
+const BREWING_RECIPES = [
+  {
+    name: '어색한 물약 (베이스)', effectId: null,
+    steps: [['glass_bottle', '물병', '🧪'], ['nether_wart', '네더 사마귀', '🍄']],
+    note: '거의 모든 물약의 시작점이에요. 이것 없이는 대부분의 효과 포션을 만들 수 없어요.'
+  },
+  { name: '회복의 물약', effectId: 'instant_health', steps: [['potion', '어색한 물약', '🧪'], ['glistering_melon_slice', '반짝이는 수박 조각', '🍈']] },
+  { name: '재생의 물약', effectId: 'regeneration', steps: [['potion', '어색한 물약', '🧪'], ['ghast_tear', '가스트 눈물', '💧']] },
+  { name: '화염 저항의 물약', effectId: 'fire_resistance', steps: [['potion', '어색한 물약', '🧪'], ['magma_cream', '마그마 크림', '🔥']] },
+  { name: '힘의 물약', effectId: 'strength', steps: [['potion', '어색한 물약', '🧪'], ['blaze_powder', '블레이즈 가루', '⚡']] },
+  { name: '신속의 물약', effectId: 'speed', steps: [['potion', '어색한 물약', '🧪'], ['sugar', '설탕', '🍬']] },
+  { name: '야간 투시의 물약', effectId: 'night_vision', steps: [['potion', '어색한 물약', '🧪'], ['golden_carrot', '황금 당근', '🥕']] },
+  { name: '수중 호흡의 물약', effectId: 'water_breathing', steps: [['potion', '어색한 물약', '🧪'], ['pufferfish', '복어', '🐡']] },
+  { name: '점프 강화의 물약', effectId: 'jump_boost', steps: [['potion', '어색한 물약', '🧪'], ['rabbit_foot', '토끼 발', '🐇']] },
+  { name: '느린 낙하의 물약', effectId: 'slow_falling', steps: [['potion', '어색한 물약', '🧪'], ['phantom_membrane', '팬텀 막', '🦇']] },
+  { name: '독의 물약', effectId: 'poison', steps: [['potion', '어색한 물약', '🧪'], ['spider_eye', '거미 눈', '🕷']] },
+  { name: '거북 도사의 물약', effectId: 'resistance', steps: [['potion', '어색한 물약', '🧪'], ['turtle_helmet', '거북 등딱지', '🐢']] },
+  {
+    name: '야간 투시 → 투명화의 물약', effectId: 'invisibility',
+    steps: [['potion', '야간 투시의 물약', '🧪'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
+    note: '반드시 야간 투시 물약을 먼저 만든 뒤 발효된 거미 눈을 넣어야 해요. 순서를 헷갈리기 쉬운 물약이에요.'
+  },
+  {
+    name: '구속의 물약', effectId: 'slowness',
+    steps: [['potion', '신속의 물약', '🧪'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
+    note: '신속의 물약에 발효된 거미 눈을 넣으면 효과가 반전돼서 구속(느려짐)이 돼요.'
+  },
+  {
+    name: '나약함의 물약', effectId: 'weakness',
+    steps: [['potion', '물병', '💧'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
+    note: '어색한 물약 없이 물병에 바로 발효된 거미 눈을 넣으면 나와요. 좀비 주민 치료용으로 자주 씀.'
+  },
+  {
+    name: '즉시 피해의 물약', effectId: 'instant_damage',
+    steps: [['potion', '회복의 물약', '🧪'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
+    note: '회복 물약을 반전시켜 만들어요.'
+  },
+];
+const BREWING_MODIFIERS = [
+  { icon: ['redstone', '레드스톤', '🔴'], label: '레드스톤 가루', desc: '지속시간을 늘려요 (즉시 효과 포션 제외).' },
+  { icon: ['glowstone_dust', '발광석 가루', '💡'], label: '발광석 가루', desc: '효과 레벨을 올려요 (예: 힘 I → 힘 II). 지속시간은 줄어들어요.' },
+  { icon: ['gunpowder', '화약', '💥'], label: '화약', desc: '물병 → 투척용 물약.' },
+  { icon: ['dragon_breath', '드래곤의 숨결', '🐉'], label: '드래곤의 숨결', desc: '투척용 물약 → 잔류형 물약(구름으로 남아 지속되는 물약)으로 바꿔요.' },
+];
+
+function renderBrewingList() {
+  const iconGrid = document.getElementById('brewingIconGrid');
+  const detail = document.getElementById('brewingDetail');
+  iconGrid.innerHTML = '';
+
+  function renderDetail(index) {
+    const recipe = BREWING_RECIPES[index];
+    const stepsHtml = recipe.steps.map(([id, label, emoji], i) => {
+      const arrow = i > 0 ? '<span class="recipe-arrow">+</span>' : '';
+      return `${arrow}${iconImg(id, emoji)}<span>${label}</span>`;
+    }).join('');
+    detail.innerHTML = `
+      <div class="recipe-card">
+        <div class="recipe-card-body">
+          <div class="recipe-card-title">${recipe.name}</div>
+          <div class="recipe-steps">${stepsHtml}</div>
+          ${recipe.note ? `<div class="recipe-note">${recipe.note}</div>` : ''}
+        </div>
+      </div>
+    `;
+    document.querySelectorAll('.brewing-icon-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+  }
+
+  BREWING_RECIPES.forEach((recipe, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'brewing-icon-btn';
+    const iconHtml = recipe.effectId
+      ? effectIconImg(recipe.effectId, '🧪', 28)
+      : iconImg('potion', '🧪', 28); // base awkward potion has no status effect of its own
+    btn.innerHTML = `${iconHtml}<span class="brewing-icon-label">${recipe.name.replace('의 물약', '').replace(' (베이스)', '')}</span>`;
+    btn.addEventListener('click', () => renderDetail(index));
+    iconGrid.appendChild(btn);
+  });
+
+  renderDetail(0);
+
+  // modifiers section
+  const modContainer = document.getElementById('brewingModifiers');
+  modContainer.innerHTML = '';
+  BREWING_MODIFIERS.forEach(mod => {
+    const card = document.createElement('div');
+    card.className = 'recipe-card';
+    card.innerHTML = `
+      <div class="recipe-card-body">
+        <div class="recipe-steps">${iconImg(...mod.icon)}<span style="font-weight:600; color:var(--text);">${mod.label}</span></div>
+        <div class="recipe-note">${mod.desc}</div>
+      </div>
+    `;
+    modContainer.appendChild(card);
+  });
+}
+renderBrewingList();
+
+// ---- Commonly-forgotten crafting recipes ----
+const CRAFTING_RECIPES = [
+  {
+    name: '활',
+    steps: [['stick', '막대기', '🥢'], ['string', '실', '🧵']],
+    grid: [
+      [null, 0, 1],
+      [0, null, 1],
+      [null, 0, 1],
+    ],
+    note: 'ㄷ자 모양으로 막대기 3개와 실 3개를 배치해요. 순서가 헷갈리기로 유명한 조합이에요.'
+  },
+  {
+    name: '화살',
+    steps: [['flint', '부싯돌', '🔷'], ['stick', '막대기', '🥢'], ['feather', '깃털', '🪶']],
+    grid: [
+      [null, 0, null],
+      [null, 1, null],
+      [null, 2, null],
+    ],
+    note: '세로로 부싯돌 - 막대기 - 깃털 순서로 배치해요.'
+  },
+  {
+    name: '케이크',
+    steps: [['bucket', '우유 양동이', '🥛'], ['sugar', '설탕', '🍬'], ['egg', '달걀', '🥚'], ['wheat', '밀', '🌾']],
+    grid: [
+      [0, 0, 0],
+      [1, 2, 1],
+      [3, 3, 3],
+    ],
+    note: '우유 3개(양동이) + 설탕 2개 + 달걀 1개 + 밀 3개. 재료 개수가 많아서 자주 까먹어요.'
+  },
+  {
+    name: '토끼 스튜',
+    steps: [['cooked_rabbit', '익힌 토끼고기', '🍖'], ['carrot', '당근', '🥕'], ['baked_potato', '구운 감자', '🥔'], ['brown_mushroom', '버섯', '🍄'], ['bowl', '그릇', '🥣']],
+    grid: [
+      [0, 1, 2],
+      [null, 3, null],
+      [null, 4, null],
+    ],
+    note: '재료 5개가 전부 달라서 순서 없이 아무 칸에나 넣으면 완성돼요. 배치는 예시일 뿐이에요.'
+  },
+  {
+    name: '나침반',
+    steps: [['iron_ingot', '철 주괴', '⚙'], ['redstone', '레드스톤', '🔴']],
+    grid: [
+      [null, 0, null],
+      [0, 1, 0],
+      [null, 0, null],
+    ],
+    note: '철 주괴 4개를 다이아몬드 모양으로, 가운데에 레드스톤 1개를 넣어요.'
+  },
+  {
+    name: '시계',
+    steps: [['gold_ingot', '금 주괴', '🟡'], ['redstone', '레드스톤', '🔴']],
+    grid: [
+      [null, 0, null],
+      [0, 1, 0],
+      [null, 0, null],
+    ],
+    note: '나침반과 같은 배치인데 금 주괴로 바꾼 버전이에요.'
+  },
+  {
+    name: '피스톤',
+    steps: [['oak_planks', '나무판자', '🪵'], ['cobblestone', '조약돌', '🪨'], ['iron_ingot', '철 주괴', '⚙'], ['redstone', '레드스톤', '🔴']],
+    grid: [
+      [0, 0, 0],
+      [1, 2, 1],
+      [1, 3, 1],
+    ],
+    note: '맨 윗줄 나무판자 3, 가운데줄 조약돌 2+철 주괴(중앙), 아랫줄 조약돌+레드스톤+조약돌.'
+  },
+  {
+    name: '레드스톤 중계기',
+    steps: [['redstone_torch', '레드스톤 횃불', '🔥'], ['stone', '돌', '🪨'], ['redstone', '레드스톤', '🔴']],
+    grid: [
+      [0, 2, 0],
+      [1, 1, 1],
+      [null, null, null],
+    ],
+    note: '윗줄에 레드스톤 횃불 2개(양옆) + 레드스톤 가루 1개(중앙), 그 아랫줄에 돌 3개. 맨 아랫줄은 비워둬요.'
+  },
+  {
+    name: '레드스톤 비교기',
+    steps: [['redstone_torch', '레드스톤 횃불', '🔥'], ['stone', '돌', '🪨'], ['quartz', '쿼츠', '⬜']],
+    grid: [
+      [null, 0, null],
+      [0, 2, 0],
+      [1, 1, 1],
+    ],
+    note: '맨 윗줄 중앙에 횃불 1개, 가운데줄에 횃불-쿼츠-횃불, 맨 아랫줄은 돌 3개. 중계기랑 헷갈리기 쉬워요.'
+  },
+  {
+    name: '레드스톤 램프',
+    steps: [['redstone', '레드스톤', '🔴'], ['glowstone_dust', '발광석 가루', '💡']],
+    grid: [
+      [null, 0, null],
+      [0, 1, 0],
+      [null, 0, null],
+    ],
+    note: '레드스톤 가루 4개(십자 모양) + 발광석 가루 1개(중앙).'
+  },
+  {
+    name: '불 조각',
+    steps: [['blaze_powder', '블레이즈 가루', '🔥'], ['gunpowder', '화약', '💥'], ['coal', '석탄', '⚫']],
+    note: '블레이즈 가루 1 + 화약 1 + 석탄(또는 숯) 1을 아무 칸에나 넣으면 완성돼요. (조합대 배치가 정해져 있지 않아요)'
+  },
+  {
+    name: '이름표',
+    steps: [['string', '실', '🧵'], ['ghast_tear', '가스트 눈물', '💧']],
+    note: '조합대에서 만들 수 없고, 낚시나 던전 상자에서만 얻을 수 있어요. (재료 조합이 아니라 획득처가 헷갈리는 케이스)'
+  },
+];
+
+// Renders a 3x3 crafting-grid visualization. `grid` is a 3x3 array of step
+// indexes (or null for an empty cell); `steps` provides the icon/emoji for
+// each index. Returns an HTML string for a small grid widget.
+function craftingGridHtml(grid, steps) {
+  const cells = grid.flat().map(idx => {
+    if (idx === null) {
+      return `<div class="crafting-grid-cell empty"></div>`;
+    }
+    const [id, label, emoji] = steps[idx];
+    return `<div class="crafting-grid-cell" title="${label}">${iconImg(id, emoji, 22)}</div>`;
+  }).join('');
+  return `<div class="crafting-grid">${cells}</div>`;
+}
+
+function renderCraftingList() {
+  const container = document.getElementById('craftingList');
+  container.innerHTML = '';
+  CRAFTING_RECIPES.forEach(recipe => {
+    const card = document.createElement('div');
+    card.className = 'recipe-card';
+    const stepsHtml = recipe.steps.map(([id, label, emoji], i) => {
+      const arrow = i > 0 ? '<span class="recipe-arrow">+</span>' : '';
+      return `${arrow}${iconImg(id, emoji)}<span>${label}</span>`;
+    }).join('');
+    const gridHtml = recipe.grid ? craftingGridHtml(recipe.grid, recipe.steps) : '';
+    card.innerHTML = `
+      ${gridHtml}
+      <div class="recipe-card-body">
+        <div class="recipe-card-title">${recipe.name}</div>
+        <div class="recipe-steps">${stepsHtml}</div>
+        ${recipe.note ? `<div class="recipe-note">${recipe.note}</div>` : ''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+renderCraftingList();
+
+// ================= LINKS TAB =================
+const USEFUL_LINKS = [
+  {
+    section: '이 도구 (참고용)',
+    items: [
+      { title: 'Ride Command Generator — GamerGeeks', url: 'https://www.gamergeeks.net/apps/minecraft/ride-command-generator', desc: '/ride 명령어(엔티티가 다른 엔티티를 타게/내리게)를 만들어주는 생성기. Give/Summon 등 다른 명령어 생성기도 같이 있어요.', emoji: '🐴' },
+    ]
+  },
+  {
+    section: '스킨 / 이미지 변환',
+    items: [
+      { title: 'SkinSprite Studio', url: 'https://sss.1m3.jp/', desc: '마인크래프트 스킨을 작은 픽셀아트로 변환해주는 도구.', emoji: '🖼' },
+      { title: 'ドットちび子 (도트 치비코)', url: 'https://dot-chibiko.chabo.tokyo/', desc: '스킨 PNG로 2등신 치비 캐릭터 GIF/PNG를 만들어주는 도구. 디스코드·라인용 사이즈 지원.', emoji: '🎨' },
+      { title: 'NameMC', url: 'https://namemc.com/', desc: '플레이어 닉네임/UUID 조회, 스킨/케이프 갤러리, 서버 검색.', emoji: '👤' },
+    ]
+  },
+  {
+    section: '종합 도구 모음',
+    items: [
+      { title: 'MC Tools', url: 'https://mc-tools.net/', desc: '스킨 에디터, 좌표 계산기, 컬러코드 메이커, 커스텀 그림/음반/토템 제작 등 브라우저 기반 종합 도구.', emoji: '🧰' },
+      { title: 'Minecraft.Tools', url: 'https://minecraft.tools/en/', desc: '조합법 계산기, 마법부여/양조 계산기, 갑옷·비콘 색상, 폭죽/배너/방패 제작기, 몹 생성기, 좌표 변환기, 텍스트/타겟 셀렉터 생성기 등 방대한 생성기 모음.', emoji: '🛠' },
+      { title: 'Minecraft.Tools — 배너 갤러리', url: 'https://minecraft.tools/en/banner-galery.php', desc: '다른 사람들이 만든 배너 디자인을 둘러보고 그대로 가져다 쓸 수 있는 갤러리.', emoji: '🚩' },
+    ]
+  },
+];
+
+function renderLinksList() {
+  const container = document.getElementById('linksList');
+  container.innerHTML = '';
+  USEFUL_LINKS.forEach(section => {
+    const title = document.createElement('div');
+    title.className = 'links-section-title';
+    title.textContent = section.section;
+    container.appendChild(title);
+
+    section.items.forEach(item => {
+      const a = document.createElement('a');
+      a.className = 'link-card';
+      a.href = item.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.innerHTML = `
+        <div class="link-card-icon">${item.emoji}</div>
+        <div class="link-card-body">
+          <div class="link-card-title">${item.title}</div>
+          <div class="link-card-url">${item.url}</div>
+          <div class="link-card-desc">${item.desc}</div>
+        </div>
+      `;
+      container.appendChild(a);
+    });
+  });
+}
+renderLinksList();
+
+// ---- Mini coordinate calculator (Overworld <-> Nether) ----
+const coordOverworldX = document.getElementById('coordOverworldX');
+const coordOverworldZ = document.getElementById('coordOverworldZ');
+function updateCoordCalc() {
+  const x = parseFloat(coordOverworldX.value) || 0;
+  const z = parseFloat(coordOverworldZ.value) || 0;
+  const netherX = Math.round(x / 8);
+  const netherZ = Math.round(z / 8);
+  document.getElementById('coordNetherResult').textContent = `X: ${netherX}, Z: ${netherZ}`;
+}
+coordOverworldX.addEventListener('input', updateCoordCalc);
+coordOverworldZ.addEventListener('input', updateCoordCalc);
+updateCoordCalc();
 </script>
 
 </body>
