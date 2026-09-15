@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>마인크래프트 도구</title>
+<title>염색 조합기 — 마인크래프트 가죽 염색 시뮬레이터</title>
 <style>
   :root{
     --bg: #14161c;
@@ -1521,7 +1521,7 @@
 <header>
   <div class="header-top">
     <h1>⚗ 마크 도구</h1>
-    <p>마크 하면서 쓸 수 있는 작은 도구 모음</p>
+    <p>마인크래프트에서 쓸 수 있는 작은 도구 모음</p>
   </div>
   <div class="tool-tabs">
     <button class="tool-tab active" data-tool="dye">색상 도구</button>
@@ -1703,6 +1703,7 @@
   <nav class="cmd-cat-nav" id="cmdCatNav">
     <button class="cmd-cat-item" data-cat="items">아이템 생성</button>
     <button class="cmd-cat-item" data-cat="entities">엔티티 조작</button>
+    <button class="cmd-cat-item" data-cat="chatui">채팅/UI</button>
     <button class="cmd-cat-item" data-cat="world">월드·서버 설정</button>
     <button class="cmd-cat-item" data-cat="tools">텍스트·데이터 도구</button>
     <button class="cmd-cat-item" data-cat="mine">내 저장소</button>
@@ -1716,19 +1717,26 @@
     <button class="cmd-nav-item" data-nav="locate-entity" data-cat="entities">엔티티 위치 찾기</button>
     <button class="cmd-nav-item" data-nav="look-at" data-cat="entities">엔티티 고개 돌리기</button>
     <button class="cmd-nav-item" data-nav="scale" data-cat="entities">크기 변경</button>
-    <button class="cmd-nav-item" data-nav="mannequin" data-cat="entities">마네킹</button>
     <button class="cmd-nav-item" data-nav="summon" data-cat="entities">엔티티 소환하기</button>
     <button class="cmd-nav-item" data-nav="effect" data-cat="entities">효과 부여</button>
-    <button class="cmd-nav-item" data-nav="ride" data-cat="entities">탈것 태우기/내리기</button>
+
+    <button class="cmd-nav-item" data-nav="tellraw" data-cat="chatui">채팅 메시지(tellraw)</button>
+    <button class="cmd-nav-item" data-nav="title" data-cat="chatui">타이틀/액션바</button>
+    <button class="cmd-nav-item" data-nav="bossbar" data-cat="chatui">보스바</button>
+    <button class="cmd-nav-item" data-nav="scoreboard" data-cat="chatui">점수판(scoreboard)</button>
+    <button class="cmd-nav-item" data-nav="team" data-cat="chatui">팀(team)</button>
 
     <button class="cmd-nav-item" data-nav="gamerule" data-cat="world">게임규칙</button>
     <button class="cmd-nav-item" data-nav="chair" data-cat="world">의자 만들기</button>
     <button class="cmd-nav-item" data-nav="structure" data-cat="world">구조물 찾기</button>
     <button class="cmd-nav-item" data-nav="worldborder" data-cat="world">월드보더</button>
+    <button class="cmd-nav-item" data-nav="setblock-fill" data-cat="world">블록 채우기/복사(setblock·fill·clone)</button>
+    <button class="cmd-nav-item" data-nav="loot" data-cat="world">전리품 지급(loot)</button>
     <button class="cmd-nav-item" data-nav="etc" data-cat="world">그 밖의 명령어</button>
 
     <button class="cmd-nav-item" data-nav="fetchprofile" data-cat="tools">프로필 조회</button>
     <button class="cmd-nav-item" data-nav="selector" data-cat="tools">타겟 셀렉터 빌더</button>
+    <button class="cmd-nav-item" data-nav="execute" data-cat="tools">조건부 명령(execute)</button>
     <button class="cmd-nav-item" data-nav="anvil" data-cat="tools">모루 비용 계산기</button>
 
     <button class="cmd-nav-item" data-nav="saved" data-cat="mine">내가 저장한 명령어</button>
@@ -1905,41 +1913,7 @@
         </div>
       </div>
 
-      <!-- 5. Mannequin -->
-      <div class="cmd-group" data-cmd-group="mannequin">
-        <div class="cmd-group-title">마네킹 (1.21.9+)</div>
-        <div class="cmd-group-desc">아머스탠드가 아니라, 플레이어처럼 생긴 NPC 형태의 새 엔티티예요. Copper Age 업데이트(1.21.9)부터 추가됐고, summon 명령어로만 소환할 수 있어요.</div>
-
-        <div class="cmd-card">
-          <div class="cmd-card-title">소환 (스킨 + 이름표 + NPC 문구 설정)</div>
-          <div class="cmd-controls">
-            <span class="cmd-num-label">버전</span>
-            <select class="cmd-select" id="mannequinVersionSelect">
-              <option value="new">26.2 이상 (true/false 표기)</option>
-              <option value="old">1.21.9 ~ 26.1 (1b/0b 표기)</option>
-            </select>
-          </div>
-          <div class="cmd-controls">
-            <span class="cmd-num-label">스킨으로 쓸 플레이어 아이디</span>
-            <input type="text" class="cmd-num-input" id="mannequinNameInput" value="Notch" style="width:140px;">
-          </div>
-          <div class="cmd-controls">
-            <span class="cmd-num-label">이름표</span>
-            <input type="text" class="cmd-num-input" id="mannequinCustomNameInput" value="상점 주인" style="width:140px;">
-          </div>
-          <div class="cmd-controls">
-            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
-              <input type="checkbox" id="mannequinShowDescCheckbox" checked>
-              "NPC" 문구 표시하기
-            </label>
-          </div>
-          <div class="cmd-code-row">
-            <div class="cmd-code" id="mannequinSummonCode"></div>
-            <button class="cmd-copy-btn">복사</button>
-          </div>
-          <div class="cmd-note">이름표는 CustomName으로 항상 표시돼요. "NPC" 문구는 마네킹 고유의 기본 설명(description)인데, 체크를 끄면 hide_description이 적용돼서 그 문구만 안 보이게 할 수 있어요. 26.2부터는 SNBT가 true/false를 직접 지원하고, 그 이전 버전은 1b/0b로 써야 해요 — 버전을 선택하면 알맞은 표기로 바뀝니다. 삭제는 /kill @e[type=mannequin,limit=1,sort=nearest] 로 하거나 직접 공격하면 돼요.</div>
-        </div>
-      </div>
+      <!-- (Mannequin summon merged into 엔티티 소환하기 below) -->
 
       <!-- Entity summon builder -->
       <div class="cmd-group" data-cmd-group="summon">
@@ -1969,6 +1943,79 @@
             <select class="cmd-select" id="summonVariantSelect"></select>
           </div>
 
+          <!-- Mannequin-only controls (shown only when entity = mannequin) -->
+          <div class="cmd-controls" id="summonMannequinVersionControls" style="display:none;">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="summonMannequinVersionSelect">
+              <option value="new">26.2 이상 (true/false 표기)</option>
+              <option value="old">1.21.9 ~ 26.1 (1b/0b 표기)</option>
+            </select>
+          </div>
+          <div class="cmd-controls" id="summonMannequinSkinControls" style="display:none;">
+            <span class="cmd-num-label">스킨으로 쓸 플레이어 아이디</span>
+            <input type="text" class="cmd-num-input" id="summonMannequinSkinInput" value="Notch" style="width:140px;">
+          </div>
+          <div class="cmd-controls" id="summonMannequinDescControls" style="display:none;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonMannequinShowDescCheckbox" checked>
+              "NPC" 문구 표시하기
+            </label>
+          </div>
+          <div class="cmd-controls" id="summonMannequinNameControls" style="display:none;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="summonMannequinNameCheckbox">
+              이름표 지정
+            </label>
+            <input type="text" class="cmd-num-input" id="summonMannequinNameInput" placeholder="이름표" style="display:none; width:130px;">
+          </div>
+
+          <!-- Horse-only: color + markings (packed into Variant int) -->
+          <div class="cmd-controls" id="summonHorseControls" style="display:none;">
+            <span class="cmd-num-label">털 색</span>
+            <select class="cmd-select" id="summonHorseColorSelect">
+              <option value="0">흰색</option>
+              <option value="1">크림색</option>
+              <option value="2">밤색</option>
+              <option value="3">갈색</option>
+              <option value="4">검정</option>
+              <option value="5">회색</option>
+              <option value="6">진갈색</option>
+            </select>
+            <span class="cmd-num-label">무늬</span>
+            <select class="cmd-select" id="summonHorseMarkingSelect">
+              <option value="0">없음</option>
+              <option value="256">흰 양말+블레이즈</option>
+              <option value="512">흰 반점(페인트)</option>
+              <option value="768">흰 점(눈꽃 아팔루사)</option>
+              <option value="1024">검은 반점(수티)</option>
+            </select>
+          </div>
+
+          <!-- Tropical fish-only: shape + pattern + 2 colors (packed into Variant int) -->
+          <div class="cmd-controls" id="summonTropicalFishControls" style="display:none;">
+            <span class="cmd-num-label">몸 크기</span>
+            <select class="cmd-select" id="summonFishShapeSelect">
+              <option value="0">작은 물고기</option>
+              <option value="1">큰 물고기</option>
+            </select>
+            <span class="cmd-num-label">무늬</span>
+            <select class="cmd-select" id="summonFishPatternSelect">
+              <option value="0">콥(가로 줄)</option>
+              <option value="1">선스트릭</option>
+              <option value="2">스누퍼</option>
+              <option value="3">대셔</option>
+              <option value="4">브라이늘리</option>
+              <option value="5">스파티(점박이)</option>
+            </select>
+          </div>
+          <div class="cmd-controls" id="summonTropicalFishColorControls" style="display:none;">
+            <span class="cmd-num-label">몸 색</span>
+            <select class="cmd-select" id="summonFishBaseColorSelect"></select>
+            <span class="cmd-num-label">무늬 색</span>
+            <select class="cmd-select" id="summonFishPatternColorSelect"></select>
+          </div>
+
+          <div id="summonGenericControls">
           <div class="cmd-controls">
             <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
               <input type="checkbox" id="summonNameCheckbox">
@@ -2031,6 +2078,7 @@
               소리 없음
             </label>
           </div>
+          </div>
 
           <div class="cmd-range-warning" id="summonHealthWarning">체력은 0보다 커야 해요.</div>
           <div class="cmd-range-warning" id="summonScaleWarning">크기는 0.0625 ~ 16 사이여야 해요.</div>
@@ -2039,7 +2087,8 @@
             <div class="cmd-code" id="summonCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
-          <div class="cmd-note">체력을 늘렸다면 소환 직후 <code>/effect give @e[limit=1,sort=nearest] instant_health 1 255</code> 등으로 채워주는 게 좋아요 (기본은 최대 체력의 시작값으로 스폰돼요). "아기 상태"와 "색상/무늬"는 지원하는 종류에서만 나타나요.</div>
+          <div class="cmd-note" id="summonGenericNote">체력을 늘렸다면 소환 직후 <code>/effect give @e[limit=1,sort=nearest] instant_health 1 255</code> 등으로 채워주는 게 좋아요 (기본은 최대 체력의 시작값으로 스폰돼요). "아기 상태"와 "색상/무늬"는 지원하는 종류에서만 나타나요.</div>
+          <div class="cmd-note" id="summonMannequinNote" style="display:none;">마네킹은 아머스탠드가 아니라, 플레이어처럼 생긴 NPC 형태의 새 엔티티예요(Copper Age, 1.21.9+). 이름표(CustomName)는 다른 엔티티와 달리 JSON 텍스트가 아니라 순수 문자열을 그대로 써요 — <code>{"text":"..."}</code> 형식을 쓰면 그 글자 그대로가 이름이 되어버려요. "NPC" 문구는 마네킹 고유의 기본 설명(description)인데, 체크를 끄면 hide_description이 적용돼서 그 문구만 안 보이게 할 수 있어요. 26.2부터는 SNBT가 true/false를 직접 지원하고, 그 이전 버전은 1b/0b로 써야 해요. 삭제는 <code>/kill @e[type=mannequin,limit=1,sort=nearest]</code> 로 하거나 직접 공격하면 돼요.</div>
         </div>
       </div>
 
@@ -2210,6 +2259,403 @@
         </div>
       </div>
 
+      <!-- Tellraw -->
+      <div class="cmd-group" data-cmd-group="tellraw">
+        <div class="cmd-group-title">채팅 메시지 (tellraw)</div>
+        <div class="cmd-group-desc">색상/서식이 있는 채팅 메시지를 보내거나, 클릭하면 명령어가 실행되는 링크형 메시지를 만들어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">버전</span>
+            <select class="cmd-select" id="tellrawVersionSelect">
+              <option value="new">1.21.5 이상 (click_event/hover_event)</option>
+              <option value="old">1.21.4 이하 (clickEvent/hoverEvent)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">받을 대상</span>
+            <select class="cmd-select" id="tellrawTargetSelect">
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="tellrawPlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">내용</span>
+            <input type="text" class="cmd-num-input" id="tellrawTextInput" value="공지사항" style="width:220px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">색상</span>
+            <select class="cmd-select" id="tellrawColorSelect">
+              <option value="">기본(흰색)</option>
+              <option value="black">검정</option>
+              <option value="dark_blue">진한 파랑</option>
+              <option value="dark_green">진한 초록</option>
+              <option value="dark_aqua">진한 하늘색</option>
+              <option value="dark_red">진한 빨강</option>
+              <option value="dark_purple">진한 보라</option>
+              <option value="gold">금색</option>
+              <option value="gray">회색</option>
+              <option value="dark_gray">진회색</option>
+              <option value="blue">파랑</option>
+              <option value="green">초록</option>
+              <option value="aqua">하늘색</option>
+              <option value="red">빨강</option>
+              <option value="light_purple">연보라</option>
+              <option value="yellow">노랑</option>
+              <option value="white">흰색</option>
+            </select>
+            <label style="display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="tellrawBoldCheckbox"> 굵게
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="tellrawItalicCheckbox"> 기울임
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="tellrawUnderlineCheckbox"> 밑줄
+            </label>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="tellrawClickCheckbox"> 클릭하면 동작 실행
+            </label>
+            <select class="cmd-select" id="tellrawClickActionSelect" style="display:none;">
+              <option value="run_command">명령어 실행</option>
+              <option value="suggest_command">채팅창에 입력만 해두기</option>
+              <option value="open_url">웹사이트 열기</option>
+              <option value="copy_to_clipboard">클립보드에 복사</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="tellrawClickValueInput" placeholder="/spawn" style="display:none; width:180px;">
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="tellrawHoverCheckbox"> 마우스 올리면 설명 표시
+            </label>
+            <input type="text" class="cmd-num-input" id="tellrawHoverValueInput" placeholder="설명 문구" style="display:none; width:180px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="tellrawCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">"채팅창에 입력만 해두기"는 명령어를 바로 실행하지 않고 채팅창에 타이핑만 해줘요. run_command로 명령어를 실행하려면 앞에 슬래시(/)를 붙여야 해요. 1.21.5부터 click_event/hover_event로 필드 이름이 바뀌었으니 서버 버전에 맞는 쪽을 선택하세요.</div>
+        </div>
+      </div>
+
+      <!-- Title / Actionbar -->
+      <div class="cmd-group" data-cmd-group="title">
+        <div class="cmd-group-title">타이틀 / 서브타이틀 / 액션바</div>
+        <div class="cmd-group-desc">화면 정중앙에 큰 글씨(타이틀)나 핫바 위(액션바)에 문구를 띄워요. 보스전 시작, 알림 등에 써요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <span class="cmd-num-label">받을 대상</span>
+            <select class="cmd-select" id="titleTargetSelect">
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="titlePlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">위치</span>
+            <select class="cmd-select" id="titlePositionSelect">
+              <option value="title">타이틀(큰 글씨, 정중앙)</option>
+              <option value="subtitle">서브타이틀(타이틀 아래 작은 글씨)</option>
+              <option value="actionbar">액션바(핫바 위)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">내용</span>
+            <input type="text" class="cmd-num-input" id="titleTextInput" value="승리!" style="width:200px;">
+            <span class="cmd-num-label">색상</span>
+            <select class="cmd-select" id="titleColorSelect">
+              <option value="">기본(흰색)</option>
+              <option value="gold">금색</option>
+              <option value="red">빨강</option>
+              <option value="green">초록</option>
+              <option value="aqua">하늘색</option>
+              <option value="yellow">노랑</option>
+              <option value="light_purple">연보라</option>
+            </select>
+            <label style="display:flex; align-items:center; gap:5px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="titleBoldCheckbox"> 굵게
+            </label>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="titleTimesCheckbox">
+              나타나는 시간 직접 지정 (기본: 서서히 0.5초 · 유지 3.5초 · 사라짐 1초)
+            </label>
+          </div>
+          <div class="cmd-controls" id="titleTimesControls" style="display:none;">
+            서서히 나타남 <input type="text" class="cmd-num-input" id="titleFadeInInput" value="10" style="width:55px;"> 틱
+            유지 <input type="text" class="cmd-num-input" id="titleStayInput" value="70" style="width:55px;"> 틱
+            서서히 사라짐 <input type="text" class="cmd-num-input" id="titleFadeOutInput" value="20" style="width:55px;"> 틱
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="titleCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">1틱 = 1/20초예요(20틱 = 1초). 서브타이틀만 단독으로는 안 보이고, 타이틀과 같이 보내야 화면에 떠요. 시간 지정은 다음 타이틀부터 적용되니, times 명령을 먼저 실행하고 title을 보내는 순서가 안전해요.</div>
+        </div>
+      </div>
+
+      <!-- Bossbar -->
+      <div class="cmd-group" data-cmd-group="bossbar">
+        <div class="cmd-group-title">보스바 만들기</div>
+        <div class="cmd-group-desc">화면 상단에 뜨는 보스 체력바 스타일의 진행 바를 커스텀으로 만들어요. 이벤트 타이머, 진행률 표시 등에 응용할 수 있어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">1. 만들기 + 초기 설정</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">보스바 아이디</span>
+            <input type="text" class="cmd-num-input" id="bossbarIdInput" value="event" style="width:120px;">
+            <span class="cmd-num-label">표시 이름</span>
+            <input type="text" class="cmd-num-input" id="bossbarNameInput" value="이벤트 타이머" style="width:150px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">색상</span>
+            <select class="cmd-select" id="bossbarColorSelect">
+              <option value="white">흰색</option>
+              <option value="blue">파랑</option>
+              <option value="red">빨강</option>
+              <option value="green">초록</option>
+              <option value="yellow">노랑</option>
+              <option value="pink">분홍</option>
+              <option value="purple">보라</option>
+            </select>
+            <span class="cmd-num-label">모양</span>
+            <select class="cmd-select" id="bossbarStyleSelect">
+              <option value="progress">연속(칸 없음)</option>
+              <option value="notched_6">6칸</option>
+              <option value="notched_10">10칸</option>
+              <option value="notched_12">12칸</option>
+              <option value="notched_20">20칸</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">보이는 대상</span>
+            <select class="cmd-select" id="bossbarPlayersSelect">
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+            </select>
+            <span class="cmd-num-label">최대값</span>
+            <input type="text" class="cmd-num-input" id="bossbarMaxInput" value="100" style="width:70px;">
+            <span class="cmd-num-label">현재값</span>
+            <input type="text" class="cmd-num-input" id="bossbarValueInput" value="100" style="width:70px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="bossbarSetupCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">위 명령어들을 순서대로 하나씩 실행하면 돼요. 값(value)을 바꿀 땐 아래 "값 갱신"만 다시 실행하면 되고, 명령블록 반복 실행으로 진행률을 자동 업데이트할 수 있어요.</div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">2. 값만 갱신 (진행 중 반복용)</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">아이디</span>
+            <input type="text" class="cmd-num-input" id="bossbarUpdateIdInput" value="event" style="width:120px;">
+            <span class="cmd-num-label">새 값</span>
+            <input type="text" class="cmd-num-input" id="bossbarUpdateValueInput" value="50" style="width:70px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="bossbarUpdateCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">3. 지우기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">아이디</span>
+            <input type="text" class="cmd-num-input" id="bossbarRemoveIdInput" value="event" style="width:120px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="bossbarRemoveCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">/bossbar list 로 지금 만들어진 보스바 목록을 확인할 수 있어요.</div>
+        </div>
+      </div>
+
+      <!-- Scoreboard -->
+      <div class="cmd-group" data-cmd-group="scoreboard">
+        <div class="cmd-group-title">점수판(scoreboard) 만들기</div>
+        <div class="cmd-group-desc">킬 수, 코인, 퀘스트 진행도처럼 플레이어별 숫자를 저장하고 화면에 표시해요. 사이드바/탭 목록/이름 아래 등에 띄울 수 있어요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">1. 오브젝티브(항목) 만들기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">내부 이름</span>
+            <input type="text" class="cmd-num-input" id="scoreboardObjNameInput" value="coins" style="width:110px;">
+            <span class="cmd-num-label">기준(criteria)</span>
+            <select class="cmd-select" id="scoreboardCriteriaSelect">
+              <option value="dummy">dummy (명령어로만 값이 바뀜, 가장 흔히 씀)</option>
+              <option value="playerKillCount">playerKillCount (플레이어 처치 수)</option>
+              <option value="totalKillCount">totalKillCount (전체 처치 수)</option>
+              <option value="deathCount">deathCount (사망 횟수)</option>
+              <option value="health">health (체력, 최대 20)</option>
+              <option value="food">food (허기 수치)</option>
+              <option value="xp">xp (경험치 총량)</option>
+              <option value="level">level (경험치 레벨)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">표시 이름</span>
+            <input type="text" class="cmd-num-input" id="scoreboardDisplayNameInput" value="코인" style="width:140px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="scoreboardAddCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">2. 화면에 표시하기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">위치</span>
+            <select class="cmd-select" id="scoreboardSlotSelect">
+              <option value="sidebar">사이드바(화면 오른쪽)</option>
+              <option value="list">탭 목록(Tab 키)</option>
+              <option value="belowname">플레이어 이름 아래(머리 위)</option>
+            </select>
+            <span class="cmd-num-label">표시할 오브젝티브</span>
+            <input type="text" class="cmd-num-input" id="scoreboardDisplayObjInput" value="coins" style="width:110px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="scoreboardDisplayCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">오브젝티브 부분을 비우고 실행하면 해당 위치의 표시가 꺼져요.</div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">3. 점수 값 바꾸기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">대상</span>
+            <select class="cmd-select" id="scoreboardPlayerTargetSelect">
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="scoreboardPlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">오브젝티브</span>
+            <input type="text" class="cmd-num-input" id="scoreboardOpObjInput" value="coins" style="width:110px;">
+            <span class="cmd-num-label">동작</span>
+            <select class="cmd-select" id="scoreboardOpSelect">
+              <option value="set">값을 정확히 지정 (set)</option>
+              <option value="add">더하기 (add)</option>
+              <option value="remove">빼기 (remove)</option>
+              <option value="reset">초기화(기록 삭제, reset)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="scoreboardOpValueInput" value="1" style="width:70px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="scoreboardPlayersCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">dummy 기준일 때만 명령어로 자유롭게 값을 바꿀 수 있어요. health/xp 같은 기준은 게임이 자동으로 값을 갱신해서 표시용으로만 쓰는 게 보통이에요.</div>
+        </div>
+      </div>
+
+      <!-- Team -->
+      <div class="cmd-group" data-cmd-group="team">
+        <div class="cmd-group-title">팀(team) 만들기</div>
+        <div class="cmd-group-desc">플레이어를 팀으로 묶어서 이름 색상, 아군 피해, 충돌, 이름표 표시 여부 등을 한 번에 관리해요. PvP 미니게임에 자주 써요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">1. 팀 만들기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">팀 이름(내부용)</span>
+            <input type="text" class="cmd-num-input" id="teamNameInput" value="red" style="width:100px;">
+            <span class="cmd-num-label">표시 이름</span>
+            <input type="text" class="cmd-num-input" id="teamDisplayNameInput" value="레드팀" style="width:130px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="teamAddCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">2. 팀원 넣기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">팀 이름</span>
+            <input type="text" class="cmd-num-input" id="teamJoinNameInput" value="red" style="width:100px;">
+            <span class="cmd-num-label">넣을 대상</span>
+            <select class="cmd-select" id="teamJoinTargetSelect">
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@a">모든 플레이어 (@a)</option>
+              <option value="PLAYERNAME">특정 플레이어 (아이디 직접 입력)</option>
+            </select>
+            <input type="text" class="cmd-num-input" id="teamJoinPlayerNameInput" placeholder="플레이어 아이디" style="display:none; width:120px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="teamJoinCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">3. 팀 설정 바꾸기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">팀 이름</span>
+            <input type="text" class="cmd-num-input" id="teamModifyNameInput" value="red" style="width:100px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">색상</span>
+            <select class="cmd-select" id="teamColorSelect">
+              <option value="red">빨강</option>
+              <option value="blue">파랑</option>
+              <option value="green">초록</option>
+              <option value="yellow">노랑</option>
+              <option value="aqua">하늘색</option>
+              <option value="light_purple">연보라</option>
+              <option value="white">흰색</option>
+              <option value="reset">색 없음(reset)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="teamFriendlyFireCheckbox"> 아군끼리 서로 공격 가능(friendlyFire)
+            </label>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">이름표 표시</span>
+            <select class="cmd-select" id="teamNametagSelect">
+              <option value="always">항상 보임</option>
+              <option value="never">항상 안 보임</option>
+              <option value="hideForOtherTeams">다른 팀에게만 안 보임</option>
+              <option value="hideForOwnTeam">같은 팀에게만 안 보임</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">충돌 규칙</span>
+            <select class="cmd-select" id="teamCollisionSelect">
+              <option value="always">항상 밀림</option>
+              <option value="never">절대 안 밀림(통과)</option>
+              <option value="pushOwnTeam">같은 팀끼리만 밀림</option>
+              <option value="pushOtherTeams">다른 팀에게만 밀림</option>
+            </select>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="teamModifyCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">이 카드는 항목마다 명령어가 따로 나가요. 아래 4줄을 각각 원하는 것만 골라서 실행하면 돼요.</div>
+        </div>
+      </div>
+
+
+
       <!-- 9b. Custom potion -->
       <div class="cmd-group" data-cmd-group="custom-potion">
         <div class="cmd-group-title">커스텀 물약</div>
@@ -2328,48 +2774,148 @@
         </div>
       </div>
 
-      <!-- Ride command -->
-      <div class="cmd-group" data-cmd-group="ride">
-        <div class="cmd-group-title">탈것 태우기/내리기 (ride)</div>
-        <div class="cmd-group-desc">엔티티를 다른 엔티티에 태우거나(mount) 내리게(dismount) 만들어요. 말 타기, 커스텀 탈것, 의자 등 여러 곳에 응용할 수 있어요.</div>
+      <!-- Setblock / Fill / Clone -->
+      <div class="cmd-group" data-cmd-group="setblock-fill">
+        <div class="cmd-group-title">블록 채우기/복사</div>
+        <div class="cmd-group-desc">한 칸(setblock), 영역 전체(fill), 다른 위치로 그대로 복사(clone)까지 좌표만 넣으면 명령어를 만들어줘요.</div>
 
         <div class="cmd-card">
-          <div class="cmd-card-title">태우기 (mount)</div>
+          <div class="cmd-card-title">한 칸만 바꾸기 (setblock)</div>
           <div class="cmd-controls">
-            <span class="cmd-num-label">탈 엔티티</span>
-            <div class="cmd-combo" id="rideRiderSelectCombo">
-              <input type="text" class="cmd-combo-input" id="rideRiderSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
-              <span class="cmd-combo-arrow">▾</span>
-              <div class="cmd-combo-list" id="rideRiderSelectList"></div>
-            </div>
+            <span class="cmd-num-label">좌표</span>
+            <input type="text" class="cmd-num-input" id="setblockXInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="setblockYInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="setblockZInput" value="~" style="width:55px;">
+            <span class="cmd-num-label">블록</span>
+            <input type="text" class="cmd-num-input" id="setblockBlockInput" value="stone" style="width:120px;">
           </div>
           <div class="cmd-controls">
-            <span class="cmd-num-label">태워질(탈것) 엔티티</span>
-            <div class="cmd-combo" id="rideVehicleSelectCombo">
-              <input type="text" class="cmd-combo-input" id="rideVehicleSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
-              <span class="cmd-combo-arrow">▾</span>
-              <div class="cmd-combo-list" id="rideVehicleSelectList"></div>
-            </div>
+            <span class="cmd-num-label">기존 블록 처리</span>
+            <select class="cmd-select" id="setblockModeSelect">
+              <option value="replace">교체(기본, 소리 없음)</option>
+              <option value="destroy">파괴(부수는 소리 + 아이템 드랍)</option>
+              <option value="keep">빈 공간에만 놓기(공기가 아니면 안 바뀜)</option>
+            </select>
           </div>
           <div class="cmd-code-row">
-            <div class="cmd-code" id="rideMountCode"></div>
+            <div class="cmd-code" id="setblockCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
-          <div class="cmd-note">가장 가까운 대상 기준으로 만들어져요. 특정 대상 하나만 정확히 지정하고 싶으면 selector 부분을 원하는 조건으로 바꾸면 돼요.</div>
         </div>
 
         <div class="cmd-card">
-          <div class="cmd-card-title">내리기 (dismount)</div>
+          <div class="cmd-card-title">영역 전체 채우기 (fill)</div>
           <div class="cmd-controls">
-            <span class="cmd-num-label">내릴 엔티티</span>
-            <div class="cmd-combo" id="rideDismountSelectCombo">
-              <input type="text" class="cmd-combo-input" id="rideDismountSelect" placeholder="엔티티 선택" autocomplete="off" readonly>
-              <span class="cmd-combo-arrow">▾</span>
-              <div class="cmd-combo-list" id="rideDismountSelectList"></div>
-            </div>
+            <span class="cmd-num-label">시작 좌표</span>
+            <input type="text" class="cmd-num-input" id="fillFromXInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="fillFromYInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="fillFromZInput" value="~" style="width:55px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">끝 좌표</span>
+            <input type="text" class="cmd-num-input" id="fillToXInput" value="~10" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="fillToYInput" value="~10" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="fillToZInput" value="~10" style="width:55px;">
+            <span class="cmd-num-label">블록</span>
+            <input type="text" class="cmd-num-input" id="fillBlockInput" value="stone" style="width:120px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">채우기 방식</span>
+            <select class="cmd-select" id="fillModeSelect">
+              <option value="replace">전체 교체(기본, 공기 포함 전부)</option>
+              <option value="destroy">전체 파괴 후 채우기(아이템 드랍)</option>
+              <option value="keep">빈 공간에만 채우기</option>
+              <option value="hollow">테두리만 채우고 속은 비우기</option>
+              <option value="outline">테두리만 채우고 속은 그대로</option>
+            </select>
           </div>
           <div class="cmd-code-row">
-            <div class="cmd-code" id="rideDismountCode"></div>
+            <div class="cmd-code" id="fillCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">한 번에 채울 수 있는 블록은 최대 32,768개예요. 그보다 큰 영역은 나눠서 실행해야 해요.</div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">다른 위치로 통째로 복사 (clone)</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">원본 시작</span>
+            <input type="text" class="cmd-num-input" id="cloneFromXInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneFromYInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneFromZInput" value="~" style="width:55px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">원본 끝</span>
+            <input type="text" class="cmd-num-input" id="cloneEndXInput" value="~10" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneEndYInput" value="~10" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneEndZInput" value="~10" style="width:55px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">붙여넣을 위치</span>
+            <input type="text" class="cmd-num-input" id="cloneDestXInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneDestYInput" value="~20" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="cloneDestZInput" value="~" style="width:55px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">복사 방식</span>
+            <select class="cmd-select" id="cloneMaskSelect">
+              <option value="replace">전체 복사(공기 포함, 기본)</option>
+              <option value="masked">빈 공간(공기) 빼고 복사</option>
+            </select>
+            <span class="cmd-num-label">겹침 처리</span>
+            <select class="cmd-select" id="cloneModeSelect">
+              <option value="normal">겹치면 실행 안 함(기본)</option>
+              <option value="force">겹쳐도 강제 실행</option>
+              <option value="move">복사 후 원본은 공기로 비우기(이동)</option>
+            </select>
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="cloneCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loot -->
+      <div class="cmd-group" data-cmd-group="loot">
+        <div class="cmd-group-title">전리품 지급 (loot)</div>
+        <div class="cmd-group-desc">특정 아이템을 바로 주는 게 아니라, 게임 내 전리품 테이블(상자에 나오는 그 확률 테이블)을 뽑아서 지급/생성해요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">플레이어 인벤토리로 지급</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">받을 대상</span>
+            <select class="cmd-select" id="lootTargetSelect">
+              <option value="@s">나 자신 (@s)</option>
+              <option value="@p">가장 가까운 플레이어 (@p)</option>
+              <option value="@a">모든 플레이어 (@a)</option>
+            </select>
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">전리품 테이블</span>
+            <input type="text" class="cmd-num-input" id="lootTableInput" value="chests/simple_dungeon" style="width:220px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="lootGiveCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">자주 쓰는 테이블 예시: chests/simple_dungeon(던전 상자), chests/village/village_weaponsmith(마을 대장간), chests/end_city_treasure(엔드 도시), entities/zombie(좀비 처치 시 드랍). 정확한 이름은 minecraft.wiki의 "Loot table"에서 확인하는 게 확실해요.</div>
+        </div>
+
+        <div class="cmd-card">
+          <div class="cmd-card-title">바닥에 아이템으로 떨어뜨리기</div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">위치</span>
+            <input type="text" class="cmd-num-input" id="lootSpawnXInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="lootSpawnYInput" value="~" style="width:55px;">
+            <input type="text" class="cmd-num-input" id="lootSpawnZInput" value="~" style="width:55px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">전리품 테이블</span>
+            <input type="text" class="cmd-num-input" id="lootSpawnTableInput" value="chests/simple_dungeon" style="width:220px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="lootSpawnCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
         </div>
@@ -2456,6 +3002,84 @@
             <div class="cmd-code" id="selectorCode"></div>
             <button class="cmd-copy-btn">복사</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Execute -->
+      <div class="cmd-group" data-cmd-group="execute">
+        <div class="cmd-group-title">조건부 명령 (execute)</div>
+        <div class="cmd-group-desc">"누가(as) · 어디서(at/positioned) · 조건이 맞으면(if) · 이 명령을 실행"하는 식으로 여러 조건을 이어붙여요. 체크한 것만 순서대로 조합돼요.</div>
+
+        <div class="cmd-card">
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="executeAsCheckbox"> as (실행자를 바꾸기)
+            </label>
+            <input type="text" class="cmd-num-input" id="executeAsInput" value="@a" style="display:none; width:100px;">
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="executeAtCheckbox"> at (그 대상의 위치에서 실행)
+            </label>
+            <input type="text" class="cmd-num-input" id="executeAtInput" value="@s" style="display:none; width:100px;">
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="executePositionedCheckbox"> positioned (특정 좌표로 위치 이동)
+            </label>
+            <span id="executePositionedControls" style="display:none;">
+              <input type="text" class="cmd-num-input" id="executePosXInput" value="~" style="width:55px;">
+              <input type="text" class="cmd-num-input" id="executePosYInput" value="~" style="width:55px;">
+              <input type="text" class="cmd-num-input" id="executePosZInput" value="~" style="width:55px;">
+            </span>
+          </div>
+          <div class="cmd-controls">
+            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);">
+              <input type="checkbox" id="executeIfCheckbox"> if / unless (조건에 맞을 때만 / 안 맞을 때만)
+            </label>
+          </div>
+          <div class="cmd-controls" id="executeIfControls" style="display:none;">
+            <select class="cmd-select" id="executeIfNotSelect">
+              <option value="if">if (조건을 만족하면)</option>
+              <option value="unless">unless (조건을 만족하지 않으면)</option>
+            </select>
+            <select class="cmd-select" id="executeIfTypeSelect">
+              <option value="entity">entity (대상이 존재하면)</option>
+              <option value="block">block (특정 위치가 특정 블록이면)</option>
+              <option value="score">score (점수판 값 비교)</option>
+            </select>
+          </div>
+          <div class="cmd-controls" id="executeIfEntityControls" style="display:none;">
+            <span class="cmd-num-label">대상</span>
+            <input type="text" class="cmd-num-input" id="executeIfEntityInput" value="@p[distance=..5]" style="width:180px;">
+          </div>
+          <div class="cmd-controls" id="executeIfBlockControls" style="display:none;">
+            <span class="cmd-num-label">위치</span>
+            <input type="text" class="cmd-num-input" id="executeIfBlockXInput" value="~" style="width:50px;">
+            <input type="text" class="cmd-num-input" id="executeIfBlockYInput" value="~-1" style="width:50px;">
+            <input type="text" class="cmd-num-input" id="executeIfBlockZInput" value="~" style="width:50px;">
+            <span class="cmd-num-label">블록</span>
+            <input type="text" class="cmd-num-input" id="executeIfBlockNameInput" value="diamond_block" style="width:130px;">
+          </div>
+          <div class="cmd-controls" id="executeIfScoreControls" style="display:none;">
+            <span class="cmd-num-label">대상</span>
+            <input type="text" class="cmd-num-input" id="executeIfScoreTargetInput" value="@s" style="width:80px;">
+            <span class="cmd-num-label">오브젝티브</span>
+            <input type="text" class="cmd-num-input" id="executeIfScoreObjInput" value="coins" style="width:90px;">
+            <span class="cmd-num-label">범위</span>
+            <input type="text" class="cmd-num-input" id="executeIfScoreRangeInput" value="10.." style="width:80px;">
+          </div>
+          <div class="cmd-controls">
+            <span class="cmd-num-label">마지막에 실행할 명령어(run)</span>
+          </div>
+          <div class="cmd-controls">
+            <input type="text" class="cmd-num-input" id="executeRunInput" value="say 안녕!" style="width:260px;">
+          </div>
+          <div class="cmd-code-row">
+            <div class="cmd-code" id="executeCode"></div>
+            <button class="cmd-copy-btn">복사</button>
+          </div>
+          <div class="cmd-note">as는 "누가 실행하는지(@s가 뭘 가리키는지)"만 바꾸고, at은 "어디서 실행하는지(좌표·회전·차원)"만 바꿔요. 위치가 필요 없는 명령이면 at 없이 as만 써도 충분해요. score 범위는 "10..","..5","3..7"처럼 셀렉터의 distance와 같은 형식이에요.</div>
         </div>
       </div>
 
@@ -3467,29 +4091,6 @@ scalePlayerNameInput.addEventListener('input', updateScaleCode);
 
 updateScaleCode();
 
-// ---- 4. Mannequin ----
-const mannequinNameInput = document.getElementById('mannequinNameInput');
-const mannequinShowDescCheckbox = document.getElementById('mannequinShowDescCheckbox');
-const mannequinCustomNameInput = document.getElementById('mannequinCustomNameInput');
-const mannequinVersionSelect = document.getElementById('mannequinVersionSelect');
-function updateMannequinSummonCode() {
-  const skin = mannequinNameInput.value.trim() || 'Notch';
-  const showDesc = mannequinShowDescCheckbox.checked;
-  const customName = mannequinCustomNameInput.value.trim() || '이름표';
-  const isNew = mannequinVersionSelect.value === 'new';
-  const trueVal = isNew ? 'true' : '1b';
-  let nbt = `{profile:"${skin}",CustomName:'{"text":"${customName}"}',CustomNameVisible:${trueVal}`;
-  if (!showDesc) nbt += `,hide_description:${trueVal}`;
-  nbt += `}`;
-  document.getElementById('mannequinSummonCode').textContent =
-    `summon minecraft:mannequin ~ ~ ~ ${nbt}`;
-}
-mannequinNameInput.addEventListener('input', updateMannequinSummonCode);
-mannequinShowDescCheckbox.addEventListener('change', updateMannequinSummonCode);
-mannequinCustomNameInput.addEventListener('input', updateMannequinSummonCode);
-mannequinVersionSelect.addEventListener('change', updateMannequinSummonCode);
-updateMannequinSummonCode();
-
 // ---- Entity summon builder ----
 // Entities with a namespaced-id "variant" component (registry-based, version-dependent set)
 // vs a simple enum variant. We keep a curated common subset for each.
@@ -3521,6 +4122,18 @@ const ENTITY_VARIANTS = {
   'minecraft:chicken': { label: '기후(무늬)', values: [
     ['temperate', '온화(기본)'], ['warm', '더운 지역'], ['cold', '추운 지역'],
   ], minVersion: '1.21.5' },
+  'minecraft:axolotl': { label: '색상', intVariant: true, values: [
+    ['0', '분홍(루시)'], ['1', '갈색(야생)'], ['2', '금색'], ['3', '청록'], ['4', '파랑(희귀)'],
+  ]},
+  'minecraft:frog': { label: '색상', values: [
+    ['temperate', '온화(주황, 기본)'], ['warm', '따뜻함(하양)'], ['cold', '차가움(초록)'],
+  ]},
+  'minecraft:llama': { label: '색상', intVariant: true, values: [
+    ['0', '크림색'], ['1', '흰색'], ['2', '갈색'], ['3', '회색'],
+  ]},
+  'minecraft:trader_llama': { label: '색상', intVariant: true, values: [
+    ['0', '크림색'], ['1', '흰색'], ['2', '갈색'], ['3', '회색'],
+  ]},
 };
 // Entities that support the "baby" spawn variant (Age:-2147483648)
 const BABY_CAPABLE = new Set([
@@ -3547,6 +4160,32 @@ function onSummonEntityChange() {
   const variantVersionSelect = document.getElementById('summonVariantVersionSelect');
   const variantData = ENTITY_VARIANTS[entityId];
 
+  const isMannequin = entityId === 'minecraft:mannequin';
+  const isHorseLike = entityId === 'minecraft:horse';
+  const isTropicalFish = entityId === 'minecraft:tropical_fish';
+
+  // Mannequin has its own dedicated fields and doesn't use the generic
+  // health/damage/scale/variant/etc. controls (CustomName syntax also differs).
+  document.getElementById('summonGenericControls').style.display = isMannequin ? 'none' : '';
+  document.getElementById('summonMannequinVersionControls').style.display = isMannequin ? 'flex' : 'none';
+  document.getElementById('summonMannequinSkinControls').style.display = isMannequin ? 'flex' : 'none';
+  document.getElementById('summonMannequinDescControls').style.display = isMannequin ? 'flex' : 'none';
+  document.getElementById('summonMannequinNameControls').style.display = isMannequin ? 'flex' : 'none';
+  document.getElementById('summonGenericNote').style.display = isMannequin ? 'none' : '';
+  document.getElementById('summonMannequinNote').style.display = isMannequin ? '' : 'none';
+  document.getElementById('summonHealthWarning').style.display = isMannequin ? 'none' : '';
+  document.getElementById('summonScaleWarning').style.display = isMannequin ? 'none' : '';
+  document.getElementById('summonHorseControls').style.display = isHorseLike ? 'flex' : 'none';
+  document.getElementById('summonTropicalFishControls').style.display = isTropicalFish ? 'flex' : 'none';
+  document.getElementById('summonTropicalFishColorControls').style.display = isTropicalFish ? 'flex' : 'none';
+
+  if (isMannequin) {
+    variantControls.style.display = 'none';
+    variantVersionControls.style.display = 'none';
+    updateSummonCode();
+    return;
+  }
+
   variantVersionControls.style.display = (variantData && variantData.minVersion) ? 'flex' : 'none';
 
   const versionTooOld = variantData && variantData.minVersion && variantVersionSelect.value === 'old';
@@ -3572,6 +4211,32 @@ function onSummonEntityChange() {
   updateSummonCode();
 }
 document.getElementById('summonVariantVersionSelect').addEventListener('change', onSummonEntityChange);
+document.getElementById('summonMannequinVersionSelect').addEventListener('change', updateSummonCode);
+document.getElementById('summonMannequinSkinInput').addEventListener('input', updateSummonCode);
+document.getElementById('summonMannequinShowDescCheckbox').addEventListener('change', updateSummonCode);
+document.getElementById('summonMannequinNameCheckbox').addEventListener('change', () => {
+  document.getElementById('summonMannequinNameInput').style.display =
+    document.getElementById('summonMannequinNameCheckbox').checked ? 'inline-block' : 'none';
+  updateSummonCode();
+});
+document.getElementById('summonMannequinNameInput').addEventListener('input', updateSummonCode);
+
+// Horse & tropical fish controls (packed Variant int, different shape from ENTITY_VARIANTS)
+['summonHorseColorSelect', 'summonHorseMarkingSelect', 'summonFishShapeSelect', 'summonFishPatternSelect',
+ 'summonFishBaseColorSelect', 'summonFishPatternColorSelect'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updateSummonCode);
+});
+// Populate the two fish color dropdowns from the shared 16-dye palette
+['summonFishBaseColorSelect', 'summonFishPatternColorSelect'].forEach((id, idx) => {
+  const sel = document.getElementById(id);
+  DYES.forEach((dye, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = dye.name;
+    sel.appendChild(opt);
+  });
+  sel.value = idx === 0 ? 0 : 8; // sensible distinct defaults (white body / gray pattern)
+});
 
 function bindSummonCheckbox(checkboxId, inputId) {
   const checkbox = document.getElementById(checkboxId);
@@ -3596,6 +4261,27 @@ document.getElementById('summonVariantSelect').addEventListener('change', update
 
 function updateSummonCode() {
   const entityId = summonEntityPicker.getValue();
+
+  // Mannequin uses an entirely different NBT shape: profile + a *plain string*
+  // CustomName (not a JSON text component like every other entity), plus
+  // its own description/hide_description fields.
+  if (entityId === 'minecraft:mannequin') {
+    const skin = document.getElementById('summonMannequinSkinInput').value.trim() || 'Notch';
+    const showDesc = document.getElementById('summonMannequinShowDescCheckbox').checked;
+    const isNew = document.getElementById('summonMannequinVersionSelect').value === 'new';
+    const trueVal = isNew ? 'true' : '1b';
+    const nameChecked = document.getElementById('summonMannequinNameCheckbox').checked;
+    let nbt = `{profile:"${skin}"`;
+    if (nameChecked) {
+      const name = document.getElementById('summonMannequinNameInput').value.trim() || '이름표';
+      nbt += `,CustomName:"${name}",CustomNameVisible:${trueVal}`;
+    }
+    if (!showDesc) nbt += `,hide_description:${trueVal}`;
+    nbt += `}`;
+    document.getElementById('summonCode').textContent = `summon minecraft:mannequin ~ ~ ~ ${nbt}`;
+    return;
+  }
+
   const nbtParts = [];
 
   if (document.getElementById('summonNameCheckbox').checked) {
@@ -3619,10 +4305,31 @@ function updateSummonCode() {
       // sheep color is a legacy dye-index NBT tag, not a variant component; use Color (0-15)
       const dyeIndex = DYES.findIndex(d => d.hex === variantVal);
       nbtParts.push(`Color:${dyeIndex}b`);
+    } else if (variantData.intVariant) {
+      // Older entities (axolotl, llama) still use the legacy integer Variant tag,
+      // not the newer string-based variant component that cow/pig/chicken/frog use.
+      nbtParts.push(`Variant:${variantVal}`);
     } else {
       // variant NBT is a namespaced string id, e.g. {variant:"minecraft:cold"}
       nbtParts.push(`variant:"minecraft:${variantVal}"`);
     }
+  }
+
+  // Horse: color + markings packed into one legacy integer Variant tag
+  if (entityId === 'minecraft:horse') {
+    const color = parseInt(document.getElementById('summonHorseColorSelect').value, 10);
+    const marking = parseInt(document.getElementById('summonHorseMarkingSelect').value, 10);
+    nbtParts.push(`Variant:${color + marking}`);
+  }
+
+  // Tropical fish: shape + pattern + 2 dye colors packed into one legacy integer Variant tag
+  if (entityId === 'minecraft:tropical_fish') {
+    const shape = parseInt(document.getElementById('summonFishShapeSelect').value, 10);
+    const pattern = parseInt(document.getElementById('summonFishPatternSelect').value, 10);
+    const baseColor = parseInt(document.getElementById('summonFishBaseColorSelect').value, 10);
+    const patternColor = parseInt(document.getElementById('summonFishPatternColorSelect').value, 10);
+    const packed = shape + (pattern << 8) + (baseColor << 16) + (patternColor << 24);
+    nbtParts.push(`Variant:${packed}`);
   }
 
   const attributeCmds = [];
@@ -4228,7 +4935,12 @@ updateFireworkCode();
 
 // ---- 9. Structure ----
 const STRUCTURES = [
-  ['minecraft:village', '마을'],
+  ['#minecraft:village', '마을 (전체, 아무 지형)'],
+  ['minecraft:village_plains', '마을 - 평원'],
+  ['minecraft:village_desert', '마을 - 사막'],
+  ['minecraft:village_savanna', '마을 - 사바나'],
+  ['minecraft:village_snowy', '마을 - 설원'],
+  ['minecraft:village_taiga', '마을 - 타이가'],
   ['minecraft:pillager_outpost', '약탈자 전초기지'],
   ['minecraft:mansion', '삼림 대저택'],
   ['minecraft:stronghold', '근거지(엔드 포탈)'],
@@ -4239,10 +4951,19 @@ const STRUCTURES = [
   ['minecraft:jungle_pyramid', '정글 사원'],
   ['minecraft:igloo', '이글루'],
   ['minecraft:swamp_hut', '늪지 오두막'],
-  ['minecraft:shipwreck', '난파선'],
+  ['minecraft:shipwreck', '난파선 (물속)'],
+  ['minecraft:shipwreck_beached', '난파선 (해변)'],
   ['minecraft:buried_treasure', '땅에 묻힌 보물'],
-  ['minecraft:ocean_ruin', '해저 폐허'],
-  ['minecraft:ruined_portal', '무너진 차원문'],
+  ['#minecraft:ocean_ruin', '해저 폐허 (전체)'],
+  ['minecraft:ocean_ruin_warm', '해저 폐허 - 따뜻한 바다'],
+  ['minecraft:ocean_ruin_cold', '해저 폐허 - 차가운 바다'],
+  ['minecraft:ruined_portal', '무너진 차원문 (오버월드, 일반)'],
+  ['minecraft:ruined_portal_desert', '무너진 차원문 - 사막'],
+  ['minecraft:ruined_portal_jungle', '무너진 차원문 - 정글'],
+  ['minecraft:ruined_portal_mountain', '무너진 차원문 - 산'],
+  ['minecraft:ruined_portal_ocean', '무너진 차원문 - 바다'],
+  ['minecraft:ruined_portal_swamp', '무너진 차원문 - 늪'],
+  ['minecraft:ruined_portal_nether', '무너진 차원문 - 네더'],
   ['minecraft:trail_ruins', '흔적 폐허'],
   ['minecraft:fortress', '네더 요새'],
   ['minecraft:bastion_remnant', '보루 잔해'],
@@ -4255,7 +4976,7 @@ function updateStructureCode() {
 const structurePicker = setupComboPicker(
   document.getElementById('structureSelect'),
   document.getElementById('structureSelectList'),
-  STRUCTURES, 'minecraft:village',
+  STRUCTURES, '#minecraft:village',
   updateStructureCode
 );
 updateStructureCode();
@@ -4270,39 +4991,408 @@ function updateWorldborderCode() {
 worldborderInput.addEventListener('input', updateWorldborderCode);
 updateWorldborderCode();
 
-// ---- Ride command (mount/dismount) ----
-const rideRiderPicker = setupComboPicker(
-  document.getElementById('rideRiderSelect'),
-  document.getElementById('rideRiderSelectList'),
-  COMMON_ENTITIES, 'minecraft:player',
-  updateRideMountCode
-);
-const rideVehiclePicker = setupComboPicker(
-  document.getElementById('rideVehicleSelect'),
-  document.getElementById('rideVehicleSelectList'),
-  COMMON_ENTITIES, 'minecraft:horse',
-  updateRideMountCode
-);
-function updateRideMountCode() {
-  const rider = rideRiderPicker.getValue();
-  const vehicle = rideVehiclePicker.getValue();
-  document.getElementById('rideMountCode').textContent =
-    `ride @e[type=${rider},limit=1,sort=nearest] mount @e[type=${vehicle},limit=1,sort=nearest]`;
+// ---- Tellraw ----
+function tellrawResolveTarget(selectId, nameInputId) {
+  const sel = document.getElementById(selectId).value;
+  if (sel === 'PLAYERNAME') return document.getElementById(nameInputId).value.trim() || '플레이어이름';
+  return sel;
 }
-updateRideMountCode();
+document.getElementById('tellrawTargetSelect').addEventListener('change', () => {
+  document.getElementById('tellrawPlayerNameInput').style.display =
+    document.getElementById('tellrawTargetSelect').value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateTellrawCode();
+});
+document.getElementById('tellrawClickCheckbox').addEventListener('change', () => {
+  const on = document.getElementById('tellrawClickCheckbox').checked;
+  document.getElementById('tellrawClickActionSelect').style.display = on ? 'inline-block' : 'none';
+  document.getElementById('tellrawClickValueInput').style.display = on ? 'inline-block' : 'none';
+  updateTellrawCode();
+});
+document.getElementById('tellrawHoverCheckbox').addEventListener('change', () => {
+  document.getElementById('tellrawHoverValueInput').style.display =
+    document.getElementById('tellrawHoverCheckbox').checked ? 'inline-block' : 'none';
+  updateTellrawCode();
+});
+['tellrawVersionSelect', 'tellrawPlayerNameInput', 'tellrawTextInput', 'tellrawColorSelect',
+ 'tellrawBoldCheckbox', 'tellrawItalicCheckbox', 'tellrawUnderlineCheckbox',
+ 'tellrawClickActionSelect', 'tellrawClickValueInput', 'tellrawHoverValueInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', updateTellrawCode);
+});
+function updateTellrawCode() {
+  const target = tellrawResolveTarget('tellrawTargetSelect', 'tellrawPlayerNameInput');
+  const text = document.getElementById('tellrawTextInput').value.trim() || '메시지';
+  const color = document.getElementById('tellrawColorSelect').value;
+  const isNew = document.getElementById('tellrawVersionSelect').value === 'new';
+  const clickKey = isNew ? 'click_event' : 'clickEvent';
+  const hoverKey = isNew ? 'hover_event' : 'hoverEvent';
 
-const rideDismountPicker = setupComboPicker(
-  document.getElementById('rideDismountSelect'),
-  document.getElementById('rideDismountSelectList'),
-  COMMON_ENTITIES, 'minecraft:player',
-  updateRideDismountCode
-);
-function updateRideDismountCode() {
-  const target = rideDismountPicker.getValue();
-  document.getElementById('rideDismountCode').textContent =
-    `ride @e[type=${target},limit=1,sort=nearest] dismount`;
+  const comp = { text };
+  if (color) comp.color = color;
+  if (document.getElementById('tellrawBoldCheckbox').checked) comp.bold = true;
+  if (document.getElementById('tellrawItalicCheckbox').checked) comp.italic = true;
+  if (document.getElementById('tellrawUnderlineCheckbox').checked) comp.underlined = true;
+
+  if (document.getElementById('tellrawClickCheckbox').checked) {
+    const action = document.getElementById('tellrawClickActionSelect').value;
+    const value = document.getElementById('tellrawClickValueInput').value.trim() || '/spawn';
+    if (isNew) {
+      const valueKey = action === 'open_url' ? 'url' : (action === 'copy_to_clipboard' ? 'value' : 'command');
+      comp[clickKey] = { action, [valueKey]: value };
+    } else {
+      comp[clickKey] = { action, value };
+    }
+  }
+  if (document.getElementById('tellrawHoverCheckbox').checked) {
+    const hoverText = document.getElementById('tellrawHoverValueInput').value.trim() || '설명';
+    if (isNew) {
+      comp[hoverKey] = { action: 'show_text', value: hoverText };
+    } else {
+      comp[hoverKey] = { action: 'show_text', contents: hoverText };
+    }
+  }
+
+  document.getElementById('tellrawCode').textContent = `tellraw ${target} ${JSON.stringify(comp)}`;
 }
-updateRideDismountCode();
+updateTellrawCode();
+
+// ---- Title / Actionbar ----
+document.getElementById('titleTargetSelect').addEventListener('change', () => {
+  document.getElementById('titlePlayerNameInput').style.display =
+    document.getElementById('titleTargetSelect').value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateTitleCode();
+});
+document.getElementById('titleTimesCheckbox').addEventListener('change', () => {
+  document.getElementById('titleTimesControls').style.display =
+    document.getElementById('titleTimesCheckbox').checked ? 'flex' : 'none';
+  updateTitleCode();
+});
+['titlePlayerNameInput', 'titlePositionSelect', 'titleTextInput', 'titleColorSelect', 'titleBoldCheckbox',
+ 'titleFadeInInput', 'titleStayInput', 'titleFadeOutInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', updateTitleCode);
+});
+function updateTitleCode() {
+  const target = tellrawResolveTarget('titleTargetSelect', 'titlePlayerNameInput');
+  const position = document.getElementById('titlePositionSelect').value;
+  const text = document.getElementById('titleTextInput').value.trim() || '문구';
+  const color = document.getElementById('titleColorSelect').value;
+  const comp = { text };
+  if (color) comp.color = color;
+  if (document.getElementById('titleBoldCheckbox').checked) comp.bold = true;
+
+  let code = `title ${target} ${position} ${JSON.stringify(comp)}`;
+  if (document.getElementById('titleTimesCheckbox').checked) {
+    const fadeIn = document.getElementById('titleFadeInInput').value.trim() || '10';
+    const stay = document.getElementById('titleStayInput').value.trim() || '70';
+    const fadeOut = document.getElementById('titleFadeOutInput').value.trim() || '20';
+    code = `title ${target} times ${fadeIn} ${stay} ${fadeOut}\n${code}`;
+  }
+  document.getElementById('titleCode').textContent = code;
+}
+updateTitleCode();
+
+// ---- Bossbar ----
+['bossbarIdInput', 'bossbarNameInput', 'bossbarColorSelect', 'bossbarStyleSelect',
+ 'bossbarPlayersSelect', 'bossbarMaxInput', 'bossbarValueInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateBossbarSetupCode);
+});
+function updateBossbarSetupCode() {
+  const id = document.getElementById('bossbarIdInput').value.trim() || 'event';
+  const name = document.getElementById('bossbarNameInput').value.trim() || '이벤트';
+  const color = document.getElementById('bossbarColorSelect').value;
+  const style = document.getElementById('bossbarStyleSelect').value;
+  const players = document.getElementById('bossbarPlayersSelect').value;
+  const max = document.getElementById('bossbarMaxInput').value.trim() || '100';
+  const value = document.getElementById('bossbarValueInput').value.trim() || '100';
+  const lines = [
+    `bossbar add ${id} ${JSON.stringify({ text: name })}`,
+    `bossbar set ${id} color ${color}`,
+    `bossbar set ${id} style ${style}`,
+    `bossbar set ${id} players ${players}`,
+    `bossbar set ${id} max ${max}`,
+    `bossbar set ${id} value ${value}`,
+  ];
+  document.getElementById('bossbarSetupCode').textContent = lines.join('\n');
+}
+updateBossbarSetupCode();
+
+['bossbarUpdateIdInput', 'bossbarUpdateValueInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateBossbarUpdateCode);
+});
+function updateBossbarUpdateCode() {
+  const id = document.getElementById('bossbarUpdateIdInput').value.trim() || 'event';
+  const value = document.getElementById('bossbarUpdateValueInput').value.trim() || '0';
+  document.getElementById('bossbarUpdateCode').textContent = `bossbar set ${id} value ${value}`;
+}
+updateBossbarUpdateCode();
+
+document.getElementById('bossbarRemoveIdInput').addEventListener('input', updateBossbarRemoveCode);
+function updateBossbarRemoveCode() {
+  const id = document.getElementById('bossbarRemoveIdInput').value.trim() || 'event';
+  document.getElementById('bossbarRemoveCode').textContent = `bossbar remove ${id}`;
+}
+updateBossbarRemoveCode();
+
+// ---- Scoreboard ----
+['scoreboardObjNameInput', 'scoreboardCriteriaSelect', 'scoreboardDisplayNameInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateScoreboardAddCode);
+});
+function updateScoreboardAddCode() {
+  const name = document.getElementById('scoreboardObjNameInput').value.trim() || 'objective';
+  const criteria = document.getElementById('scoreboardCriteriaSelect').value;
+  const displayName = document.getElementById('scoreboardDisplayNameInput').value.trim();
+  let code = `scoreboard objectives add ${name} ${criteria}`;
+  if (displayName) code += ` ${JSON.stringify({ text: displayName })}`;
+  document.getElementById('scoreboardAddCode').textContent = code;
+}
+updateScoreboardAddCode();
+
+['scoreboardSlotSelect', 'scoreboardDisplayObjInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateScoreboardDisplayCode);
+});
+function updateScoreboardDisplayCode() {
+  const slot = document.getElementById('scoreboardSlotSelect').value;
+  const obj = document.getElementById('scoreboardDisplayObjInput').value.trim();
+  document.getElementById('scoreboardDisplayCode').textContent =
+    `scoreboard objectives setdisplay ${slot}${obj ? ' ' + obj : ''}`;
+}
+updateScoreboardDisplayCode();
+
+document.getElementById('scoreboardPlayerTargetSelect').addEventListener('change', () => {
+  document.getElementById('scoreboardPlayerNameInput').style.display =
+    document.getElementById('scoreboardPlayerTargetSelect').value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateScoreboardPlayersCode();
+});
+document.getElementById('scoreboardOpSelect').addEventListener('change', () => {
+  document.getElementById('scoreboardOpValueInput').style.display =
+    document.getElementById('scoreboardOpSelect').value === 'reset' ? 'none' : 'inline-block';
+  updateScoreboardPlayersCode();
+});
+['scoreboardPlayerNameInput', 'scoreboardOpObjInput', 'scoreboardOpValueInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateScoreboardPlayersCode);
+});
+function updateScoreboardPlayersCode() {
+  const target = tellrawResolveTarget('scoreboardPlayerTargetSelect', 'scoreboardPlayerNameInput');
+  const obj = document.getElementById('scoreboardOpObjInput').value.trim() || 'objective';
+  const op = document.getElementById('scoreboardOpSelect').value;
+  const value = document.getElementById('scoreboardOpValueInput').value.trim() || '1';
+  const code = op === 'reset'
+    ? `scoreboard players reset ${target} ${obj}`
+    : `scoreboard players ${op} ${target} ${obj} ${value}`;
+  document.getElementById('scoreboardPlayersCode').textContent = code;
+}
+updateScoreboardPlayersCode();
+
+// ---- Team ----
+['teamNameInput', 'teamDisplayNameInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateTeamAddCode);
+});
+function updateTeamAddCode() {
+  const name = document.getElementById('teamNameInput').value.trim() || 'team';
+  const displayName = document.getElementById('teamDisplayNameInput').value.trim();
+  let code = `team add ${name}`;
+  if (displayName) code += ` ${JSON.stringify({ text: displayName })}`;
+  document.getElementById('teamAddCode').textContent = code;
+}
+updateTeamAddCode();
+
+document.getElementById('teamJoinTargetSelect').addEventListener('change', () => {
+  document.getElementById('teamJoinPlayerNameInput').style.display =
+    document.getElementById('teamJoinTargetSelect').value === 'PLAYERNAME' ? 'inline-block' : 'none';
+  updateTeamJoinCode();
+});
+['teamJoinNameInput', 'teamJoinPlayerNameInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateTeamJoinCode);
+});
+function updateTeamJoinCode() {
+  const name = document.getElementById('teamJoinNameInput').value.trim() || 'team';
+  const target = tellrawResolveTarget('teamJoinTargetSelect', 'teamJoinPlayerNameInput');
+  document.getElementById('teamJoinCode').textContent = `team join ${name} ${target}`;
+}
+updateTeamJoinCode();
+
+['teamModifyNameInput', 'teamColorSelect', 'teamFriendlyFireCheckbox', 'teamNametagSelect', 'teamCollisionSelect'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', updateTeamModifyCode);
+});
+function updateTeamModifyCode() {
+  const name = document.getElementById('teamModifyNameInput').value.trim() || 'team';
+  const color = document.getElementById('teamColorSelect').value;
+  const ff = document.getElementById('teamFriendlyFireCheckbox').checked;
+  const nametag = document.getElementById('teamNametagSelect').value;
+  const collision = document.getElementById('teamCollisionSelect').value;
+  const lines = [
+    `team modify ${name} color ${color}`,
+    `team modify ${name} friendlyFire ${ff}`,
+    `team modify ${name} nametagVisibility ${nametag}`,
+    `team modify ${name} collisionRule ${collision}`,
+  ];
+  document.getElementById('teamModifyCode').textContent = lines.join('\n');
+}
+updateTeamModifyCode();
+
+// ---- Setblock / Fill / Clone ----
+['setblockXInput', 'setblockYInput', 'setblockZInput', 'setblockBlockInput', 'setblockModeSelect'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateSetblockCode);
+});
+function updateSetblockCode() {
+  const x = document.getElementById('setblockXInput').value.trim() || '~';
+  const y = document.getElementById('setblockYInput').value.trim() || '~';
+  const z = document.getElementById('setblockZInput').value.trim() || '~';
+  const block = document.getElementById('setblockBlockInput').value.trim() || 'stone';
+  const mode = document.getElementById('setblockModeSelect').value;
+  document.getElementById('setblockCode').textContent = `setblock ${x} ${y} ${z} ${block} ${mode}`;
+}
+updateSetblockCode();
+
+['fillFromXInput', 'fillFromYInput', 'fillFromZInput', 'fillToXInput', 'fillToYInput', 'fillToZInput',
+ 'fillBlockInput', 'fillModeSelect'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateFillCode);
+});
+function updateFillCode() {
+  const fx = document.getElementById('fillFromXInput').value.trim() || '~';
+  const fy = document.getElementById('fillFromYInput').value.trim() || '~';
+  const fz = document.getElementById('fillFromZInput').value.trim() || '~';
+  const tx = document.getElementById('fillToXInput').value.trim() || '~10';
+  const ty = document.getElementById('fillToYInput').value.trim() || '~10';
+  const tz = document.getElementById('fillToZInput').value.trim() || '~10';
+  const block = document.getElementById('fillBlockInput').value.trim() || 'stone';
+  const mode = document.getElementById('fillModeSelect').value;
+  document.getElementById('fillCode').textContent = `fill ${fx} ${fy} ${fz} ${tx} ${ty} ${tz} ${block} ${mode}`;
+}
+updateFillCode();
+
+['cloneFromXInput', 'cloneFromYInput', 'cloneFromZInput', 'cloneEndXInput', 'cloneEndYInput', 'cloneEndZInput',
+ 'cloneDestXInput', 'cloneDestYInput', 'cloneDestZInput', 'cloneMaskSelect', 'cloneModeSelect'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateCloneCode);
+});
+function updateCloneCode() {
+  const fx = document.getElementById('cloneFromXInput').value.trim() || '~';
+  const fy = document.getElementById('cloneFromYInput').value.trim() || '~';
+  const fz = document.getElementById('cloneFromZInput').value.trim() || '~';
+  const ex = document.getElementById('cloneEndXInput').value.trim() || '~10';
+  const ey = document.getElementById('cloneEndYInput').value.trim() || '~10';
+  const ez = document.getElementById('cloneEndZInput').value.trim() || '~10';
+  const dx = document.getElementById('cloneDestXInput').value.trim() || '~';
+  const dy = document.getElementById('cloneDestYInput').value.trim() || '~20';
+  const dz = document.getElementById('cloneDestZInput').value.trim() || '~';
+  const mask = document.getElementById('cloneMaskSelect').value;
+  const mode = document.getElementById('cloneModeSelect').value;
+  document.getElementById('cloneCode').textContent =
+    `clone ${fx} ${fy} ${fz} ${ex} ${ey} ${ez} ${dx} ${dy} ${dz} ${mask} ${mode}`;
+}
+updateCloneCode();
+
+// ---- Loot ----
+['lootTargetSelect', 'lootTableInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateLootGiveCode);
+});
+function updateLootGiveCode() {
+  const target = document.getElementById('lootTargetSelect').value;
+  const table = document.getElementById('lootTableInput').value.trim() || 'chests/simple_dungeon';
+  document.getElementById('lootGiveCode').textContent = `loot give ${target} loot minecraft:${table}`;
+}
+updateLootGiveCode();
+
+['lootSpawnXInput', 'lootSpawnYInput', 'lootSpawnZInput', 'lootSpawnTableInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateLootSpawnCode);
+});
+function updateLootSpawnCode() {
+  const x = document.getElementById('lootSpawnXInput').value.trim() || '~';
+  const y = document.getElementById('lootSpawnYInput').value.trim() || '~';
+  const z = document.getElementById('lootSpawnZInput').value.trim() || '~';
+  const table = document.getElementById('lootSpawnTableInput').value.trim() || 'chests/simple_dungeon';
+  document.getElementById('lootSpawnCode').textContent = `loot spawn ${x} ${y} ${z} loot minecraft:${table}`;
+}
+updateLootSpawnCode();
+
+// ---- Execute ----
+document.getElementById('executeAsCheckbox').addEventListener('change', () => {
+  document.getElementById('executeAsInput').style.display =
+    document.getElementById('executeAsCheckbox').checked ? 'inline-block' : 'none';
+  updateExecuteCode();
+});
+document.getElementById('executeAtCheckbox').addEventListener('change', () => {
+  document.getElementById('executeAtInput').style.display =
+    document.getElementById('executeAtCheckbox').checked ? 'inline-block' : 'none';
+  updateExecuteCode();
+});
+document.getElementById('executePositionedCheckbox').addEventListener('change', () => {
+  document.getElementById('executePositionedControls').style.display =
+    document.getElementById('executePositionedCheckbox').checked ? 'inline-block' : 'none';
+  updateExecuteCode();
+});
+document.getElementById('executeIfCheckbox').addEventListener('change', () => {
+  const on = document.getElementById('executeIfCheckbox').checked;
+  document.getElementById('executeIfControls').style.display = on ? 'flex' : 'none';
+  if (on) onExecuteIfTypeChange(); else {
+    document.getElementById('executeIfEntityControls').style.display = 'none';
+    document.getElementById('executeIfBlockControls').style.display = 'none';
+    document.getElementById('executeIfScoreControls').style.display = 'none';
+  }
+  updateExecuteCode();
+});
+function onExecuteIfTypeChange() {
+  const type = document.getElementById('executeIfTypeSelect').value;
+  document.getElementById('executeIfEntityControls').style.display = type === 'entity' ? 'flex' : 'none';
+  document.getElementById('executeIfBlockControls').style.display = type === 'block' ? 'flex' : 'none';
+  document.getElementById('executeIfScoreControls').style.display = type === 'score' ? 'flex' : 'none';
+  updateExecuteCode();
+}
+document.getElementById('executeIfTypeSelect').addEventListener('change', onExecuteIfTypeChange);
+['executeAsInput', 'executeAtInput', 'executePosXInput', 'executePosYInput', 'executePosZInput',
+ 'executeIfNotSelect', 'executeIfEntityInput', 'executeIfBlockXInput', 'executeIfBlockYInput',
+ 'executeIfBlockZInput', 'executeIfBlockNameInput', 'executeIfScoreTargetInput', 'executeIfScoreObjInput',
+ 'executeIfScoreRangeInput', 'executeRunInput'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateExecuteCode);
+});
+function updateExecuteCode() {
+  const parts = ['execute'];
+  if (document.getElementById('executeAsCheckbox').checked) {
+    parts.push('as', document.getElementById('executeAsInput').value.trim() || '@a');
+  }
+  if (document.getElementById('executeAtCheckbox').checked) {
+    parts.push('at', document.getElementById('executeAtInput').value.trim() || '@s');
+  }
+  if (document.getElementById('executePositionedCheckbox').checked) {
+    const x = document.getElementById('executePosXInput').value.trim() || '~';
+    const y = document.getElementById('executePosYInput').value.trim() || '~';
+    const z = document.getElementById('executePosZInput').value.trim() || '~';
+    parts.push('positioned', x, y, z);
+  }
+  if (document.getElementById('executeIfCheckbox').checked) {
+    const ifNot = document.getElementById('executeIfNotSelect').value;
+    const type = document.getElementById('executeIfTypeSelect').value;
+    parts.push(ifNot, type);
+    if (type === 'entity') {
+      parts.push(document.getElementById('executeIfEntityInput').value.trim() || '@p');
+    } else if (type === 'block') {
+      const x = document.getElementById('executeIfBlockXInput').value.trim() || '~';
+      const y = document.getElementById('executeIfBlockYInput').value.trim() || '~-1';
+      const z = document.getElementById('executeIfBlockZInput').value.trim() || '~';
+      const name = document.getElementById('executeIfBlockNameInput').value.trim() || 'stone';
+      parts.push(x, y, z, name);
+    } else if (type === 'score') {
+      const target = document.getElementById('executeIfScoreTargetInput').value.trim() || '@s';
+      const obj = document.getElementById('executeIfScoreObjInput').value.trim() || 'objective';
+      const range = document.getElementById('executeIfScoreRangeInput').value.trim() || '1..';
+      parts.push(target, obj, 'matches', range);
+    }
+  }
+  const runCmd = document.getElementById('executeRunInput').value.trim() || 'say 안녕!';
+  parts.push('run', runCmd);
+  document.getElementById('executeCode').textContent = parts.join(' ');
+}
+updateExecuteCode();
 
 // ---- Color code maker ----
 const MC_COLORS = [
@@ -4437,12 +5527,12 @@ function updateSelectorCode() {
   }
   if (document.getElementById('selectorNameCheckbox').checked) {
     const name = document.getElementById('selectorNameInput').value.trim();
-    if (name) conditions.push(`name="${name}"`);
+    if (name) conditions.push(`name="${name.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`);
   }
   if (document.getElementById('selectorDistanceCheckbox').checked) {
     const min = document.getElementById('selectorDistanceMinInput').value.trim();
     const max = document.getElementById('selectorDistanceMaxInput').value.trim();
-    conditions.push(`distance=${min || '0'}..${max || ''}`);
+    if (min || max) conditions.push(`distance=${min}..${max}`);
   }
   if (document.getElementById('selectorGamemodeCheckbox').checked) {
     conditions.push(`gamemode=${document.getElementById('selectorGamemodeSelect').value}`);
@@ -4460,7 +5550,7 @@ function updateSelectorCode() {
     const scoreName = document.getElementById('selectorScoreNameInput').value.trim();
     const min = document.getElementById('selectorScoreMinInput').value.trim();
     const max = document.getElementById('selectorScoreMaxInput').value.trim();
-    if (scoreName) conditions.push(`scores={${scoreName}=${min || '0'}..${max || ''}}`);
+    if (scoreName && (min || max)) conditions.push(`scores={${scoreName}=${min}..${max}}`);
   }
 
   const selector = conditions.length > 0 ? `${base}[${conditions.join(',')}]` : base;
@@ -4855,6 +5945,26 @@ const BREWING_RECIPES = [
     name: '즉시 피해의 물약', effectId: 'instant_damage',
     steps: [['potion', '회복의 물약', '🧪'], ['fermented_spider_eye', '발효된 거미 눈', '🕸']],
     note: '회복 물약을 반전시켜 만들어요.'
+  },
+  {
+    name: '벌레 먹음의 물약', effectId: 'infested',
+    steps: [['potion', '어색한 물약', '🧪'], ['stone', '돌', '🪨']],
+    note: '1.21(트리키 트라이얼)에 추가됐어요. 효과를 받은 대상이 피해를 입을 때마다 10% 확률로 좀벌레가 1~2마리 튀어나와요. 지속시간이 3분 고정이라 레드스톤(연장)이나 발광석(강화)을 넣을 수 없어요.'
+  },
+  {
+    name: '점액질의 물약', effectId: 'oozing',
+    steps: [['potion', '어색한 물약', '🧪'], ['slime_ball', '슬라임 블록', '🟩']],
+    note: '1.21(트리키 트라이얼)에 추가됐어요. 효과를 받은 대상이 죽을 때 슬라임 2마리가 생겨요. 지속시간 3분 고정, 레드스톤/발광석 사용 불가.'
+  },
+  {
+    name: '거미줄 뒤덮음의 물약', effectId: 'weaving',
+    steps: [['potion', '어색한 물약', '🧪'], ['cobweb', '거미줄', '🕸']],
+    note: '1.21(트리키 트라이얼)에 추가됐어요. 효과를 받은 대상이 죽을 때 주변에 거미줄이 2~3개 생겨요. 지속시간 3분 고정, 레드스톤/발광석 사용 불가.'
+  },
+  {
+    name: '강풍 충전의 물약', effectId: 'wind_charged',
+    steps: [['potion', '어색한 물약', '🧪'], ['breeze_rod', '강풍의 막대', '💨']],
+    note: '1.21(트리키 트라이얼)에 추가됐어요. 효과를 받은 대상이 죽을 때 강풍 충전탄과 같은 돌풍이 터져요. 지속시간 3분 고정, 레드스톤/발광석 사용 불가.'
   },
 ];
 const BREWING_MODIFIERS = [
